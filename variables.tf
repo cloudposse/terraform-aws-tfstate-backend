@@ -55,31 +55,31 @@ variable "hash_key" {
 }
 
 variable "autoscale_write_target" {
-  default     = 5
+  default     = 20
   description = "The target value for DynamoDB write autoscaling"
 }
 
 variable "autoscale_read_target" {
-  default     = 5
+  default     = 20
   description = "The target value for DynamoDB read autoscaling"
 }
 
 variable "autoscale_min_read_capacity" {
-  default     = 5
+  default     = 10
   description = "DynamoDB autoscaling min read capacity"
 }
 
 variable "autoscale_max_read_capacity" {
-  default     = 50
+  default     = 100
   description = "DynamoDB autoscaling max read capacity"
 }
 
 variable "autoscale_min_write_capacity" {
-  default     = 5
+  default     = 10
   description = "DynamoDB autoscaling min write capacity"
 }
 
 variable "autoscale_max_write_capacity" {
-  default     = 50
+  default     = 100
   description = "DynamoDB autoscaling max write capacity"
 }
