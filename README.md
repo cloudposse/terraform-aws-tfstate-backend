@@ -1,6 +1,6 @@
 # terraform-aws-state-backend [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-state-backend.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-state-backend)
 
-Provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file to prevent concurrent modification
+Provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file to prevent concurrent modifications and state corruption.
 
 __NOTE:__ The operators of the module (IAM Users) must have permissions to create S3 buckets and DynamoDB tables when performing `terraform plan` and `terraform apply`
 
