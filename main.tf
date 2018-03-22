@@ -5,9 +5,9 @@ module "s3_bucket" {
   name                   = "${var.name}"
   region                 = "${var.region}"
   acl                    = "${var.acl}"
-  force_destroy          = "${var.force_destroy}"
-  versioning_enabled     = "${var.versioning_enabled}"
-  lifecycle_rule_enabled = "${var.lifecycle_rule_enabled}"
+  force_destroy          = "false"
+  versioning_enabled     = "true"
+  lifecycle_rule_enabled = "false"
   delimiter              = "${var.delimiter}"
   attributes             = ["${compact(concat(var.attributes, list("terraform", "state")))}"]
   tags                   = "${var.tags}"

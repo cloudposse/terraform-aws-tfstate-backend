@@ -44,9 +44,6 @@ terraform {
 | `tags`                          | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                                   | No       |
 | `delimiter`                     | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`            | No       |
 | `acl`                           | `private`    | The canned ACL to apply to the S3 bucket                                               | No       |
-| `force_destroy`                 | `false`      | Indicates that all objects should be deleted from the S3 bucket so that it can be destroyed without errors   | No       |
-| `lifecycle_rule_enabled`        | `false`      | Enable lifecycle events on the bucket                                                  | No       |
-| `versioning_enabled`            | `true`       | Enable versioning to keep multiple variants of an object in the same bucket            | No       |
 | `encrypt_dynamodb`              | `true`       | Enable encryption of DynamoDB                                                          | No       |
 | `hash_key`                      | `LockID`     | The attribute in the DynamoDB table to use as the hash key                             | No       |
 | `autoscale_write_target`        | `5`          | The target value for DynamoDB write autoscaling                                        | No       |

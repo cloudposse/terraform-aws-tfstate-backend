@@ -43,21 +43,6 @@ variable "acl" {
   default     = "private"
 }
 
-variable "force_destroy" {
-  description = "Indicates that all objects should be deleted from the S3 bucket so that it can be destroyed without errors. These objects are not recoverable"
-  default     = "false"
-}
-
-variable "lifecycle_rule_enabled" {
-  description = "Enable lifecycle events on the bucket"
-  default     = "false"
-}
-
-variable "versioning_enabled" {
-  description = "Enable versioning to keep multiple variants of an object in the same bucket"
-  default     = "true"
-}
-
 variable "encrypt_dynamodb" {
   description = "Enable encryption of DynamoDB"
   default     = "true"
