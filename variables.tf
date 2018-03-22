@@ -30,3 +30,71 @@ variable "tags" {
   default     = {}
   description = "Additional tags (e.g. map('BusinessUnit`,`XYZ`)"
 }
+
+variable "region" {
+  type        = "string"
+  description = "AWS Region the S3 bucket should reside in"
+  default     = "us-east-1"
+}
+
+variable "acl" {
+  type        = "string"
+  description = "The canned ACL to apply to the S3 bucket"
+  default     = "private"
+}
+
+variable "force_destroy" {
+  description = "Indicates that all objects should be deleted from the S3 bucket so that it can be destroyed without errors. These objects are not recoverable"
+  default     = "false"
+}
+
+variable "lifecycle_rule_enabled" {
+  description = "Enable lifecycle events on the bucket"
+  default     = "false"
+}
+
+variable "versioning_enabled" {
+  description = "Enable versioning to keep multiple variants of an object in the same bucket"
+  default     = "true"
+}
+
+variable "encrypt_dynamodb" {
+  description = "Enable encryption of DynamoDB"
+  default     = "true"
+}
+
+variable "hash_key" {
+  type        = "string"
+  default     = "LockID"
+  description = "The attribute in the DynamoDB table to use as the hash key"
+}
+
+variable "autoscale_write_target" {
+  default     = 5
+  description = "The target value for DynamoDB write autoscaling"
+}
+
+variable "autoscale_read_target" {
+  default     = 5
+  description = "The target value for DynamoDB read autoscaling"
+}
+
+variable "autoscale_min_read_capacity" {
+  default     = 5
+  description = "DynamoDB autoscaling min read capacity"
+}
+
+variable "autoscale_max_read_capacity" {
+  default     = 50
+  description = "DynamoDB autoscaling max read capacity"
+}
+
+variable "autoscale_min_write_capacity" {
+  default     = 5
+  description = "DynamoDB autoscaling min write capacity"
+}
+
+variable "autoscale_max_write_capacity" {
+  default     = 50
+  description = "DynamoDB autoscaling max write capacity"
+}
