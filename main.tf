@@ -4,7 +4,7 @@ module "s3_bucket_label" {
   stage      = "${var.stage}"
   name       = "${var.name}"
   delimiter  = "${var.delimiter}"
-  attributes = ["${compact(concat(var.attributes, list("terraform", "state")))}"]
+  attributes = "${var.attributes}"
   tags       = "${var.tags}"
 }
 
@@ -35,7 +35,7 @@ module "dynamodb_table_label" {
   stage      = "${var.stage}"
   name       = "${var.name}"
   delimiter  = "${var.delimiter}"
-  attributes = ["${compact(concat(var.attributes, list("terraform", "state", "lock")))}"]
+  attributes = ["${compact(concat(var.attributes, list("lock")))}"]
   tags       = "${var.tags}"
 }
 

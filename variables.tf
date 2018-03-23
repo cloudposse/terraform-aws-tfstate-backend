@@ -10,6 +10,7 @@ variable "stage" {
 
 variable "name" {
   type        = "string"
+  default     = "terraform"
   description = "Name  (e.g. `app` or `cluster`)"
 }
 
@@ -21,7 +22,7 @@ variable "delimiter" {
 
 variable "attributes" {
   type        = "list"
-  default     = []
+  default     = ["state"]
   description = "Additional attributes (e.g. `policy` or `role`)"
 }
 

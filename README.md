@@ -12,7 +12,7 @@ module "terraform_state_backend" {
   source        = "git::https://github.com/cloudposse/terraform-aws-state-backend.git?ref=master"
   namespace     = "cp"
   stage         = "dev"
-  name          = "cluster"
+  name          = "terraform"
   region        = "us-east-1"
 }
 ```
@@ -40,9 +40,9 @@ terraform {
 |:-------------------------|:-------------|:----------------------------------------------------------------------------------|:--------:|
 | `namespace`              | ``           | Namespace (_e.g._ `cp` or `cloudposse`)                                           | Yes      |
 | `stage`                  | ``           | Stage (_e.g._ `prod`, `dev`, `staging`)                                           | Yes      |
-| `name`                   | ``           | Name  (_e.g._ `app` or `cluster`)                                                 | Yes      |
-| `region`                 | ``           | AWS Region the S3 bucket should reside in                                         | Yes      |
-| `attributes`             | `[]`         | Additional attributes (_e.g._ `policy` or `role`)                                 | No       |
+| `region`                 | `us-east-1`  | AWS Region the S3 bucket should reside in                                         | Yes      |
+| `name`                   | `terraform`  | Name  (_e.g._ `app`, `cluster`, or `terraform`)                                   | No       |
+| `attributes`             | `["state"]`  | Additional attributes (_e.g._ `policy` or `role`)                                 | No       |
 | `tags`                   | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                              | No       |
 | `delimiter`              | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`       | No       |
 | `acl`                    | `private`    | The canned ACL to apply to the S3 bucket                                          | No       |
