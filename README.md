@@ -41,9 +41,9 @@ terraform {
   
   backend "s3" {
     region         = "us-east-1"
-    bucket         = "${module.terraform_state_backend.s3_bucket_id}"
+    bucket         = "< the name of the S3 bucket >"
     key            = "terraform.tfstate"
-    dynamodb_table = "${module.terraform_state_backend.dynamodb_table_name}"
+    dynamodb_table = "< the name of the DynamoDB table >"
     encrypt        = true
   }
 }
