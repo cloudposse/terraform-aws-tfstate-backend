@@ -19,6 +19,8 @@ module "terraform_state_backend" {
 
 Once the S3 bucket and DynamoDB table have been created, configure Terraform backend to use them
 
+https://www.terraform.io/docs/backends/types/s3.html
+
 ```hcl
 terraform {
   backend "s3" {
@@ -44,14 +46,12 @@ terraform {
 | `tags`                          | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                              | No       |
 | `delimiter`                     | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`       | No       |
 | `acl`                           | `private`    | The canned ACL to apply to the S3 bucket                                          | No       |
-| `encrypt_dynamodb`              | `true`       | Enable DynamoDB encryption                                                        | No       |
-| `hash_key`                      | `LockID`     | The attribute in the DynamoDB table to use as the hash key                        | No       |
 | `autoscale_write_target`        | `10`         | The target value for DynamoDB write autoscaling                                   | No       |
 | `autoscale_read_target`         | `10`         | The target value for DynamoDB read autoscaling                                    | No       |
-| `autoscale_min_read_capacity`   | `5`         | DynamoDB autoscaling min read capacity                                             | No       |
-| `autoscale_max_read_capacity`   | `20`        | DynamoDB autoscaling max read capacity                                             | No       |
-| `autoscale_min_write_capacity`  | `5`         | DynamoDB autoscaling min write capacity                                            | No       |
-| `autoscale_max_write_capacity`  | `20`        | DynamoDB autoscaling max write capacity                                            | No       |
+| `autoscale_min_read_capacity`   | `5`          | DynamoDB autoscaling min read capacity                                            | No       |
+| `autoscale_max_read_capacity`   | `20`         | DynamoDB autoscaling max read capacity                                            | No       |
+| `autoscale_min_write_capacity`  | `5`          | DynamoDB autoscaling min write capacity                                           | No       |
+| `autoscale_max_write_capacity`  | `20`         | DynamoDB autoscaling max write capacity                                           | No       |
 
 
 ## Outputs

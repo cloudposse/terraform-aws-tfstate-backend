@@ -43,11 +43,6 @@ variable "acl" {
   default     = "private"
 }
 
-variable "encrypt_dynamodb" {
-  description = "Enable DynamoDB encryption"
-  default     = "true"
-}
-
 variable "autoscale_write_target" {
   default     = 10
   description = "The target value for DynamoDB write autoscaling"
