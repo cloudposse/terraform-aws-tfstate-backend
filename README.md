@@ -27,6 +27,7 @@ terraform {
     bucket         = "${module.terraform_state_backend.s3_bucket_id}"
     key            = "terraform.tfstate"
     dynamodb_table = "${module.terraform_state_backend.dynamodb_table_name}"
+    encrypt        = true
   }
 }
 ```
