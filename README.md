@@ -2,12 +2,21 @@
 
 Provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file to prevent concurrent modifications and state corruption.
 
+https://www.terraform.io/docs/backends/types/s3.html
+
+
 __NOTE:__ The operators of the module (IAM Users) must have permissions to create S3 buckets and DynamoDB tables when performing `terraform plan` and `terraform apply`
 
 
 ## Usage
 
+Create Terraform state storage backend by running `terraform plan` and `terraform apply`
+
 ```hcl
+terraform {
+  required_version = ">= 0.11.3"
+}
+
 module "terraform_state_backend" {
   source        = "git::https://github.com/cloudposse/terraform-aws-state-backend.git?ref=master"
   namespace     = "cp"
@@ -17,12 +26,17 @@ module "terraform_state_backend" {
 }
 ```
 
-Once the S3 bucket and DynamoDB table have been created, configure Terraform backend to use them
+__NOTE:__ This is bootstrapping process and you'll have to create the Terraform state storage backend (S3 bucket and DynamoDB table) before you could start using 
+the backend to provision other Terraform resources. This is the reason why in the example above we did not specify a backend. Terraform will use the local 
+file system to store the state.
+You can then import the created S3 bucket and DynamoDB table by using `terraform import` and store them into the newly created remote Terraform state.
 
-https://www.terraform.io/docs/backends/types/s3.html
+Once the S3 bucket and DynamoDB table have been created, configure the Terraform state backend to provision other Terraform resources
 
 ```hcl
 terraform {
+  required_version = ">= 0.11.3"
+  
   backend "s3" {
     region         = "us-east-1"
     bucket         = "${module.terraform_state_backend.s3_bucket_id}"
@@ -30,6 +44,10 @@ terraform {
     dynamodb_table = "${module.terraform_state_backend.dynamodb_table_name}"
     encrypt        = true
   }
+}
+
+module "another_module" {
+  source        = "....."
 }
 ```
 
