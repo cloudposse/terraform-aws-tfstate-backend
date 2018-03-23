@@ -49,12 +49,12 @@ variable "encrypt_dynamodb" {
 }
 
 variable "autoscale_write_target" {
-  default     = 5
+  default     = 10
   description = "The target value for DynamoDB write autoscaling"
 }
 
 variable "autoscale_read_target" {
-  default     = 5
+  default     = 10
   description = "The target value for DynamoDB read autoscaling"
 }
 

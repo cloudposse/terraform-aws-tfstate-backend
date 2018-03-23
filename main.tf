@@ -23,6 +23,7 @@ module "dynamodb_table" {
   tags                         = "${var.tags}"
   enable_encryption            = "${var.encrypt_dynamodb}"
   hash_key                     = "LockID"                                                                       # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
+  range_key                    = "LockRange"
   autoscale_read_target        = "${var.autoscale_read_target}"
   autoscale_write_target       = "${var.autoscale_write_target}"
   autoscale_min_read_capacity  = "${var.autoscale_min_read_capacity}"
