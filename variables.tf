@@ -43,32 +43,12 @@ variable "acl" {
   default     = "private"
 }
 
-variable "autoscale_write_target" {
-  default     = 10
-  description = "The target value for DynamoDB write autoscaling"
-}
-
-variable "autoscale_read_target" {
-  default     = 10
-  description = "The target value for DynamoDB read autoscaling"
-}
-
-variable "autoscale_min_read_capacity" {
+variable "read_capacity" {
   default     = 5
-  description = "DynamoDB autoscaling min read capacity"
+  description = "DynamoDB read capacity units"
 }
 
-variable "autoscale_max_read_capacity" {
-  default     = 20
-  description = "DynamoDB autoscaling max read capacity"
-}
-
-variable "autoscale_min_write_capacity" {
+variable "write_capacity" {
   default     = 5
-  description = "DynamoDB autoscaling min write capacity"
-}
-
-variable "autoscale_max_write_capacity" {
-  default     = 20
-  description = "DynamoDB autoscaling max write capacity"
+  description = "DynamoDB write capacity units"
 }
