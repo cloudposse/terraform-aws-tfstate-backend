@@ -14,7 +14,6 @@ module "terraform_state_backend" {
   stage         = "dev"
   name          = "cluster"
   region        = "us-east-1"
-  hash_key      = "LockID"
 }
 ```
 
@@ -35,36 +34,36 @@ terraform {
 
 ## Variables
 
-|  Name                           |  Default     |  Description                                                                           | Required |
-|:--------------------------------|:-------------|:---------------------------------------------------------------------------------------|:--------:|
-| `namespace`                     | ``           | Namespace (_e.g._ `cp` or `cloudposse`)                                                | Yes      |
-| `stage`                         | ``           | Stage (_e.g._ `prod`, `dev`, `staging`)                                                | Yes      |
-| `name`                          | ``           | Name  (_e.g._ `app` or `cluster`)                                                      | Yes      |
-| `region`                        | ``           | AWS Region the S3 bucket should reside in                                              | Yes      |
-| `attributes`                    | `[]`         | Additional attributes (_e.g._ `policy` or `role`)                                      | No       |
-| `tags`                          | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                                   | No       |
-| `delimiter`                     | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`            | No       |
-| `acl`                           | `private`    | The canned ACL to apply to the S3 bucket                                               | No       |
-| `encrypt_dynamodb`              | `true`       | Enable encryption of DynamoDB                                                          | No       |
-| `hash_key`                      | `LockID`     | The attribute in the DynamoDB table to use as the hash key                             | No       |
-| `autoscale_write_target`        | `20`         | The target value for DynamoDB write autoscaling                                        | No       |
-| `autoscale_read_target`         | `20`         | The target value for DynamoDB read autoscaling                                         | No       |
-| `autoscale_min_read_capacity`   | `10`         | DynamoDB autoscaling min read capacity                                                 | No       |
-| `autoscale_max_read_capacity`   | `100`        | DynamoDB autoscaling max read capacity                                                 | No       |
-| `autoscale_min_write_capacity`  | `10`         | DynamoDB autoscaling min write capacity                                                | No       |
-| `autoscale_max_write_capacity`  | `100`        | DynamoDB autoscaling max write capacity                                                | No       |
+|  Name                           |  Default     |  Description                                                                      | Required |
+|:--------------------------------|:-------------|:----------------------------------------------------------------------------------|:--------:|
+| `namespace`                     | ``           | Namespace (_e.g._ `cp` or `cloudposse`)                                           | Yes      |
+| `stage`                         | ``           | Stage (_e.g._ `prod`, `dev`, `staging`)                                           | Yes      |
+| `name`                          | ``           | Name  (_e.g._ `app` or `cluster`)                                                 | Yes      |
+| `region`                        | ``           | AWS Region the S3 bucket should reside in                                         | Yes      |
+| `attributes`                    | `[]`         | Additional attributes (_e.g._ `policy` or `role`)                                 | No       |
+| `tags`                          | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                              | No       |
+| `delimiter`                     | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`       | No       |
+| `acl`                           | `private`    | The canned ACL to apply to the S3 bucket                                          | No       |
+| `encrypt_dynamodb`              | `true`       | Enable DynamoDB encryption                                                        | No       |
+| `hash_key`                      | `LockID`     | The attribute in the DynamoDB table to use as the hash key                        | No       |
+| `autoscale_write_target`        | `20`         | The target value for DynamoDB write autoscaling                                   | No       |
+| `autoscale_read_target`         | `20`         | The target value for DynamoDB read autoscaling                                    | No       |
+| `autoscale_min_read_capacity`   | `10`         | DynamoDB autoscaling min read capacity                                            | No       |
+| `autoscale_max_read_capacity`   | `100`        | DynamoDB autoscaling max read capacity                                            | No       |
+| `autoscale_min_write_capacity`  | `10`         | DynamoDB autoscaling min write capacity                                           | No       |
+| `autoscale_max_write_capacity`  | `100`        | DynamoDB autoscaling max write capacity                                           | No       |
 
 
 ## Outputs
 
-| Name                     | Description                            |
-|:-------------------------|:---------------------------------------|
-| `s3_bucket_domain_name`  | S3 bucket domain name                  |
-| `s3_bucket_id`           | S3 bucket ID                           |
-| `s3_bucket_arn`          | S3 bucket ARN                          |
-| `dynamodb_table_id`      | DynamoDB table ID                      |
-| `dynamodb_table_arn`     | DynamoDB table ARN                     |
-| `dynamodb_table_name`    | DynamoDB table name                    |
+| Name                     | Description                  |
+|:-------------------------|:-----------------------------|
+| `s3_bucket_domain_name`  | S3 bucket domain name        |
+| `s3_bucket_id`           | S3 bucket ID                 |
+| `s3_bucket_arn`          | S3 bucket ARN                |
+| `dynamodb_table_id`      | DynamoDB table ID            |
+| `dynamodb_table_arn`     | DynamoDB table ARN           |
+| `dynamodb_table_name`    | DynamoDB table name          |
 
 
 ## Help

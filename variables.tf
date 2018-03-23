@@ -44,42 +44,36 @@ variable "acl" {
 }
 
 variable "encrypt_dynamodb" {
-  description = "Enable encryption of DynamoDB"
+  description = "Enable DynamoDB encryption"
   default     = "true"
 }
 
-variable "hash_key" {
-  type        = "string"
-  default     = "LockID"
-  description = "The attribute in the DynamoDB table to use as the hash key"
-}
-
 variable "autoscale_write_target" {
-  default     = 20
+  default     = 5
   description = "The target value for DynamoDB write autoscaling"
 }
 
 variable "autoscale_read_target" {
-  default     = 20
+  default     = 5
   description = "The target value for DynamoDB read autoscaling"
 }
 
 variable "autoscale_min_read_capacity" {
-  default     = 10
+  default     = 5
   description = "DynamoDB autoscaling min read capacity"
 }
 
 variable "autoscale_max_read_capacity" {
-  default     = 100
+  default     = 20
   description = "DynamoDB autoscaling max read capacity"
 }
 
 variable "autoscale_min_write_capacity" {
-  default     = 10
+  default     = 5
   description = "DynamoDB autoscaling min write capacity"
 }
 
 variable "autoscale_max_write_capacity" {
-  default     = 100
+  default     = 20
   description = "DynamoDB autoscaling max write capacity"
 }
