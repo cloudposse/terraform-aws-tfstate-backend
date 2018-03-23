@@ -31,7 +31,9 @@ the backend to provision other Terraform resources. This is the reason why in th
 file system to store the state.
 You can then import the created S3 bucket and DynamoDB table by using `terraform import` and store them into the newly created remote Terraform state.
 
-Once the S3 bucket and DynamoDB table have been created, configure the Terraform state backend to provision other Terraform resources
+Once the S3 bucket and DynamoDB table have been created, configure the Terraform state backend to provision other Terraform resources.
+
+Run `terraform init` to initialize the backend and then `terraform plan` and `terraform apply`
 
 ```hcl
 terraform {
@@ -50,6 +52,8 @@ module "another_module" {
   source        = "....."
 }
 ```
+
+The new `terraform.tfstate` file will now be stored in the S3 bucket.
 
 
 ## Variables
