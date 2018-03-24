@@ -1,6 +1,7 @@
 # terraform-aws-tfstate-backend [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend)
 
-Provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file to prevent concurrent modifications and state corruption.
+Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
+to prevent concurrent modifications and state corruption.
 
 https://www.terraform.io/docs/backends/types/s3.html
 
