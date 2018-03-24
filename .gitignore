@@ -5,4 +5,4 @@
 # Module directory
 .terraform/
 .idea
-terraform-aws-state-backend.iml
+terraform-aws-tfstate-backend.iml

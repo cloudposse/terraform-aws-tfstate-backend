@@ -1,4 +1,4 @@
-# terraform-aws-state-backend [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-state-backend.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-state-backend)
+# terraform-aws-tfstate-backend [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend)
 
 Provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file to prevent concurrent modifications and state corruption.
 
@@ -10,30 +10,24 @@ __NOTE:__ The operators of the module (IAM Users) must have permissions to creat
 
 ## Usage
 
-Create Terraform state storage backend by running `terraform plan` and `terraform apply`
-
 ```hcl
 terraform {
   required_version = ">= 0.11.3"
 }
 
 module "terraform_state_backend" {
-  source        = "git::https://github.com/cloudposse/terraform-aws-state-backend.git?ref=master"
+  source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
   namespace     = "cp"
   stage         = "dev"
-  name          = "terraform"
+  name          = "app"
   region        = "us-east-1"
 }
 ```
 
-__NOTE:__ This is bootstrapping process and you'll have to create the Terraform state storage backend (S3 bucket and DynamoDB table) before you could start using 
-the backend to provision other Terraform resources. This is the reason why in the example above we did not specify a backend. Terraform will use the local 
-file system to store the state.
-You can then import the created S3 bucket and DynamoDB table by using `terraform import` and store them into the newly created remote Terraform state.
+__NOTE:__ We create the Terraform state backend before we have a remote backend, so Terraform will use the local file system to store the state.
+You can then import the created S3 bucket and DynamoDB table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
 
-Once the S3 bucket and DynamoDB table have been created, configure Terraform backend and provision other Terraform resources.
-
-Run `terraform init` to initialize the backend and then `terraform plan` and `terraform apply`
+Once the S3 bucket and DynamoDB table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
 
 ```hcl
 terraform {
@@ -53,7 +47,13 @@ module "another_module" {
 }
 ```
 
-The new `terraform.tfstate` file will now be stored in the S3 bucket.
+Initialize the backend with `terraform init`.
+
+After `terraform apply`, `terraform.tfstate` file will be stored in the S3 bucket, 
+and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+
+
+![s3-bucket-with-terraform-state](images/s3-bucket-with-terraform-state.png)
 
 
 ## Variables
@@ -88,18 +88,18 @@ The new `terraform.tfstate` file will now be stored in the S3 bucket.
 
 **Got a question?**
 
-File a GitHub [issue](https://github.com/cloudposse/terraform-aws-state-backend/issues), send us an [email](mailto:hello@cloudposse.com) or reach out to us on [Gitter](https://gitter.im/cloudposse/).
+File a GitHub [issue](https://github.com/cloudposse/terraform-aws-tfstate-backend/issues), send us an [email](mailto:hello@cloudposse.com) or reach out to us on [Gitter](https://gitter.im/cloudposse/).
 
 
 ## Contributing
 
 ### Bug Reports & Feature Requests
 
-Please use the [issue tracker](https://github.com/cloudposse/terraform-aws-state-backend/issues) to report any bugs or file feature requests.
+Please use the [issue tracker](https://github.com/cloudposse/terraform-aws-tfstate-backend/issues) to report any bugs or file feature requests.
 
 ### Developing
 
-If you are interested in being a contributor and want to get involved in developing `terraform-aws-state-backend`, we would love to hear from you! Shoot us an [email](mailto:hello@cloudposse.com).
+If you are interested in being a contributor and want to get involved in developing `terraform-aws-tfstate-backend`, we would love to hear from you! Shoot us an [email](mailto:hello@cloudposse.com).
 
 In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
@@ -138,7 +138,7 @@ See [LICENSE](LICENSE) for full details.
 
 ## About
 
-`terraform-aws-state-backend` is maintained and funded by [Cloud Posse, LLC][website].
+`terraform-aws-tfstate-backend` is maintained and funded by [Cloud Posse, LLC][website].
 
 ![Cloud Posse](https://cloudposse.com/logo-300x69.png)
 
