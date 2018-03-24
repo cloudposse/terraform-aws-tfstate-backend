@@ -54,6 +54,7 @@ After `terraform apply`, `terraform.tfstate` file will be stored in the S3 bucke
 and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 
 <br/>
+
 ![s3-bucket-with-terraform-state](images/s3-bucket-with-terraform-state.png)
 
 
