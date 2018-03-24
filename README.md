@@ -3,6 +3,13 @@
 Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
 to prevent concurrent modifications and state corruption.
 
+The module supports the following:
+
+1. Forced server-side encryption at rest for the S3 bucket
+2. S3 bucket versioning to allow for Terraform state recovery in the case of accidental deletions and human errors
+3. State locking and consistency checking via DynamoDB table to prevent concurrent operations
+4. DynamoDB server-side encryption
+
 https://www.terraform.io/docs/backends/types/s3.html
 
 
