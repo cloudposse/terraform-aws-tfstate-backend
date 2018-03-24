@@ -25,10 +25,10 @@ module "terraform_state_backend" {
 }
 ```
 
-__NOTE:__ We create the Terraform state backend before we have a remote backend, so Terraform will use the local file system to store the state.
-You can then import the created S3 bucket and DynamoDB table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
+__NOTE:__ First create the bucket and table without any state enabled (Terraform will use the local file system to store state).
+You can then import the bucket and table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
 
-Once the S3 bucket and DynamoDB table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
+Once the bucket and table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
 
 ```hcl
 terraform {
@@ -50,7 +50,7 @@ module "another_module" {
 
 Initialize the backend with `terraform init`.
 
-After `terraform apply`, `terraform.tfstate` file will be stored in the S3 bucket, 
+After `terraform apply`, `terraform.tfstate` file will be stored in the bucket, 
 and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 
 <br/>
