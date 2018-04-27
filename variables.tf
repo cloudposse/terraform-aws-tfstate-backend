@@ -5,7 +5,7 @@ variable "namespace" {
 
 variable "stage" {
   type        = "string"
-  description = "Stage (e.g. `prod`, `dev`, `staging`, `infra`)"
+  description = "Stage (e.g. `prod`, `dev`, `staging`)"
 }
 
 variable "name" {
@@ -23,19 +23,18 @@ variable "delimiter" {
 variable "attributes" {
   type        = "list"
   default     = ["state"]
-  description = "Additional attributes (e.g. `policy` or `role`)"
+  description = "Additional attributes (e.g. `state`)"
 }
 
 variable "tags" {
   type        = "map"
   default     = {}
-  description = "Additional tags (e.g. map('BusinessUnit`,`XYZ`)"
+  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)"
 }
 
 variable "region" {
   type        = "string"
   description = "AWS Region the S3 bucket should reside in"
-  default     = "us-east-1"
 }
 
 variable "acl" {
@@ -52,4 +51,14 @@ variable "read_capacity" {
 variable "write_capacity" {
   default     = 5
   description = "DynamoDB write capacity units"
+}
+
+variable "force_destroy" {
+  description = "A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable"
+  default     = "false"
+}
+
+variable "enable_server_side_encryption" {
+  description = "Enable DynamoDB server-side encryption"
+  default     = "true"
 }
