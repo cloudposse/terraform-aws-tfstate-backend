@@ -26,8 +26,9 @@ terraform {
 module "terraform_state_backend" {
   source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
   namespace     = "cp"
-  stage         = "dev"
-  name          = "app"
+  stage         = "prod"
+  name          = "terraform"
+  attributes    = ["state"]
   region        = "us-east-1"
 }
 ```
@@ -67,18 +68,20 @@ and the DynamoDB table will be used to lock the state to prevent concurrent modi
 
 ## Variables
 
-|  Name                    |  Default     |  Description                                                                      | Required |
-|:-------------------------|:-------------|:----------------------------------------------------------------------------------|:--------:|
-| `namespace`              | ``           | Namespace (_e.g._ `cp` or `cloudposse`)                                           | Yes      |
-| `stage`                  | ``           | Stage (_e.g._ `prod`, `dev`, `staging`)                                           | Yes      |
-| `region`                 | `us-east-1`  | AWS Region the S3 bucket should reside in                                         | Yes      |
-| `name`                   | `terraform`  | Name  (_e.g._ `app`, `cluster`, or `terraform`)                                   | No       |
-| `attributes`             | `["state"]`  | Additional attributes (_e.g._ `policy` or `role`)                                 | No       |
-| `tags`                   | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                              | No       |
-| `delimiter`              | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`       | No       |
-| `acl`                    | `private`    | The canned ACL to apply to the S3 bucket                                          | No       |
-| `read_capacity`          | `5`          | DynamoDB read capacity units                                                      | No       |
-| `write_capacity`         | `5`          | DynamoDB write capacity units                                                     | No       |
+|  Name                            |  Default     |  Description                                                                      | Required |
+|:---------------------------------|:-------------|:----------------------------------------------------------------------------------|:--------:|
+| `namespace`                      | ``           | Namespace (_e.g._ `cp` or `cloudposse`)                                           | Yes      |
+| `stage`                          | ``           | Stage (_e.g._ `prod`, `dev`, `staging`)                                           | Yes      |
+| `region`                         | ``           | AWS Region the S3 bucket should reside in                                         | Yes      |
+| `name`                           | `terraform`  | Name  (_e.g._ `app`, `cluster`, or `terraform`)                                   | No       |
+| `attributes`                     | `["state"]`  | Additional attributes (_e.g._ `state`)                                            | No       |
+| `tags`                           | `{}`         | Additional tags  (_e.g._ `map("BusinessUnit","XYZ")`                              | No       |
+| `delimiter`                      | `-`          | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes`       | No       |
+| `acl`                            | `private`    | The canned ACL to apply to the S3 bucket                                          | No       |
+| `read_capacity`                  | `5`          | DynamoDB read capacity units                                                      | No       |
+| `write_capacity`                 | `5`          | DynamoDB write capacity units                                                     | No       |
+| `force_destroy`                  | `false`      | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable   | No       |
+| `enable_server_side_encryption`  | `true`       | Enable DynamoDB server-side encryption                                            | No       |
 
 
 ## Outputs
