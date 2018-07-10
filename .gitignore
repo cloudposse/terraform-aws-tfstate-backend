@@ -6,3 +6,6 @@
 .terraform/
 .idea
 terraform-aws-tfstate-backend.iml
+
+.build-harness
+build-harness

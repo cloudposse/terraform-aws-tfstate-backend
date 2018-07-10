@@ -1,0 +1,113 @@
+---
+#
+# This is the canonical configuration for the `README.md`
+# Run `make readme` to rebuild the `README.md`
+#
+
+# Name of this project
+name: terraform-aws-tfstate-backend
+
+# Logo for this project
+#logo: docs/logo.png
+
+# License of this project
+license: "APACHE2"
+
+# Canonical GitHub repo
+github_repo: cloudposse/terraform-aws-tfstate-backend
+
+# Badges to display
+badges:
+  - name: "Build Status"
+    image: "https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend.svg?branch=master"
+    url: "https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend"
+  - name: "Latest Release"
+    image: "https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg"
+    url: "https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest"
+  - name: "Slack Community"
+    image: "https://slack.cloudposse.com/badge.svg"
+    url: "https://slack.cloudposse.com"
+
+related:
+  - name: "terraform-aws-dynamodb"
+    description: "Terraform module that implements AWS DynamoDB with support for AutoScaling"
+    url: "https://github.com/cloudposse/terraform-aws-dynamodb"
+  - name: "terraform-aws-dynamodb-autoscaler"
+    description: "Terraform module to provision DynamoDB autoscaler"
+    url: "https://github.com/cloudposse/terraform-aws-dynamodb-autoscaler"
+
+# Short description of this project
+description: |-
+  Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
+  to prevent concurrent modifications and state corruption.
+
+  The module supports the following:
+
+  1. Forced server-side encryption at rest for the S3 bucket
+  2. S3 bucket versioning to allow for Terraform state recovery in the case of accidental deletions and human errors
+  3. State locking and consistency checking via DynamoDB table to prevent concurrent operations
+  4. DynamoDB server-side encryption
+
+  https://www.terraform.io/docs/backends/types/s3.html
+
+
+  __NOTE:__ The operators of the module (IAM Users) must have permissions to create S3 buckets and DynamoDB tables when performing `terraform plan` and `terraform apply`
+
+# How to use this project
+usage: |-
+  ```hcl
+  terraform {
+    required_version = ">= 0.11.3"
+  }
+
+  module "terraform_state_backend" {
+    source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+    namespace     = "cp"
+    stage         = "prod"
+    name          = "terraform"
+    attributes    = ["state"]
+    region        = "us-east-1"
+  }
+  ```
+
+  __NOTE:__ First create the bucket and table without any state enabled (Terraform will use the local file system to store state).
+  You can then import the bucket and table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
+
+  Once the bucket and table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
+
+  ```hcl
+  terraform {
+    required_version = ">= 0.11.3"
+    
+    backend "s3" {
+      region         = "us-east-1"
+      bucket         = "< the name of the S3 bucket >"
+      key            = "terraform.tfstate"
+      dynamodb_table = "< the name of the DynamoDB table >"
+      encrypt        = true
+    }
+  }
+
+  module "another_module" {
+    source = "....."
+  }
+  ```
+
+  Initialize the backend with `terraform init`.
+
+  After `terraform apply`, `terraform.tfstate` file will be stored in the bucket, 
+  and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+
+  <br/>
+
+  ![s3-bucket-with-terraform-state](images/s3-bucket-with-terraform-state.png)
+
+
+include:
+  - "docs/targets.md"
+  - "docs/terraform.md"
+
+# Contributors to this project
+contributors:
+  - name: "Andriy Knysh"
+    github: "aknysh"
