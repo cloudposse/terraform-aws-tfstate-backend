@@ -58,6 +58,11 @@ variable "force_destroy" {
   default     = "false"
 }
 
+variable "mfa_delete" {
+  description = "A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 )"
+  default     = "false"
+}
+
 variable "enable_server_side_encryption" {
   description = "Enable DynamoDB server-side encryption"
   default     = "true"
