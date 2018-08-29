@@ -15,7 +15,8 @@ resource "aws_s3_bucket" "default" {
   force_destroy = "${var.force_destroy}"
 
   versioning {
-    enabled = true
+    enabled    = true
+    mfa_delete = "${var.mfa_delete}"
   }
 
   server_side_encryption_configuration {

@@ -20,6 +20,8 @@ https://www.terraform.io/docs/backends/types/s3.html
 
 __NOTE:__ The operators of the module (IAM Users) must have permissions to create S3 buckets and DynamoDB tables when performing `terraform plan` and `terraform apply`
 
+__NOTE:__ This module cannot be used to apply changes to the `mfa_delete` feature of the bucket. Changes regarding mfa_delete can only be made manually using the root credentials with MFA of the AWS Account where the bucket resides. Please see: https://github.com/terraform-providers/terraform-provider-aws/issues/62
+
 
 ---
 
@@ -95,8 +97,9 @@ and the DynamoDB table will be used to lock the state to prevent concurrent modi
 ```
 Available targets:
 
-  help                                This help screen
+  help                                Help screen
   help/all                            Display help for all targets
+  help/short                          This help short screen
   lint                                Lint terraform code
 
 ```
@@ -110,6 +113,7 @@ Available targets:
 | delimiter | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes` | string | `-` | no |
 | enable_server_side_encryption | Enable DynamoDB server-side encryption | string | `true` | no |
 | force_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | string | `false` | no |
+| mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | string | `false` | no |
 | name | Name  (e.g. `app` or `cluster`) | string | `terraform` | no |
 | namespace | Namespace (e.g. `cp` or `cloudposse`) | string | - | yes |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
@@ -256,10 +260,14 @@ Check out [our other projects][github], [apply for a job][jobs], or [hire us][hi
 
 ### Contributors
 
-|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] |
-|---|
+|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] |
+|---|---|---|
 
   [aknysh_homepage]: https://github.com/aknysh
   [aknysh_avatar]: https://github.com/aknysh.png?size=150
+  [osterman_homepage]: https://github.com/osterman
+  [osterman_avatar]: https://github.com/osterman.png?size=150
+  [maartenvanderhoef_homepage]: https://github.com/maartenvanderhoef
+  [maartenvanderhoef_avatar]: https://github.com/maartenvanderhoef.png?size=150
 
 

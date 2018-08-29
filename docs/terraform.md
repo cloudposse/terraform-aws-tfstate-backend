@@ -8,6 +8,7 @@
 | delimiter | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes` | string | `-` | no |
 | enable_server_side_encryption | Enable DynamoDB server-side encryption | string | `true` | no |
 | force_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | string | `false` | no |
+| mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | string | `false` | no |
 | name | Name  (e.g. `app` or `cluster`) | string | `terraform` | no |
 | namespace | Namespace (e.g. `cp` or `cloudposse`) | string | - | yes |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
