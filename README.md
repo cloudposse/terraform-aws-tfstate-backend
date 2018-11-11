@@ -5,7 +5,7 @@
 # terraform-aws-tfstate-backend [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend) [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg)](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 
 
-Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
+Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file
 to prevent concurrent modifications and state corruption.
 
 The module supports the following:
@@ -25,7 +25,7 @@ __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` featur
 
 ---
 
-This project is part of our comprehensive ["SweetOps"](https://docs.cloudposse.com) approach towards DevOps. 
+This project is part of our comprehensive ["SweetOps"](https://docs.cloudposse.com) approach towards DevOps.
 
 
 It's 100% Open Source and licensed under the [APACHE2](LICENSE).
@@ -64,7 +64,7 @@ Once the bucket and table have been created, configure the [backend](https://www
 ```hcl
 terraform {
   required_version = ">= 0.11.3"
-  
+
   backend "s3" {
     region         = "us-east-1"
     bucket         = "< the name of the S3 bucket >"
@@ -81,7 +81,7 @@ module "another_module" {
 
 Initialize the backend with `terraform init`.
 
-After `terraform apply`, `terraform.tfstate` file will be stored in the bucket, 
+After `terraform apply`, `terraform.tfstate` file will be stored in the bucket,
 and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 
 <br/>
@@ -109,17 +109,21 @@ Available targets:
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
 | acl | The canned ACL to apply to the S3 bucket | string | `private` | no |
-| attributes | Additional attributes (e.g. `state`) | list | `<list>` | no |
-| delimiter | Delimiter to be used between `namespace`, `stage`, `name`, and `attributes` | string | `-` | no |
+| additional_tag_map | Additional tags for appending to each tag map | map | `<map>` | no |
+| attributes | Additional attributes (e.g. `state`) | list | `["state"]` | no |
+| context | Default context to use for passing state between label invocations | map | `<map>` | no |
+| delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | string | `-` | no |
 | enable_server_side_encryption | Enable DynamoDB server-side encryption | string | `true` | no |
+| environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT'| string | `""` | no |
 | force_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | string | `false` | no |
+| label_order | The naming order of the id output and Name tag | list | `<list>` | no |
 | mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | string | `false` | no |
-| name | Name  (e.g. `app` or `cluster`) | string | `terraform` | no |
-| namespace | Namespace (e.g. `cp` or `cloudposse`) | string | - | yes |
+| name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
+| namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `""` | no |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
 | region | AWS Region the S3 bucket should reside in | string | - | yes |
-| stage | Stage (e.g. `prod`, `dev`, `staging`) | string | - | yes |
-| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`) | map | `<map>` | no |
+| stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | string | `""` | no |
+| tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | map | `<map>` | no |
 | write_capacity | DynamoDB write capacity units | string | `5` | no |
 
 ## Outputs
@@ -153,9 +157,9 @@ File a GitHub [issue](https://github.com/cloudposse/terraform-aws-tfstate-backen
 
 ## Commercial Support
 
-Work directly with our team of DevOps experts via email, slack, and video conferencing. 
+Work directly with our team of DevOps experts via email, slack, and video conferencing.
 
-We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer. 
+We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer.
 
 [![E-Mail](https://img.shields.io/badge/email-hello@cloudposse.com-blue.svg)](mailto:hello@cloudposse.com)
 
@@ -165,7 +169,7 @@ We provide [*commercial support*][commercial_support] for all of our [Open Sourc
 - **Bug Fixes.** We'll rapidly work to fix any bugs in our projects.
 - **Build New Terraform Modules.** We'll develop original modules to provision infrastructure.
 - **Cloud Architecture.** We'll assist with your cloud strategy and design.
-- **Implementation.** We'll provide hands-on support to implement our reference architectures. 
+- **Implementation.** We'll provide hands-on support to implement our reference architectures.
 
 
 ## Community Forum
@@ -199,9 +203,9 @@ Copyright © 2017-2018 [Cloud Posse, LLC](https://cloudposse.com)
 
 
 
-## License 
+## License
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 See [LICENSE](LICENSE) for full details.
 
@@ -269,5 +273,3 @@ Check out [our other projects][github], [apply for a job][jobs], or [hire us][hi
   [osterman_avatar]: https://github.com/osterman.png?size=150
   [maartenvanderhoef_homepage]: https://github.com/maartenvanderhoef
   [maartenvanderhoef_avatar]: https://github.com/maartenvanderhoef.png?size=150
-
-
