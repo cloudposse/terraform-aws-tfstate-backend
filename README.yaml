@@ -7,6 +7,19 @@
 # Name of this project
 name: terraform-aws-tfstate-backend
 
+# Tags of this project
+tags:
+  - aws
+  - terraform
+  - terraform-modules
+  - supported
+  - tfstate
+  - dynamodb
+
+# Categories of this project
+categories:
+  - terraform-modules/supported
+
 # Logo for this project
 #logo: docs/logo.png
 
