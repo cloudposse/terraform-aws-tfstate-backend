@@ -1,11 +1,20 @@
+module "base_label" {
+  source             = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.5.3"
+  namespace          = "${var.namespace}"
+  environment        = "${var.environment}"
+  stage              = "${var.stage}"
+  name               = "${var.name}"
+  delimiter          = "${var.delimiter}"
+  attributes         = "${var.attributes}"
+  tags               = "${var.tags}"
+  additional_tag_map = "${var.additional_tag_map}"
+  context            = "${var.context}"
+  label_order        = "${var.label_order}"
+}
+
 module "s3_bucket_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.3.3"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  name       = "${var.name}"
-  delimiter  = "${var.delimiter}"
-  attributes = "${var.attributes}"
-  tags       = "${var.tags}"
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.5.3"
+  context = "${module.base_label.context}"
 }
 
 resource "aws_s3_bucket" "default" {
@@ -31,13 +40,9 @@ resource "aws_s3_bucket" "default" {
 }
 
 module "dynamodb_table_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.3.3"
-  namespace  = "${var.namespace}"
-  stage      = "${var.stage}"
-  name       = "${var.name}"
-  delimiter  = "${var.delimiter}"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.5.3"
+  context    = "${module.base_label.context}"
   attributes = ["${compact(concat(var.attributes, list("lock")))}"]
-  tags       = "${var.tags}"
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
