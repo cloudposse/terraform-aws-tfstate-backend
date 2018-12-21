@@ -38,7 +38,7 @@ related:
 
 # Short description of this project
 description: |-
-  Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
+  Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file
   to prevent concurrent modifications and state corruption.
 
   The module supports the following:
@@ -72,15 +72,12 @@ usage: |-
   }
   ```
 
-  __NOTE:__ First create the bucket and table without any state enabled (Terraform will use the local file system to store state).
-  You can then import the bucket and table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
-
-  Once the bucket and table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
+  __NOTE:__ First create the bucket and table without any state enabled (Terraform will use the local file system to store state). Once the bucket and table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html):
 
   ```hcl
   terraform {
     required_version = ">= 0.11.3"
-    
+
     backend "s3" {
       region         = "us-east-1"
       bucket         = "< the name of the S3 bucket >"
@@ -95,10 +92,7 @@ usage: |-
   }
   ```
 
-  Initialize the backend with `terraform init`.
-
-  After `terraform apply`, `terraform.tfstate` file will be stored in the bucket, 
-  and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+  Then, initialize the backend with `terraform init`. Terraform will detect that you're trying to move your state into S3 and ask, "Do you want to copy existing state to the new backend?" Enter "yes". Now state is stored in the bucket and and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 
   <br/>
 
