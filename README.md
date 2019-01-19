@@ -6,7 +6,7 @@
 # terraform-aws-tfstate-backend [![Build Status](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend.svg?branch=master)](https://travis-ci.org/cloudposse/terraform-aws-tfstate-backend) [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg)](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 
 
-Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
+Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file
 to prevent concurrent modifications and state corruption.
 
 The module supports the following:
@@ -26,7 +26,7 @@ __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` featur
 
 ---
 
-This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps. 
+This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps.
 [<img align="right" title="Share via Email" src="https://docs.cloudposse.com/images/ionicons/ios-email-outline-2.0.1-16x16-999999.svg"/>][share_email]
 [<img align="right" title="Share on Google+" src="https://docs.cloudposse.com/images/ionicons/social-googleplus-outline-2.0.1-16x16-999999.svg" />][share_googleplus]
 [<img align="right" title="Share on Facebook" src="https://docs.cloudposse.com/images/ionicons/social-facebook-outline-2.0.1-16x16-999999.svg" />][share_facebook]
@@ -47,7 +47,7 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 
 
-We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out! 
+We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out!
 
 
 
@@ -57,48 +57,46 @@ We literally have [*hundreds of terraform modules*][terraform_modules] that are 
 
 ## Usage
 
-```hcl
-terraform {
-  required_version = ">= 0.11.3"
-}
+1. Define the module in your `.tf` file using local state:
+   ```hcl
+   terraform {
+     required_version = ">= 0.11.3"
+   }
 
-module "terraform_state_backend" {
-  source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
-  namespace     = "cp"
-  stage         = "prod"
-  name          = "terraform"
-  attributes    = ["state"]
-  region        = "us-east-1"
-}
-```
+   module "terraform_state_backend" {
+     source        = "git::https://github.com/cloudposse/terraform- aws-tfstate-backend.git?ref=master"
+     namespace     = "cp"
+     stage         = "prod"
+     name          = "terraform"
+     attributes    = ["state"]
+     region        = "us-east-1"
+   }
+   ```
 
-__NOTE:__ First create the bucket and table without any state enabled (Terraform will use the local file system to store state).
-You can then import the bucket and table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
+1. `terraform init`
 
-Once the bucket and table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
+1. `terraform apply`. This will create the state bucket and locking table.
 
-```hcl
-terraform {
-  required_version = ">= 0.11.3"
-  
-  backend "s3" {
-    region         = "us-east-1"
-    bucket         = "< the name of the S3 bucket >"
-    key            = "terraform.tfstate"
-    dynamodb_table = "< the name of the DynamoDB table >"
-    encrypt        = true
-  }
-}
+1. Then add a `backend` that uses the new bucket and table:
+   ```hcl
+   terraform {
+     required_version = ">= 0.11.3"
 
-module "another_module" {
-  source = "....."
-}
-```
+     backend "s3" {
+       region         = "us-east-1"
+       bucket         = "< the name of the S3 bucket >"
+       key            = "terraform.tfstate"
+       dynamodb_table = "< the name of the DynamoDB table >"
+       encrypt        = true
+     }
+   }
 
-Initialize the backend with `terraform init`.
+   module "another_module" {
+     source = "....."
+   }
+   ```
 
-After `terraform apply`, `terraform.tfstate` file will be stored in the bucket, 
-and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+1. `terraform init`. Terraform will detect that you're trying to move your state into S3 and ask, "Do you want to copy existing state to the new backend?" Enter "yes". Now state is stored in the bucket and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 
 <br/>
 
@@ -155,9 +153,9 @@ Available targets:
 
 
 
-## Share the Love 
+## Share the Love
 
-Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-tfstate-backend)! (it helps us **a lot**) 
+Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-tfstate-backend)! (it helps us **a lot**)
 
 Are you using this project or any of our other projects? Consider [leaving a testimonial][testimonial]. =)
 
@@ -181,9 +179,9 @@ File a GitHub [issue](https://github.com/cloudposse/terraform-aws-tfstate-backen
 
 ## Commercial Support
 
-Work directly with our team of DevOps experts via email, slack, and video conferencing. 
+Work directly with our team of DevOps experts via email, slack, and video conferencing.
 
-We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer. 
+We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer.
 
 [![E-Mail](https://img.shields.io/badge/email-hello@cloudposse.com-blue.svg)][email]
 
@@ -193,7 +191,7 @@ We provide [*commercial support*][commercial_support] for all of our [Open Sourc
 - **Bug Fixes.** We'll rapidly work to fix any bugs in our projects.
 - **Build New Terraform Modules.** We'll [develop original modules][module_development] to provision infrastructure.
 - **Cloud Architecture.** We'll assist with your cloud strategy and design.
-- **Implementation.** We'll provide hands-on support to implement our reference architectures. 
+- **Implementation.** We'll provide hands-on support to implement our reference architectures.
 
 
 
@@ -208,7 +206,7 @@ Join our [Open Source Community][slack] on Slack. It's **FREE** for everyone! Ou
 
 ## Newsletter
 
-Signup for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover. 
+Signup for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover.
 
 ## Contributing
 
@@ -233,13 +231,13 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyright
 
-Copyright © 2017-2018 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2019 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
-## License 
+## License
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 See [LICENSE](LICENSE) for full details.
 

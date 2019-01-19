@@ -38,7 +38,7 @@ related:
 
 # Short description of this project
 description: |-
-  Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file 
+  Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file
   to prevent concurrent modifications and state corruption.
 
   The module supports the following:
@@ -57,48 +57,46 @@ description: |-
 
 # How to use this project
 usage: |-
-  ```hcl
-  terraform {
-    required_version = ">= 0.11.3"
-  }
+  1. Define the module in your `.tf` file using local state:
+     ```hcl
+     terraform {
+       required_version = ">= 0.11.3"
+     }
 
-  module "terraform_state_backend" {
-    source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
-    namespace     = "cp"
-    stage         = "prod"
-    name          = "terraform"
-    attributes    = ["state"]
-    region        = "us-east-1"
-  }
-  ```
+     module "terraform_state_backend" {
+       source        = "git::https://github.com/cloudposse/terraform- aws-tfstate-backend.git?ref=master"
+       namespace     = "cp"
+       stage         = "prod"
+       name          = "terraform"
+       attributes    = ["state"]
+       region        = "us-east-1"
+     }
+     ```
 
-  __NOTE:__ First create the bucket and table without any state enabled (Terraform will use the local file system to store state).
-  You can then import the bucket and table by using [`terraform import`](https://www.terraform.io/docs/import/index.html) and store the state file into the bucket.
+  1. `terraform init`
 
-  Once the bucket and table have been created, configure the [backend](https://www.terraform.io/docs/backends/types/s3.html)
+  1. `terraform apply`. This will create the state bucket and locking table.
 
-  ```hcl
-  terraform {
-    required_version = ">= 0.11.3"
-    
-    backend "s3" {
-      region         = "us-east-1"
-      bucket         = "< the name of the S3 bucket >"
-      key            = "terraform.tfstate"
-      dynamodb_table = "< the name of the DynamoDB table >"
-      encrypt        = true
-    }
-  }
+  1. Then add a `backend` that uses the new bucket and table:
+     ```hcl
+     terraform {
+       required_version = ">= 0.11.3"
 
-  module "another_module" {
-    source = "....."
-  }
-  ```
+       backend "s3" {
+         region         = "us-east-1"
+         bucket         = "< the name of the S3 bucket >"
+         key            = "terraform.tfstate"
+         dynamodb_table = "< the name of the DynamoDB table >"
+         encrypt        = true
+       }
+     }
 
-  Initialize the backend with `terraform init`.
+     module "another_module" {
+       source = "....."
+     }
+     ```
 
-  After `terraform apply`, `terraform.tfstate` file will be stored in the bucket, 
-  and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+  1. `terraform init`. Terraform will detect that you're trying to move your state into S3 and ask, "Do you want to copy existing state to the new backend?" Enter "yes". Now state is stored in the bucket and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
 
   <br/>
 
