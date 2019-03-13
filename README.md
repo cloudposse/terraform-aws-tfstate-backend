@@ -26,7 +26,7 @@ __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` featur
 
 ---
 
-This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps.
+This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps. 
 [<img align="right" title="Share via Email" src="https://docs.cloudposse.com/images/ionicons/ios-email-outline-2.0.1-16x16-999999.svg"/>][share_email]
 [<img align="right" title="Share on Google+" src="https://docs.cloudposse.com/images/ionicons/social-googleplus-outline-2.0.1-16x16-999999.svg" />][share_googleplus]
 [<img align="right" title="Share on Facebook" src="https://docs.cloudposse.com/images/ionicons/social-facebook-outline-2.0.1-16x16-999999.svg" />][share_facebook]
@@ -47,7 +47,7 @@ It's 100% Open Source and licensed under the [APACHE2](LICENSE).
 
 
 
-We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out!
+We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out! 
 
 
 
@@ -124,17 +124,21 @@ Available targets:
 | acl | The canned ACL to apply to the S3 bucket | string | `private` | no |
 | additional_tag_map | Additional tags for appending to each tag map | map | `<map>` | no |
 | attributes | Additional attributes (e.g. `state`) | list | `<list>` | no |
+| block_public_acls | Whether Amazon S3 should block public ACLs for this bucket. | string | `false` | no |
+| block_public_policy | Whether Amazon S3 should block public bucket policies for this bucket. | string | `false` | no |
 | context | Default context to use for passing state between label invocations | map | `<map>` | no |
 | delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | string | `-` | no |
 | enable_server_side_encryption | Enable DynamoDB server-side encryption | string | `true` | no |
 | environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT' | string | `` | no |
 | force_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | string | `false` | no |
+| ignore_public_acls | Whether Amazon S3 should ignore public ACLs for this bucket. | string | `false` | no |
 | label_order | The naming order of the id output and Name tag | list | `<list>` | no |
 | mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | string | `false` | no |
 | name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
 | namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
 | region | AWS Region the S3 bucket should reside in | string | - | yes |
+| restrict_public_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket. | string | `false` | no |
 | stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | string | `` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | map | `<map>` | no |
 | write_capacity | DynamoDB write capacity units | string | `5` | no |
@@ -153,9 +157,9 @@ Available targets:
 
 
 
-## Share the Love
+## Share the Love 
 
-Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-tfstate-backend)! (it helps us **a lot**)
+Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-tfstate-backend)! (it helps us **a lot**) 
 
 Are you using this project or any of our other projects? Consider [leaving a testimonial][testimonial]. =)
 
@@ -179,9 +183,9 @@ File a GitHub [issue](https://github.com/cloudposse/terraform-aws-tfstate-backen
 
 ## Commercial Support
 
-Work directly with our team of DevOps experts via email, slack, and video conferencing.
+Work directly with our team of DevOps experts via email, slack, and video conferencing. 
 
-We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer.
+We provide [*commercial support*][commercial_support] for all of our [Open Source][github] projects. As a *Dedicated Support* customer, you have access to our team of subject matter experts at a fraction of the cost of a full-time engineer. 
 
 [![E-Mail](https://img.shields.io/badge/email-hello@cloudposse.com-blue.svg)][email]
 
@@ -191,7 +195,7 @@ We provide [*commercial support*][commercial_support] for all of our [Open Sourc
 - **Bug Fixes.** We'll rapidly work to fix any bugs in our projects.
 - **Build New Terraform Modules.** We'll [develop original modules][module_development] to provision infrastructure.
 - **Cloud Architecture.** We'll assist with your cloud strategy and design.
-- **Implementation.** We'll provide hands-on support to implement our reference architectures.
+- **Implementation.** We'll provide hands-on support to implement our reference architectures. 
 
 
 
@@ -206,7 +210,7 @@ Join our [Open Source Community][slack] on Slack. It's **FREE** for everyone! Ou
 
 ## Newsletter
 
-Signup for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover.
+Signup for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover. 
 
 ## Contributing
 
@@ -235,9 +239,9 @@ Copyright © 2017-2019 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
-## License
+## License 
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
 
 See [LICENSE](LICENSE) for full details.
 
