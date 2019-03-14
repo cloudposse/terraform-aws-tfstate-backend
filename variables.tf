@@ -113,3 +113,9 @@ variable "restrict_public_buckets" {
   description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
   default     = false
 }
+
+variable "regex_replace_chars" {
+  type        = "string"
+  default     = "/[^a-zA-Z0-9-]/"
+  description = "Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed"
+}

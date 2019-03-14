@@ -1,19 +1,20 @@
 module "base_label" {
-  source             = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.5.3"
-  namespace          = "${var.namespace}"
-  environment        = "${var.environment}"
-  stage              = "${var.stage}"
-  name               = "${var.name}"
-  delimiter          = "${var.delimiter}"
-  attributes         = "${var.attributes}"
-  tags               = "${var.tags}"
-  additional_tag_map = "${var.additional_tag_map}"
-  context            = "${var.context}"
-  label_order        = "${var.label_order}"
+  source              = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.6.3"
+  namespace           = "${var.namespace}"
+  environment         = "${var.environment}"
+  stage               = "${var.stage}"
+  name                = "${var.name}"
+  delimiter           = "${var.delimiter}"
+  attributes          = "${var.attributes}"
+  tags                = "${var.tags}"
+  additional_tag_map  = "${var.additional_tag_map}"
+  context             = "${var.context}"
+  label_order         = "${var.label_order}"
+  regex_replace_chars = "${var.regex_replace_chars}"
 }
 
 module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.5.3"
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.6.3"
   context = "${module.base_label.context}"
 }
 
@@ -48,7 +49,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 module "dynamodb_table_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.5.3"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.6.3"
   context    = "${module.base_label.context}"
   attributes = ["${compact(concat(var.attributes, list("lock")))}"]
 }

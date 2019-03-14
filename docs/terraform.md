@@ -18,6 +18,7 @@
 | name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
 | namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
+| regex_replace_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | string | `/[^a-zA-Z0-9-]/` | no |
 | region | AWS Region the S3 bucket should reside in | string | - | yes |
 | restrict_public_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket. | string | `false` | no |
 | stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | string | `` | no |
