@@ -64,7 +64,7 @@ usage: |-
      }
 
      module "terraform_state_backend" {
-       source        = "git::https://github.com/cloudposse/terraform- aws-tfstate-backend.git?ref=master"
+       source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
        namespace     = "cp"
        stage         = "prod"
        name          = "terraform"
@@ -115,3 +115,5 @@ contributors:
     github: "osterman"
   - name: "Maarten van der Hoef"
     github: "maartenvanderhoef"
+  - name: "Vladimir"
+    github: "SweetOps"
