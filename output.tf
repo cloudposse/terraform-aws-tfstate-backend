@@ -27,3 +27,8 @@ output "dynamodb_table_arn" {
   value       = "${element(coalescelist(aws_dynamodb_table.with_server_side_encryption.*.arn, aws_dynamodb_table.without_server_side_encryption.*.arn), 0)}"
   description = "DynamoDB table ARN"
 }
+
+output "terraform_backend_config" {
+  value       = "${data.template_file.terraform_backend_config.rendered}"
+  description = "Redenred terraform backend config file"
+}

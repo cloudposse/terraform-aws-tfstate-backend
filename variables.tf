@@ -119,3 +119,19 @@ variable "regex_replace_chars" {
   default     = "/[^a-zA-Z0-9-]/"
   description = "Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed"
 }
+
+variable "prevent_unencrypted_uploads" {
+  type        = "string"
+  default     = "false"
+  description = ""
+}
+
+variable "terraform_backend_config_file_name" {
+  default     = "terraform.tf"
+  description = "Name of terraform backend config file"
+}
+
+variable "terraform_backend_config_file_path" {
+  default     = ""
+  description = "Path to terrafrom project directory"
+}
