@@ -157,7 +157,7 @@ Available targets:
 | s3_bucket_arn | S3 bucket ARN |
 | s3_bucket_domain_name | S3 bucket domain name |
 | s3_bucket_id | S3 bucket ID |
-| terraform_backend_config | Redenred terraform backend config file |
+| terraform_backend_config | Rendered Terraform backend config file |
 
 
 
