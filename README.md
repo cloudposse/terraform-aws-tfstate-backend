@@ -136,7 +136,7 @@ Available targets:
 | mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | string | `false` | no |
 | name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
 | namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
-| prevent_unencrypted_uploads | Prevent uploads of unencrypted objects to S3 | string | `false` | no |
+| prevent_unencrypted_uploads | Prevent uploads of unencrypted objects to S3 | string | `true` | no |
 | profile | AWS profile name as set in the shared credentials file | string | `` | no |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
 | regex_replace_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | string | `/[^a-zA-Z0-9-]/` | no |
