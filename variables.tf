@@ -119,3 +119,39 @@ variable "regex_replace_chars" {
   default     = "/[^a-zA-Z0-9-]/"
   description = "Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed"
 }
+
+variable "prevent_unencrypted_uploads" {
+  type        = "string"
+  default     = "true"
+  description = "Prevent uploads of unencrypted objects to S3"
+}
+
+variable "profile" {
+  default     = ""
+  description = "AWS profile name as set in the shared credentials file"
+}
+
+variable "role_arn" {
+  default     = ""
+  description = "The role to be assumed"
+}
+
+variable "terraform_backend_config_file_name" {
+  default     = "terraform.tf"
+  description = "Name of terraform backend config file"
+}
+
+variable "terraform_backend_config_file_path" {
+  default     = ""
+  description = "The path to terrafrom project directory"
+}
+
+variable "terraform_version" {
+  default     = "0.11.3"
+  description = "The minimum required terraform version"
+}
+
+variable "terraform_state_file" {
+  default     = "terraform.tfstate"
+  description = "The path to the state file inside the bucket"
+}
