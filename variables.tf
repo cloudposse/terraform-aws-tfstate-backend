@@ -123,7 +123,7 @@ variable "regex_replace_chars" {
 variable "prevent_unencrypted_uploads" {
   type        = "string"
   default     = "false"
-  description = ""
+  description = "Prevent uploads of unencrypted objects to S3"
 }
 
 variable "profile" {
