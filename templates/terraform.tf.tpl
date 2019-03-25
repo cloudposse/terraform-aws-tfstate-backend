@@ -1,11 +1,13 @@
 terraform {
-  required_version = ">= 0.11.3"
+  required_version = ">= ${terraform_version}"
 
   backend "s3" {
     region         = "${region}"
     bucket         = "${bucket}"
-    key            = "terraform.tfstate"
+    key            = "${terraform_state_file}"
     dynamodb_table = "${dynamodb_table}"
+    profile        = "${profile}"
+    role_arn       = "${role_arn}"
     encrypt        = "${encrypt}"
   }
 }

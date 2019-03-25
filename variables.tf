@@ -126,6 +126,16 @@ variable "prevent_unencrypted_uploads" {
   description = ""
 }
 
+variable "profile" {
+  default     = ""
+  description = "AWS profile name as set in the shared credentials file"
+}
+
+variable "role_arn" {
+  default     = ""
+  description = "The role to be assumed"
+}
+
 variable "terraform_backend_config_file_name" {
   default     = "terraform.tf"
   description = "Name of terraform backend config file"
@@ -133,5 +143,15 @@ variable "terraform_backend_config_file_name" {
 
 variable "terraform_backend_config_file_path" {
   default     = ""
-  description = "Path to terrafrom project directory"
+  description = "The path to terrafrom project directory"
+}
+
+variable "terraform_version" {
+  default     = "0.11.3"
+  description = "The minimum required terraform version"
+}
+
+variable "terraform_state_file" {
+  default     = "terraform.tfstate"
+  description = "The path to the state file inside the bucket"
 }

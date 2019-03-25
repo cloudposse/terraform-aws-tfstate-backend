@@ -167,10 +167,14 @@ data "template_file" "terraform_backend_config" {
   template = "${file("${path.module}/templates/terraform.tf.tpl")}"
 
   vars {
-    region         = "${var.region}"
-    bucket         = "${aws_s3_bucket.default.id}"
-    dynamodb_table = "${element(coalescelist(aws_dynamodb_table.with_server_side_encryption.*.name, aws_dynamodb_table.without_server_side_encryption.*.name), 0)}"
-    encrypt        = "${var.enable_server_side_encryption == "true" ? "true" : "false"}"
+    region               = "${var.region}"
+    bucket               = "${aws_s3_bucket.default.id}"
+    dynamodb_table       = "${element(coalescelist(aws_dynamodb_table.with_server_side_encryption.*.name, aws_dynamodb_table.without_server_side_encryption.*.name), 0)}"
+    encrypt              = "${var.enable_server_side_encryption == "true" ? "true" : "false"}"
+    role_arn             = "${var.role_arn}"
+    profile              = "${var.profile}"
+    terraform_version    = "${var.terraform_version}"
+    terraform_state_file = "${var.terraform_state_file}"
   }
 }
 
