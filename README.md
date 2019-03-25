@@ -137,14 +137,18 @@ Available targets:
 | name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
 | namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
 | prevent_unencrypted_uploads | - | string | `false` | no |
+| profile | AWS profile name as set in the shared credentials file | string | `` | no |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
 | regex_replace_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | string | `/[^a-zA-Z0-9-]/` | no |
 | region | AWS Region the S3 bucket should reside in | string | - | yes |
 | restrict_public_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket. | string | `false` | no |
+| role_arn | The role to be assumed | string | `` | no |
 | stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | string | `` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | map | `<map>` | no |
 | terraform_backend_config_file_name | Name of terraform backend config file | string | `terraform.tf` | no |
-| terraform_backend_config_file_path | Path to terrafrom project directory | string | `` | no |
+| terraform_backend_config_file_path | The path to terrafrom project directory | string | `` | no |
+| terraform_state_file | The path to the state file inside the bucket | string | `terraform.tfstate` | no |
+| terraform_version | The minimum required terraform version | string | `0.11.3` | no |
 | write_capacity | DynamoDB write capacity units | string | `5` | no |
 
 ## Outputs
