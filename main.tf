@@ -27,7 +27,7 @@ module "s3_bucket_label" {
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
   count = "${local.prevent_unencrypted_uploads}"
 
-  statement = {
+  statement {
     sid = "DenyIncorrectEncryptionHeader"
 
     effect = "Deny"
@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     }
   }
 
-  statement = {
+  statement {
     sid = "DenyUnEncryptedObjectUploads"
 
     effect = "Deny"
