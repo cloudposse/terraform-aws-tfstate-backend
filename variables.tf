@@ -47,7 +47,7 @@ variable "additional_tag_map" {
 }
 
 variable "context" {
-  type        = map(string)
+  type        = object
   default     = {}
   description = "Default context to use for passing state between label invocations"
 }
