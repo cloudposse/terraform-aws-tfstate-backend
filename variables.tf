@@ -1,70 +1,70 @@
 variable "namespace" {
-  type        = "string"
+  type        = string
   default     = ""
   description = "Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp'"
 }
 
 variable "environment" {
-  type        = "string"
+  type        = string
   default     = ""
   description = "Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT'"
 }
 
 variable "stage" {
-  type        = "string"
+  type        = string
   default     = ""
   description = "Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release'"
 }
 
 variable "name" {
-  type        = "string"
+  type        = string
   default     = "terraform"
   description = "Solution name, e.g. 'app' or 'jenkins'"
 }
 
 variable "delimiter" {
-  type        = "string"
+  type        = string
   default     = "-"
   description = "Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes`"
 }
 
 variable "attributes" {
-  type        = "list"
+  type        = list(string)
   default     = ["state"]
   description = "Additional attributes (e.g. `state`)"
 }
 
 variable "tags" {
-  type        = "map"
+  type        = map(string)
   default     = {}
   description = "Additional tags (e.g. `map('BusinessUnit','XYZ')`"
 }
 
 variable "additional_tag_map" {
-  type        = "map"
+  type        = map(string)
   default     = {}
   description = "Additional tags for appending to each tag map"
 }
 
 variable "context" {
-  type        = "map"
+  type        = map(string)
   default     = {}
   description = "Default context to use for passing state between label invocations"
 }
 
 variable "label_order" {
-  type        = "list"
+  type        = list(string)
   default     = []
   description = "The naming order of the id output and Name tag"
 }
 
 variable "region" {
-  type        = "string"
+  type        = string
   description = "AWS Region the S3 bucket should reside in"
 }
 
 variable "acl" {
-  type        = "string"
+  type        = string
   description = "The canned ACL to apply to the S3 bucket"
   default     = "private"
 }
@@ -115,13 +115,13 @@ variable "restrict_public_buckets" {
 }
 
 variable "regex_replace_chars" {
-  type        = "string"
+  type        = string
   default     = "/[^a-zA-Z0-9-]/"
   description = "Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed"
 }
 
 variable "prevent_unencrypted_uploads" {
-  type        = "string"
+  type        = string
   default     = "true"
   description = "Prevent uploads of unencrypted objects to S3"
 }
@@ -155,3 +155,4 @@ variable "terraform_state_file" {
   default     = "terraform.tfstate"
   description = "The path to the state file inside the bucket"
 }
+
