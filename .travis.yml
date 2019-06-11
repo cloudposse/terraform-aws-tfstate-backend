@@ -5,6 +5,10 @@ addons:
       - make
       - curl
 
+env:
+  global:
+    - TERRAFORM_VERSION=0.12.1
+
 install:
   - make init
 
