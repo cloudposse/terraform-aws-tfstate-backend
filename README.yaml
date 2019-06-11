@@ -60,7 +60,7 @@ usage: |-
   1. Define the module in your `.tf` file using local state:
      ```hcl
      terraform {
-       required_version = ">= 0.11.3"
+       required_version = ">= 0.12.0"
      }
 
      module "terraform_state_backend" {
@@ -80,7 +80,7 @@ usage: |-
   1. Then add a `backend` that uses the new bucket and table:
      ```hcl
      terraform {
-       required_version = ">= 0.11.3"
+       required_version = ">= 0.12.0"
 
        backend "s3" {
          region         = "us-east-1"
