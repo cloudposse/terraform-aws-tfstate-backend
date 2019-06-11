@@ -29,7 +29,7 @@ variable "delimiter" {
 }
 
 variable "attributes" {
-  type        = "list"
+  type        = list(string)
   default     = ["state"]
   description = "Additional attributes (e.g. `state`)"
 }
@@ -47,8 +47,32 @@ variable "additional_tag_map" {
 }
 
 variable "context" {
-  type        = "map"
-  default     = {}
+  type = object({
+    namespace           = string
+    environment         = string
+    stage               = string
+    name                = string
+    enabled             = bool
+    delimiter           = string
+    attributes          = list(string)
+    label_order         = list(string)
+    tags                = map(string)
+    additional_tag_map  = map(string)
+    regex_replace_chars = string
+  })
+  default = {
+    namespace           = ""
+    environment         = ""
+    stage               = ""
+    name                = ""
+    enabled             = true
+    delimiter           = ""
+    attributes          = []
+    label_order         = []
+    tags                = {}
+    additional_tag_map  = {}
+    regex_replace_chars = ""
+}
   description = "Default context to use for passing state between label invocations"
 }
 
