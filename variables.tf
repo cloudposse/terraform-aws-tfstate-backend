@@ -72,7 +72,7 @@ variable "context" {
     tags                = {}
     additional_tag_map  = {}
     regex_replace_chars = ""
-}
+  }
   description = "Default context to use for passing state between label invocations"
 }
 
