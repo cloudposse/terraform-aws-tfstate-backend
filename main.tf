@@ -27,7 +27,7 @@ module "base_label" {
 }
 
 module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.7.0"
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.12.1"
   context = module.base_label.context
 }
 
