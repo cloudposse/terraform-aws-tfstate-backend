@@ -1,5 +1,5 @@
 locals {
-  prevent_unencrypted_uploads = var.prevent_unencrypted_uploads == "true" && var.enable_server_side_encryption == "true" ? 1 : 0
+  prevent_unencrypted_uploads = var.prevent_unencrypted_uploads == "true" && var.enable_server_side_encryption == "true" ? true : false
   policy = local.prevent_unencrypted_uploads ? join(
     "",
     data.aws_iam_policy_document.prevent_unencrypted_uploads.*.json,
