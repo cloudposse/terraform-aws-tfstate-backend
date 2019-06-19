@@ -27,8 +27,8 @@ module "base_label" {
 }
 
 module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.12.1"
-  context = module.base_label.context
+  source              = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.12.1"
+  context             = module.base_label.context
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -125,7 +125,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 module "dynamodb_table_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.12.1"
   context    = module.base_label.context
-  attributes = [compact(concat(var.attributes, ["lock"]))]
+  attributes = [compact(concat(var.attributes, "lock"))]
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
