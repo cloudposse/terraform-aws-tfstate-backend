@@ -2,7 +2,10 @@ module "tfstate_backend" {
   source = "../../"
 
   providers = {
-    aws = "aws"
+    aws      = "aws"
+    null     = "null"
+    local    = "local"
+    template = "template"
   }
 
   region    = var.region
