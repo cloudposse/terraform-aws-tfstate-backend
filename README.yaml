@@ -59,18 +59,14 @@ description: |-
 usage: |-
   1. Define the module in your `.tf` file using local state:
      ```hcl
-     terraform {
-       required_version = ">= 0.11.3"
-     }
-
-     module "terraform_state_backend" {
-       source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
-       namespace     = "cp"
-       stage         = "prod"
-       name          = "terraform"
-       attributes    = ["state"]
-       region        = "us-east-1"
-     }
+       module "terraform_state_backend" {
+         source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+         namespace     = "eg"
+         stage         = "test"
+         name          = "terraform"
+         attributes    = ["state"]
+         region        = "us-east-1"
+       }
      ```
 
   1. `terraform init`
@@ -79,9 +75,6 @@ usage: |-
 
   1. Then add a `backend` that uses the new bucket and table:
      ```hcl
-     terraform {
-       required_version = ">= 0.11.3"
-
        backend "s3" {
          region         = "us-east-1"
          bucket         = "< the name of the S3 bucket >"
