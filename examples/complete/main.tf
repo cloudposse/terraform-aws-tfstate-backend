@@ -9,4 +9,6 @@ module "tfstate_backend" {
   namespace = var.namespace
   stage     = var.stage
   name      = var.name
+
+  force_destroy = true
 }

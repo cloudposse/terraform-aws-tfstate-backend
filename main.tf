@@ -1,5 +1,5 @@
 locals {
-  prevent_unencrypted_uploads = var.prevent_unencrypted_uploads && var.enable_server_side_encryption ? 1 : 0
+  prevent_unencrypted_uploads = var.prevent_unencrypted_uploads && var.enable_server_side_encryption ? true : false
 
   policy = local.prevent_unencrypted_uploads ? join(
     "",
@@ -34,7 +34,7 @@ module "s3_bucket_label" {
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
-  count = local.prevent_unencrypted_uploads
+  count = local.prevent_unencrypted_uploads ? 1 : 0
 
   statement {
     sid = "DenyIncorrectEncryptionHeader"
