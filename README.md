@@ -64,14 +64,46 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
 
 1. Define the module in your `.tf` file using local state:
    ```hcl
-     module "terraform_state_backend" {
-       source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
-       namespace     = "eg"
-       stage         = "test"
-       name          = "terraform"
-       attributes    = ["state"]
-       region        = "us-east-1"
-     }
+    # Pin terraform version
+    terraform {
+      required_version = "~> 0.12.0"
+    }
+
+    # Pin the providers
+    # https://www.terraform.io/docs/configuration/providers.html
+    # Any non-beta version >= 2.0.0 and < 3.0.0, e.g. 2.X.Y
+    provider "aws" {
+      version = "~> 2.0"
+      region  = var.region
+    }
+
+    provider "null" {
+      version = "~> 2.0"
+    }
+
+    provider "local" {
+      version = "~> 1.2"
+    }
+
+    provider "template" {
+      version = "~> 2.0"
+    }
+
+    module "terraform_state_backend" {
+      source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+      namespace     = "eg"
+      stage         = "test"
+      name          = "terraform"
+      attributes    = ["state"]
+      region        = "us-east-1"
+
+      providers = {
+        aws      = "aws"
+        null     = "null"
+        local    = "local"
+        template = "template"
+      }
+    }
    ```
 
 1. `terraform init`
@@ -80,18 +112,18 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
 
 1. Then add a `backend` that uses the new bucket and table:
    ```hcl
-     backend "s3" {
+    backend "s3" {
        region         = "us-east-1"
        bucket         = "< the name of the S3 bucket >"
        key            = "terraform.tfstate"
        dynamodb_table = "< the name of the DynamoDB table >"
        encrypt        = true
-     }
-   }
+      }
+    }
 
-   module "another_module" {
-     source = "....."
-   }
+    module "another_module" {
+      source = "....."
+    }
    ```
 
 1. `terraform init`. Terraform will detect that you're trying to move your state into S3 and ask, "Do you want to copy existing state to the new backend?" Enter "yes". Now state is stored in the bucket and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
