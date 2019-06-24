@@ -64,31 +64,6 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
 
 1. Define the module in your `.tf` file using local state:
    ```hcl
-    # Pin terraform version
-    terraform {
-      required_version = "~> 0.12.0"
-    }
-
-    # Pin the providers
-    # https://www.terraform.io/docs/configuration/providers.html
-    # Any non-beta version >= 2.0.0 and < 3.0.0, e.g. 2.X.Y
-    provider "aws" {
-      version = "~> 2.0"
-      region  = var.region
-    }
-
-    provider "null" {
-      version = "~> 2.0"
-    }
-
-    provider "local" {
-      version = "~> 1.2"
-    }
-
-    provider "template" {
-      version = "~> 2.0"
-    }
-
     module "terraform_state_backend" {
       source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
       namespace     = "eg"
@@ -96,13 +71,6 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
       name          = "terraform"
       attributes    = ["state"]
       region        = "us-east-1"
-
-      providers = {
-        aws      = "aws"
-        null     = "null"
-        local    = "local"
-        template = "template"
-      }
     }
    ```
 

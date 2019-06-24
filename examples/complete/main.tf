@@ -1,3 +1,7 @@
+provider "aws" {
+  region = var.region
+}
+
 module "tfstate_backend" {
   source = "../../"
 
@@ -7,11 +11,4 @@ module "tfstate_backend" {
   name      = var.name
 
   force_destroy = true
-
-  providers = {
-    aws      = "aws"
-    null     = "null"
-    local    = "local"
-    template = "template"
-  }
 }
