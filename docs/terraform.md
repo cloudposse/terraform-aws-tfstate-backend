@@ -5,6 +5,7 @@
 | acl | The canned ACL to apply to the S3 bucket | string | `private` | no |
 | additional_tag_map | Additional tags for appending to each tag map | map(string) | `<map>` | no |
 | attributes | Additional attributes (e.g. `state`) | list(string) | `<list>` | no |
+| billing_mode | DynamoDB billing mode. Valid values are `PROVISIONED` and `PAY_PER_REQUEST` | string | `PROVISIONED` | no |
 | block_public_acls | Whether Amazon S3 should block public ACLs for this bucket | bool | `true` | no |
 | block_public_policy | Whether Amazon S3 should block public bucket policies for this bucket | string | `true` | no |
 | context | Default context to use for passing state between label invocations | object | `<map>` | no |
@@ -19,7 +20,7 @@
 | namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
 | prevent_unencrypted_uploads | Prevent uploads of unencrypted objects to S3 | bool | `true` | no |
 | profile | AWS profile name as set in the shared credentials file | string | `` | no |
-| read_capacity | DynamoDB read capacity units | string | `5` | no |
+| read_capacity | DynamoDB read capacity units. Ignored if `billing_mode` is `PAY_PER_REQUEST` | string | `5` | no |
 | regex_replace_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | string | `/[^a-zA-Z0-9-]/` | no |
 | region | AWS Region the S3 bucket should reside in | string | - | yes |
 | restrict_public_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket | bool | `true` | no |
@@ -30,7 +31,7 @@
 | terraform_backend_config_file_path | The path to terrafrom project directory | string | `` | no |
 | terraform_state_file | The path to the state file inside the bucket | string | `terraform.tfstate` | no |
 | terraform_version | The minimum required terraform version | string | `0.12.2` | no |
-| write_capacity | DynamoDB write capacity units | string | `5` | no |
+| write_capacity | DynamoDB write capacity units. Ignored if `billing_mode` is `PAY_PER_REQUEST` | string | `5` | no |
 
 ## Outputs
 
@@ -43,4 +44,3 @@
 | s3_bucket_domain_name | S3 bucket domain name |
 | s3_bucket_id | S3 bucket ID |
 | terraform_backend_config | Rendered Terraform backend config file |
-

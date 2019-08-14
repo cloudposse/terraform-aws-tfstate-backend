@@ -93,6 +93,11 @@ variable "acl" {
   default     = "private"
 }
 
+variable "billing_mode" {
+  default     = "PROVISIONED"
+  description = "DynamoDB billing mode"
+}
+
 variable "read_capacity" {
   default     = 5
   description = "DynamoDB read capacity units"
