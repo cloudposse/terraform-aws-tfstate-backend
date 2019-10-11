@@ -94,7 +94,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 }
 
 resource "aws_s3_bucket" "default" {
-  bucket        = module.s3_bucket_label.id
+  bucket        = substr(module.s3_bucket_label.id, 0, 63)
   acl           = var.acl
   region        = var.region
   force_destroy = var.force_destroy
