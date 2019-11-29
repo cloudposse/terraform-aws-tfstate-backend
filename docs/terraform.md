@@ -17,6 +17,7 @@
 | mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | bool | `false` | no |
 | name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
 | namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
+| point_in_time_recovery | Enable DynamoDB point in time recovery | bool | `false` | no |
 | prevent_unencrypted_uploads | Prevent uploads of unencrypted objects to S3 | bool | `true` | no |
 | profile | AWS profile name as set in the shared credentials file | string | `` | no |
 | read_capacity | DynamoDB read capacity units | string | `5` | no |
