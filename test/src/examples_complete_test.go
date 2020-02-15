@@ -28,14 +28,14 @@ func TestExamplesComplete(t *testing.T) {
 	// Run `terraform output` to get the value of an output variable
 	s3BucketId := terraform.Output(t, terraformOptions, "s3_bucket_id")
 
-	expectedS3BucketId := "eg-test-terraform-state"
+	expectedS3BucketId := "eg-test-terraform-tfstate-backend-state"
 	// Verify we're getting back the outputs we expect
 	assert.Equal(t, expectedS3BucketId, s3BucketId)
 
 	// Run `terraform output` to get the value of an output variable
 	dynamodbTableName := terraform.Output(t, terraformOptions, "dynamodb_table_name")
 
-	expectedDynamodbTableName := "eg-test-terraform-state-lock"
+	expectedDynamodbTableName := "eg-test-terraform-tfstate-backend-state-lock"
 	// Verify we're getting back the outputs we expect
 	assert.Equal(t, expectedDynamodbTableName, dynamodbTableName)
 }
