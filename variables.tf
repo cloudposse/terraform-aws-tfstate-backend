@@ -117,7 +117,7 @@ variable "mfa_delete" {
 
 variable "enable_point_in_time_recovery" {
   type        = bool
-  description = "Enable DynamoDB point in time recovery"
+  description = "Enable DynamoDB point-in-time recovery"
   default     = false
 }
 
