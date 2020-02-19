@@ -133,8 +133,9 @@ module "dynamodb_table_label" {
 resource "aws_dynamodb_table" "with_server_side_encryption" {
   count          = var.enable_server_side_encryption ? 1 : 0
   name           = module.dynamodb_table_label.id
-  read_capacity  = var.read_capacity
-  write_capacity = var.write_capacity
+  billing_mode   = var.billing_mode
+  read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
+  write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
 
   # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
   hash_key = "LockID"
@@ -143,8 +144,13 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
     enabled = true
   }
 
+  point_in_time_recovery {
+    enabled = var.enable_point_in_time_recovery
+  }
+
   lifecycle {
     ignore_changes = [
+      billing_mode,
       read_capacity,
       write_capacity,
     ]
@@ -161,14 +167,20 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 resource "aws_dynamodb_table" "without_server_side_encryption" {
   count          = var.enable_server_side_encryption ? 0 : 1
   name           = module.dynamodb_table_label.id
-  read_capacity  = var.read_capacity
-  write_capacity = var.write_capacity
+  billing_mode   = var.billing_mode
+  read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
+  write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
 
   # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
   hash_key = "LockID"
 
+  point_in_time_recovery {
+    enabled = var.enable_point_in_time_recovery
+  }
+
   lifecycle {
     ignore_changes = [
+      billing_mode,
       read_capacity,
       write_capacity,
     ]

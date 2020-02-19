@@ -93,6 +93,11 @@ variable "acl" {
   default     = "private"
 }
 
+variable "billing_mode" {
+  default     = "PROVISIONED"
+  description = "DynamoDB billing mode"
+}
+
 variable "read_capacity" {
   default     = 5
   description = "DynamoDB read capacity units"
@@ -112,6 +117,12 @@ variable "force_destroy" {
 variable "mfa_delete" {
   type        = bool
   description = "A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 )"
+  default     = false
+}
+
+variable "enable_point_in_time_recovery" {
+  type        = bool
+  description = "Enable DynamoDB point-in-time recovery"
   default     = false
 }
 
