@@ -120,6 +120,12 @@ variable "mfa_delete" {
   default     = false
 }
 
+variable "enable_point_in_time_recovery" {
+  type        = bool
+  description = "Enable DynamoDB point-in-time recovery"
+  default     = false
+}
+
 variable "enable_server_side_encryption" {
   type        = bool
   description = "Enable DynamoDB server-side encryption"

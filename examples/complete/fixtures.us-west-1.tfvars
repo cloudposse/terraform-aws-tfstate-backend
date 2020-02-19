@@ -4,4 +4,4 @@ namespace = "eg"
 
 stage = "test"
 
-name = "terraform"
+name = "terraform-tfstate-backend"
