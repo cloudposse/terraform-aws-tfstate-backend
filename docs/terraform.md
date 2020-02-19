@@ -9,6 +9,7 @@
 | block_public_policy | Whether Amazon S3 should block public bucket policies for this bucket | string | `true` | no |
 | context | Default context to use for passing state between label invocations | object | `<map>` | no |
 | delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | string | `-` | no |
+| enable_point_in_time_recovery | Enable DynamoDB point-in-time recovery | bool | `false` | no |
 | enable_server_side_encryption | Enable DynamoDB server-side encryption | bool | `true` | no |
 | environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT' | string | `` | no |
 | force_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | bool | `false` | no |

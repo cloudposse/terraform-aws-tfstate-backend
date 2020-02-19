@@ -143,6 +143,10 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
     enabled = true
   }
 
+  point_in_time_recovery {
+    enabled = var.enable_point_in_time_recovery
+  }
+
   lifecycle {
     ignore_changes = [
       read_capacity,
@@ -166,6 +170,10 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 
   # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
   hash_key = "LockID"
+
+  point_in_time_recovery {
+    enabled = var.enable_point_in_time_recovery
+  }
 
   lifecycle {
     ignore_changes = [
