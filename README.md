@@ -161,6 +161,7 @@ Available targets:
 | acl | The canned ACL to apply to the S3 bucket | string | `private` | no |
 | additional_tag_map | Additional tags for appending to each tag map | map(string) | `<map>` | no |
 | attributes | Additional attributes (e.g. `state`) | list(string) | `<list>` | no |
+| billing_mode | DynamoDB billing mode | string | `PROVISIONED` | no |
 | block_public_acls | Whether Amazon S3 should block public ACLs for this bucket | bool | `true` | no |
 | block_public_policy | Whether Amazon S3 should block public bucket policies for this bucket | string | `true` | no |
 | context | Default context to use for passing state between label invocations | object | `<map>` | no |
