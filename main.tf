@@ -11,6 +11,8 @@ locals {
     var.terraform_backend_config_file_path,
     var.terraform_backend_config_file_name
   )
+
+  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
 }
 
 module "base_label" {
@@ -51,7 +53,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${module.s3_bucket_label.id}/*",
+      "arn:aws:s3:::${local.bucket_name}/*",
     ]
 
     condition {
@@ -79,7 +81,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${module.s3_bucket_label.id}/*",
+      "arn:aws:s3:::${local.bucket_name}/*",
     ]
 
     condition {
@@ -94,7 +96,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 }
 
 resource "aws_s3_bucket" "default" {
-  bucket        = module.s3_bucket_label.id
+  bucket        = substr(local.bucket_name, 0, 63)
   acl           = var.acl
   region        = var.region
   force_destroy = var.force_destroy
