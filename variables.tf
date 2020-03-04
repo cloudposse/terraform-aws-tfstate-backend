@@ -194,7 +194,7 @@ variable "terraform_backend_config_file_path" {
 variable "terraform_backend_config_template_file" {
   type        = string
   default     = ""
-  description = "The template to be used to generate the config file"
+  description = "The path to the template used to generate the config file"
 }
 
 variable "terraform_version" {

@@ -31,6 +31,7 @@
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | map(string) | `<map>` | no |
 | terraform_backend_config_file_name | Name of terraform backend config file | string | `terraform.tf` | no |
 | terraform_backend_config_file_path | The path to terrafrom project directory | string | `` | no |
+| terraform_backend_config_template_file | The path to the template used to generate the config file | string | "${path.module}/templates/terraform.tf.tpl" | no |
 | terraform_state_file | The path to the state file inside the bucket | string | `terraform.tfstate` | no |
 | terraform_version | The minimum required terraform version | string | `0.12.2` | no |
 | write_capacity | DynamoDB write capacity units | string | `5` | no |
