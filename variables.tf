@@ -191,6 +191,12 @@ variable "terraform_backend_config_file_path" {
   description = "The path to terrafrom project directory"
 }
 
+variable "terraform_backend_config_template_file" {
+  type        = string
+  default     = ""
+  description = "The path to the template used to generate the config file"
+}
+
 variable "terraform_version" {
   type        = string
   default     = "0.12.2"

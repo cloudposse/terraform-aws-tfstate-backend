@@ -12,6 +12,8 @@ locals {
     var.terraform_backend_config_file_name
   )
 
+  terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
+
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
 }
 
@@ -197,7 +199,7 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 }
 
 data "template_file" "terraform_backend_config" {
-  template = file("${path.module}/templates/terraform.tf.tpl")
+  template = file(local.terraform_backend_config_template_file)
 
   vars = {
     region = var.region
