@@ -160,6 +160,7 @@ Available targets:
 |------|-------------|:----:|:-----:|:-----:|
 | acl | The canned ACL to apply to the S3 bucket | string | `private` | no |
 | additional_tag_map | Additional tags for appending to each tag map | map(string) | `<map>` | no |
+| arn_format | ARN format to be used. May be changed to support deployment in GovCloud/China regions. | string | `arn:aws` | no |
 | attributes | Additional attributes (e.g. `state`) | list(string) | `<list>` | no |
 | billing_mode | DynamoDB billing mode | string | `PROVISIONED` | no |
 | block_public_acls | Whether Amazon S3 should block public ACLs for this bucket | bool | `true` | no |
