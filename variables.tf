@@ -87,6 +87,12 @@ variable "region" {
   description = "AWS Region the S3 bucket should reside in"
 }
 
+variable "arn_prefix" {
+  type        = string
+  description = "AWS ARN prefix of resources. Because in China is different from the another regions"
+  default     = "arn:aws"
+}
+
 variable "acl" {
   type        = string
   description = "The canned ACL to apply to the S3 bucket"
