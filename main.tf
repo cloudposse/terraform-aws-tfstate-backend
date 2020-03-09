@@ -15,6 +15,8 @@ locals {
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
+
+  arn_root = var.region == "us-gov-west-1" && var.region == "us-gov-east-1" ? "arn:aws-us-gov" : "arn:aws"
 }
 
 module "base_label" {
@@ -55,7 +57,10 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${local.bucket_name}/*",
+      join(
+        local.arn_root, 
+        ":s3:::${local.bucket_name}/*"
+      )
     ]
 
     condition {
@@ -83,7 +88,10 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${local.bucket_name}/*",
+      join(
+        local.arn_root, 
+        ":s3:::${local.bucket_name}/*"
+      )
     ]
 
     condition {
