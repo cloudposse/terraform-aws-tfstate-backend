@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${local.bucket_name}/*",
+      "${var.arn_format}:s3:::${local.bucket_name}/*",
     ]
 
     condition {
@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${local.bucket_name}/*",
+      "${var.arn_format}:s3:::${local.bucket_name}/*",
     ]
 
     condition {
