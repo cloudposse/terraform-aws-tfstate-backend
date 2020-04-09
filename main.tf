@@ -95,6 +95,30 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
       ]
     }
   }
+
+  statement {
+    sid = "EnforceTlsRequestsOnly"
+
+    effect = "Deny"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    actions = ["s3:*"]
+
+    resources = [
+      "${var.arn_format}:s3:::${local.bucket_name}",
+      "${var.arn_format}:s3:::${local.bucket_name}/*",
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+  }
 }
 
 resource "aws_s3_bucket" "default" {
