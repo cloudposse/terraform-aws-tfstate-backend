@@ -12,8 +12,8 @@ jobs:
       - name: Slash Command Dispatch
         uses: cloudposse/actions/github/slash-command-dispatch@0.15.0
         with:
-          token: ${{ secrets.GITHUB_BOT_TOKEN }}
-          reaction-token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+          reaction-token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
           repository: cloudposse/actions
           commands: rebuild-readme, terraform-fmt
           permission: none
