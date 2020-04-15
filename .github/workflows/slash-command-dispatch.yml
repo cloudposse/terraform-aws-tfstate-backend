@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Slash Command Dispatch
-        uses: cloudposse/actions/github/slash-command-dispatch@0.12.0
+        uses: cloudposse/actions/github/slash-command-dispatch@0.15.0
         with:
           token: ${{ secrets.GITHUB_BOT_TOKEN }}
           reaction-token: ${{ secrets.GITHUB_TOKEN }}
