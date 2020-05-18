@@ -110,30 +110,48 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
       name          = "terraform"
       attributes    = ["state"]
       region        = "us-east-1"
-    }
-   ```
-
-1. `terraform init`
-
-1. `terraform apply`. This will create the state bucket and locking table.
-
-1. Then add a `backend` that uses the new bucket and table:
-   ```hcl
-    backend "s3" {
-       region         = "us-east-1"
-       bucket         = "< the name of the S3 bucket >"
-       key            = "terraform.tfstate"
-       dynamodb_table = "< the name of the DynamoDB table >"
-       encrypt        = true
-      }
+      terraform_backend_config_file_path = "."
     }
 
+    # Your Terraform configuration
     module "another_module" {
       source = "....."
     }
    ```
 
-1. `terraform init`. Terraform will detect that you're trying to move your state into S3 and ask, "Do you want to copy existing state to the new backend?" Enter "yes". Now state is stored in the bucket and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+1. `terraform init`
+
+1. `terraform apply`. This will create the state bucket and DynamoDB locking
+   table, along with anything else you have defined in your `.tf` file. At
+   this point, the Terraform state is still kept locally.
+
+   Module `terraform_state_backend` also creates a new `terraform.tf` file that
+   defines the S3 state backend:
+
+   ```hcl
+    backend "s3" {
+      region         = "us-east-1"
+      bucket         = "< the name of the S3 bucket >"
+      key            = "terraform.tfstate"
+      dynamodb_table = "< the name of the DynamoDB table >"
+      profile        = ""
+      role_arn       = ""
+      encrypt        = true
+    }
+   ```
+   Variables `terraform_backend_config_file_path` and
+   `terraform_backend_config_file_name` control the name of this backend
+   definition file.
+
+1. Add the name of the backend definition file (usually `terraform.tf`) to
+   your `.gitignore` file.
+
+1. `terraform init`. Henceforth, Terraform will also read the newly-created
+   backend definition file. Detecting that you might like to move your state
+   into S3, Terraform will ask, "Do you want to copy existing state to the new
+   backend?" Enter "yes". Now state is stored in the S3 bucket, and the
+   DynamoDB table will be used to lock the state to prevent concurrent
+   modifications.
 
 <br/>
 
@@ -350,8 +368,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 
 ### Contributors
 
-|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] | [![Vladimir][SweetOps_avatar]][SweetOps_homepage]<br/>[Vladimir][SweetOps_homepage] | [![Chris Weyl][rsrchboy_avatar]][rsrchboy_homepage]<br/>[Chris Weyl][rsrchboy_homepage] |
-|---|---|---|---|---|
+|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] | [![Vladimir][SweetOps_avatar]][SweetOps_homepage]<br/>[Vladimir][SweetOps_homepage] | [![Chris Weyl][rsrchboy_avatar]][rsrchboy_homepage]<br/>[Chris Weyl][rsrchboy_homepage] | [![John McGehee][jmcgeheeiv_avatar]][jmcgeheeiv_homepage]<br/>[John McGehee][jmcgeheeiv_homepage] |
+|---|---|---|---|---|---|
 
   [aknysh_homepage]: https://github.com/aknysh
   [aknysh_avatar]: https://img.cloudposse.com/150x150/https://github.com/aknysh.png
@@ -363,6 +381,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [SweetOps_avatar]: https://img.cloudposse.com/150x150/https://github.com/SweetOps.png
   [rsrchboy_homepage]: https://github.com/rsrchboy
   [rsrchboy_avatar]: https://img.cloudposse.com/150x150/https://github.com/rsrchboy.png
+  [jmcgeheeiv_homepage]: https://github.com/jmcgeheeiv
+  [jmcgeheeiv_avatar]: https://img.cloudposse.com/150x150/https://github.com/jmcgeheeiv.png
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]
