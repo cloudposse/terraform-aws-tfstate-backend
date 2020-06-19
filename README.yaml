@@ -73,6 +73,7 @@ usage: |-
         attributes    = ["state"]
         region        = "us-east-1"
         terraform_backend_config_file_path = "."
+        terraform_backend_config_file_name = "backend.tf"
       }
 
       # Your Terraform configuration
@@ -80,6 +81,10 @@ usage: |-
         source = "....."
       }
      ```
+     Module inputs `terraform_backend_config_file_path` and
+     `terraform_backend_config_file_name` control the name of the backend
+     definition file. Note that no file is created when
+     `terraform_backend_config_file_path` is empty (the default).
 
   1. `terraform init`
 
@@ -101,9 +106,6 @@ usage: |-
         encrypt        = true
       }
      ```
-     Variables `terraform_backend_config_file_path` and
-     `terraform_backend_config_file_name` control the name of this backend
-     definition file.
 
   1. Add the name of the backend definition file (usually `terraform.tf`) to
      your `.gitignore` file.
