@@ -63,7 +63,7 @@ usage: |-
   
   Follow this procedure to create your deployment.
 
-  1. Define the module in your `.tf` file using local state:
+  1. Define the terraform_state_backend module in `main.tf`:
      ```hcl
       module "terraform_state_backend" {
         source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
@@ -73,6 +73,8 @@ usage: |-
         attributes    = ["state"]
         region        = "us-east-1"
         terraform_backend_config_file_path = "."
+        terraform_backend_config_file_name = "backend.tf"
+        force_destroy                      = false
       }
 
       # Your Terraform configuration
@@ -81,58 +83,58 @@ usage: |-
       }
      ```
 
-  1. `terraform init`
+  1. `terraform init`. This downloades Terraform modules and providers.
 
-  1. `terraform apply`. This will create the state bucket and DynamoDB locking
-     table, along with anything else you have defined in your `.tf` file(s). At
-     this point, the Terraform state is still local.
+  1. `terraform apply --auto-approve`. This creates the state bucket and DynamoDB locking
+     table, along with anything else you have defined in your `*.tf` file(s). At
+     this point, the Terraform state is still stored locally.
      
-     Module `terraform_state_backend` also creates a new `terraform.tf` file
+     Module `terraform_state_backend` also creates a new `backend.tf` file
      that defines the S3 state backend. For example:
-
      ```hcl
       backend "s3" {
         region         = "us-east-1"
-        bucket         = "< the name of the S3 bucket >"
+        bucket         = "< the name of the S3 state bucket >"
         key            = "terraform.tfstate"
-        dynamodb_table = "< the name of the DynamoDB table >"
+        dynamodb_table = "< the name of the DynamoDB locking table >"
         profile        = ""
         role_arn       = ""
         encrypt        = true
       }
      ```
-     Variables `terraform_backend_config_file_path` and
-     `terraform_backend_config_file_name` control the name of this backend
-     definition file.
 
-  1. Add the name of the backend definition file (usually `terraform.tf`) to
-     your `.gitignore` file.
-  
-  1. `terraform init`. Henceforth, Terraform will also read the newly-created
-     backend definition file. Detecting that you might like to move your state
-     into S3, Terraform asks, "Do you want to copy this state to the new
-     backend?" Enter "yes". Now state is stored in the S3 bucket, and the
-     DynamoDB table will be used to lock the state to prevent concurrent
-     modifications.
+     Henceforth, Terraform will also read this newly-created
+     backend definition file. Its name is controlled by variables
+     `terraform_backend_config_file_path` and
+     `terraform_backend_config_file_name`.
+
+  1. `terraform init -force-copy`. Terraform detects that you want to move your
+     Terraform state to the S3 backend, and does so per `-auto-approve`. Now the
+     state is stored in the S3 bucket and the DynamoDB table will be used to lock
+     the state to prevent concurrent modifications.
   
   ### Destroy
   
   Follow this procedure to delete your deployment.
   
-  1. Remove the backend definition file (default `terraform.tf`) so that your
-     Terraform configuration no longer includes remote state `backend "s3"`.
-  
-  1. `terraform init`. The absence of a remote backend suggests to Terraform
-     that you might like to move your state back to local files. Terraform asks,
-     "Do you want to copy existing state to the new backend?" Enter "yes". Now
-     state is once again stored in local file `terraform.tfstate`, and the S3
-     backend bucket can be safely deleted.
-  
+  1. Remove file `backend.tf`.
+  1. In `main.tf`, change the `module "terraform_state_backend"` arguments as follows:
+     ```hcl
+      module "terraform_state_backend" {
+          ...
+        terraform_backend_config_file_path = ""
+        force_destroy                      = false
+      }
+      ```
+  1. `terraform apply -target module.terraform_state_backend -auto-approve`.
+     This activates the above modifications.
+  1. `terraform init -force-copy`. Terraform detects that you want to move your
+     Terraform state from the S3 backend to local files, and it does so per
+     `-auto-approve`. Now the state is once again stored locally and the S3
+     state bucket can safely be deleted.
   1. `terraform destroy`. This of course deletes all resources in your
      deployment.
-  
-  1. If you like, examine file `terraform.tfstate` to verify that it contains no
-     resources
+  1. Examine file `terraform.tfstate` to verify that it contains no resources.
   
   <br/>
 
