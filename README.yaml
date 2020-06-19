@@ -63,8 +63,13 @@ usage: |-
   
   Follow this procedure just once to create your deployment.
 
-  1. Add the `terraform_state_backend` module to your `main.tf` file:
+  1. Add the `terraform_state_backend` module to your `main.tf` file. The
+     comment will help you remember to follow this procedure in the future:
      ```hcl
+      # You cannot create a new backend by simply defining this and then
+      # immediately proceeding to "terraform apply". The S3 backend must
+      # be bootstrapped according to the simple yet essential procedure in
+      # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
       module "terraform_state_backend" {
         source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
         namespace     = "eg"
@@ -128,12 +133,12 @@ usage: |-
       module "terraform_state_backend" {
           ...
         terraform_backend_config_file_path = ""
-        force_destroy                      = false
+        force_destroy                      = true
       }
       ```
   1. `terraform apply -target module.terraform_state_backend -auto-approve`.
      This implements the above modifications by deleting the `backend.tf` file
-     and allowing the S3 state bucket to be deleted.
+     and enabling deletion of the S3 state bucket.
   1. `terraform init -force-copy`. Terraform detects that you want to move your
      Terraform state from the S3 backend to local files, and it does so per
      `-auto-approve`. Now the state is once again stored locally and the S3
@@ -165,3 +170,5 @@ contributors:
     github: "rsrchboy"
   - name: "John McGehee"
     github: "jmcgeheeiv"
+  - name: "Oliver L Schoenborn"
+    github: "schollii"
