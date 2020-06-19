@@ -104,9 +104,9 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
 
 ### Create
 
-Follow this procedure to create your deployment.
+Follow this procedure just once to create your deployment.
 
-1. Define the module in your `.tf` file using local state:
+1. Add the `terraform_state_backend` module to your `main.tf` file:
    ```hcl
     module "terraform_state_backend" {
       source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
@@ -116,6 +116,8 @@ Follow this procedure to create your deployment.
       attributes    = ["state"]
       region        = "us-east-1"
       terraform_backend_config_file_path = "."
+      terraform_backend_config_file_name = "backend.tf"
+      force_destroy                      = false
     }
 
     # Your Terraform configuration
@@ -123,59 +125,66 @@ Follow this procedure to create your deployment.
       source = "....."
     }
    ```
+   Module inputs `terraform_backend_config_file_path` and
+   `terraform_backend_config_file_name` control the name of the backend
+   definition file. Note that when `terraform_backend_config_file_path` is
+   empty (the default), no file is created.
 
-1. `terraform init`
+1. `terraform init`. This downloades Terraform modules and providers.
 
-1. `terraform apply`. This will create the state bucket and DynamoDB locking
-   table, along with anything else you have defined in your `.tf` file(s). At
-   this point, the Terraform state is still local.
+1. `terraform apply --auto-approve`. This creates the state bucket and DynamoDB locking
+   table, along with anything else you have defined in your `*.tf` file(s). At
+   this point, the Terraform state is still stored locally.
    
-   Module `terraform_state_backend` also creates a new `terraform.tf` file
+   Module `terraform_state_backend` also creates a new `backend.tf` file
    that defines the S3 state backend. For example:
-
    ```hcl
     backend "s3" {
       region         = "us-east-1"
-      bucket         = "< the name of the S3 bucket >"
+      bucket         = "< the name of the S3 state bucket >"
       key            = "terraform.tfstate"
-      dynamodb_table = "< the name of the DynamoDB table >"
+      dynamodb_table = "< the name of the DynamoDB locking table >"
       profile        = ""
       role_arn       = ""
       encrypt        = true
     }
    ```
-   Variables `terraform_backend_config_file_path` and
-   `terraform_backend_config_file_name` control the name of this backend
-   definition file.
 
-1. Add the name of the backend definition file (usually `terraform.tf`) to
-   your `.gitignore` file.
+   Henceforth, Terraform will also read this newly-created backend definition
+   file.
 
-1. `terraform init`. Henceforth, Terraform will also read the newly-created
-   backend definition file. Detecting that you might like to move your state
-   into S3, Terraform asks, "Do you want to copy this state to the new
-   backend?" Enter "yes". Now state is stored in the S3 bucket, and the
-   DynamoDB table will be used to lock the state to prevent concurrent
-   modifications.
+1. `terraform init -force-copy`. Terraform detects that you want to move your
+   Terraform state to the S3 backend, and it does so per `-auto-approve`. Now the
+   state is stored in the S3 bucket, and the DynamoDB table will be used to lock
+   the state to prevent concurrent modification.
+
+This concludes the one-time preparation. Now you can extend and modify your
+Terraform configuration as usual.
 
 ### Destroy
 
 Follow this procedure to delete your deployment.
 
-1. Remove the backend definition file (default `terraform.tf`) so that your
-   Terraform configuration no longer includes remote state `backend "s3"`.
-
-1. `terraform init`. The absence of a remote backend suggests to Terraform
-   that you might like to move your state back to local files. Terraform asks,
-   "Do you want to copy existing state to the new backend?" Enter "yes". Now
-   state is once again stored in local file `terraform.tfstate`, and the S3
-   backend bucket can be safely deleted.
-
+1. Remove file `backend.tf`.
+1. In `main.tf`, change the `terraform_state_backend` module arguments as
+   follows:
+   ```hcl
+    module "terraform_state_backend" {
+        ...
+      terraform_backend_config_file_path = ""
+      force_destroy                      = false
+    }
+    ```
+1. `terraform apply -target module.terraform_state_backend -auto-approve`.
+   This activates the above modifications.
+1. `terraform init -force-copy`. Terraform detects that you want to move your
+   Terraform state from the S3 backend to local files, and it does so per
+   `-auto-approve`. Now the state is once again stored locally and the S3
+   state bucket can be safely deleted.
 1. `terraform destroy`. This of course deletes all resources in your
    deployment.
-
-1. If you like, examine file `terraform.tfstate` to verify that it contains no
-   resources
+1. Examine local state file `terraform.tfstate` to verify that it contains
+   no resources.
 
 <br/>
 
@@ -196,56 +205,74 @@ Available targets:
   lint                                Lint terraform code
 
 ```
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | ~> 0.12.0 |
+| aws | ~> 2.0 |
+| local | ~> 1.2 |
+| null | ~> 2.0 |
+| template | ~> 2.0 |
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| aws | ~> 2.0 |
+| local | ~> 1.2 |
+| template | ~> 2.0 |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| acl | The canned ACL to apply to the S3 bucket | string | `private` | no |
-| additional_tag_map | Additional tags for appending to each tag map | map(string) | `<map>` | no |
-| arn_format | ARN format to be used. May be changed to support deployment in GovCloud/China regions. | string | `arn:aws` | no |
-| attributes | Additional attributes (e.g. `state`) | list(string) | `<list>` | no |
-| billing_mode | DynamoDB billing mode | string | `PROVISIONED` | no |
-| block_public_acls | Whether Amazon S3 should block public ACLs for this bucket | bool | `true` | no |
-| block_public_policy | Whether Amazon S3 should block public bucket policies for this bucket | string | `true` | no |
-| context | Default context to use for passing state between label invocations | object | `<map>` | no |
-| delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | string | `-` | no |
-| enable_point_in_time_recovery | Enable DynamoDB point-in-time recovery | bool | `false` | no |
-| enable_server_side_encryption | Enable DynamoDB server-side encryption | bool | `true` | no |
-| environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT' | string | `` | no |
-| force_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | bool | `false` | no |
-| ignore_public_acls | Whether Amazon S3 should ignore public ACLs for this bucket | bool | `true` | no |
-| label_order | The naming order of the id output and Name tag | list(string) | `<list>` | no |
-| mfa_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | bool | `false` | no |
-| name | Solution name, e.g. 'app' or 'jenkins' | string | `terraform` | no |
-| namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | string | `` | no |
-| prevent_unencrypted_uploads | Prevent uploads of unencrypted objects to S3 | bool | `true` | no |
-| profile | AWS profile name as set in the shared credentials file | string | `` | no |
-| read_capacity | DynamoDB read capacity units | string | `5` | no |
-| regex_replace_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | string | `/[^a-zA-Z0-9-]/` | no |
-| region | AWS Region the S3 bucket should reside in | string | - | yes |
-| restrict_public_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket | bool | `true` | no |
-| role_arn | The role to be assumed | string | `` | no |
-| s3_bucket_name | S3 bucket name. If not provided, the name will be generated by the label module in the format namespace-stage-name | string | `` | no |
-| stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | string | `` | no |
-| tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | map(string) | `<map>` | no |
-| terraform_backend_config_file_name | Name of terraform backend config file | string | `terraform.tf` | no |
-| terraform_backend_config_file_path | The path to terrafrom project directory | string | `` | no |
-| terraform_backend_config_template_file | The path to the template used to generate the config file | string | `` | no |
-| terraform_state_file | The path to the state file inside the bucket | string | `terraform.tfstate` | no |
-| terraform_version | The minimum required terraform version | string | `0.12.2` | no |
-| write_capacity | DynamoDB write capacity units | string | `5` | no |
+|------|-------------|------|---------|:--------:|
+| acl | The canned ACL to apply to the S3 bucket | `string` | `"private"` | no |
+| additional\_tag\_map | Additional tags for appending to each tag map | `map(string)` | `{}` | no |
+| arn\_format | ARN format to be used. May be changed to support deployment in GovCloud/China regions. | `string` | `"arn:aws"` | no |
+| attributes | Additional attributes (e.g. `state`) | `list(string)` | <pre>[<br>  "state"<br>]</pre> | no |
+| billing\_mode | DynamoDB billing mode | `string` | `"PROVISIONED"` | no |
+| block\_public\_acls | Whether Amazon S3 should block public ACLs for this bucket | `bool` | `true` | no |
+| block\_public\_policy | Whether Amazon S3 should block public bucket policies for this bucket | `bool` | `true` | no |
+| context | Default context to use for passing state between label invocations | <pre>object({<br>    namespace           = string<br>    environment         = string<br>    stage               = string<br>    name                = string<br>    enabled             = bool<br>    delimiter           = string<br>    attributes          = list(string)<br>    label_order         = list(string)<br>    tags                = map(string)<br>    additional_tag_map  = map(string)<br>    regex_replace_chars = string<br>  })</pre> | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": "",<br>  "enabled": true,<br>  "environment": "",<br>  "label_order": [],<br>  "name": "",<br>  "namespace": "",<br>  "regex_replace_chars": "",<br>  "stage": "",<br>  "tags": {}<br>}</pre> | no |
+| delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | `string` | `"-"` | no |
+| enable\_point\_in\_time\_recovery | Enable DynamoDB point-in-time recovery | `bool` | `false` | no |
+| enable\_server\_side\_encryption | Enable DynamoDB server-side encryption | `bool` | `true` | no |
+| environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT' | `string` | `""` | no |
+| force\_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | `bool` | `false` | no |
+| ignore\_public\_acls | Whether Amazon S3 should ignore public ACLs for this bucket | `bool` | `true` | no |
+| label\_order | The naming order of the id output and Name tag | `list(string)` | `[]` | no |
+| mfa\_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | `bool` | `false` | no |
+| name | Solution name, e.g. 'app' or 'jenkins' | `string` | `"terraform"` | no |
+| namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `""` | no |
+| prevent\_unencrypted\_uploads | Prevent uploads of unencrypted objects to S3 | `bool` | `true` | no |
+| profile | AWS profile name as set in the shared credentials file | `string` | `""` | no |
+| read\_capacity | DynamoDB read capacity units | `number` | `5` | no |
+| regex\_replace\_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | `string` | `"/[^a-zA-Z0-9-]/"` | no |
+| region | AWS Region the S3 bucket should reside in | `string` | n/a | yes |
+| restrict\_public\_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket | `bool` | `true` | no |
+| role\_arn | The role to be assumed | `string` | `""` | no |
+| s3\_bucket\_name | S3 bucket name. If not provided, the name will be generated by the label module in the format namespace-stage-name | `string` | `""` | no |
+| stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | `string` | `""` | no |
+| tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | `map(string)` | `{}` | no |
+| terraform\_backend\_config\_file\_name | Name of terraform backend config file | `string` | `"terraform.tf"` | no |
+| terraform\_backend\_config\_file\_path | Directory for the terraform backend config file, usually `.`. The default is to create no file. | `string` | `""` | no |
+| terraform\_backend\_config\_template\_file | The path to the template used to generate the config file | `string` | `""` | no |
+| terraform\_state\_file | The path to the state file inside the bucket | `string` | `"terraform.tfstate"` | no |
+| terraform\_version | The minimum required terraform version | `string` | `"0.12.2"` | no |
+| write\_capacity | DynamoDB write capacity units | `number` | `5` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| dynamodb_table_arn | DynamoDB table ARN |
-| dynamodb_table_id | DynamoDB table ID |
-| dynamodb_table_name | DynamoDB table name |
-| s3_bucket_arn | S3 bucket ARN |
-| s3_bucket_domain_name | S3 bucket domain name |
-| s3_bucket_id | S3 bucket ID |
-| terraform_backend_config | Rendered Terraform backend config file |
+| dynamodb\_table\_arn | DynamoDB table ARN |
+| dynamodb\_table\_id | DynamoDB table ID |
+| dynamodb\_table\_name | DynamoDB table name |
+| s3\_bucket\_arn | S3 bucket ARN |
+| s3\_bucket\_domain\_name | S3 bucket domain name |
+| s3\_bucket\_id | S3 bucket ID |
+| terraform\_backend\_config | Rendered Terraform backend config file |
 
 
 
