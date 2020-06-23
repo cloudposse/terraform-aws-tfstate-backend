@@ -138,6 +138,12 @@ variable "enable_server_side_encryption" {
   default     = true
 }
 
+variable "enable_public_access_block" {
+  type        = bool
+  description = "Enable Bucket Public Access Block"
+  default     = true
+}
+
 variable "block_public_acls" {
   type        = bool
   description = "Whether Amazon S3 should block public ACLs for this bucket"
