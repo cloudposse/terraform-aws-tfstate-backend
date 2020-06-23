@@ -18,7 +18,7 @@ locals {
 }
 
 module "base_label" {
-  source              = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.13.0"
+  source              = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.16.0"
   namespace           = var.namespace
   environment         = var.environment
   stage               = var.stage
@@ -33,7 +33,7 @@ module "base_label" {
 }
 
 module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.13.0"
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.16.0"
   context = module.base_label.context
 }
 
@@ -55,7 +55,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${local.bucket_name}/*",
+      "${var.arn_format}:s3:::${local.bucket_name}/*",
     ]
 
     condition {
@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     ]
 
     resources = [
-      "arn:aws:s3:::${local.bucket_name}/*",
+      "${var.arn_format}:s3:::${local.bucket_name}/*",
     ]
 
     condition {
@@ -93,6 +93,30 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
       values = [
         "true",
       ]
+    }
+  }
+
+  statement {
+    sid = "EnforceTlsRequestsOnly"
+
+    effect = "Deny"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    actions = ["s3:*"]
+
+    resources = [
+      "${var.arn_format}:s3:::${local.bucket_name}",
+      "${var.arn_format}:s3:::${local.bucket_name}/*",
+    ]
+
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
     }
   }
 }
@@ -129,7 +153,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 module "dynamodb_table_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.13.0"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.16.0"
   context    = module.base_label.context
   attributes = compact(concat(var.attributes, ["lock"]))
 }
