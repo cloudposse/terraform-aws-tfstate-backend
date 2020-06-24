@@ -42,7 +42,7 @@
 
 [![Cloud Posse][logo]](https://cpco.io/homepage)
 
-# terraform-aws-tfstate-backend [![Codefresh Build Status](https://g.codefresh.io/api/badges/pipeline/cloudposse/terraform-modules%2Fterraform-aws-tfstate-backend?type=cf-1)](https://g.codefresh.io/public/accounts/cloudposse/pipelines/5d0d3d11c841e6807afe8d2a) [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg)](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+# terraform-aws-tfstate-backend [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg)](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 
 
 Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file
@@ -137,7 +137,7 @@ Follow this procedure just once to create your deployment.
 
 1. `terraform init`. This downloads Terraform modules and providers.
 
-1. `terraform apply --auto-approve`. This creates the state bucket and DynamoDB locking
+1. `terraform apply -auto-approve`. This creates the state bucket and DynamoDB locking
    table, along with anything else you have defined in your `*.tf` file(s). At
    this point, the Terraform state is still stored locally.
    
@@ -241,6 +241,7 @@ Available targets:
 | context | Default context to use for passing state between label invocations | <pre>object({<br>    namespace           = string<br>    environment         = string<br>    stage               = string<br>    name                = string<br>    enabled             = bool<br>    delimiter           = string<br>    attributes          = list(string)<br>    label_order         = list(string)<br>    tags                = map(string)<br>    additional_tag_map  = map(string)<br>    regex_replace_chars = string<br>  })</pre> | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": "",<br>  "enabled": true,<br>  "environment": "",<br>  "label_order": [],<br>  "name": "",<br>  "namespace": "",<br>  "regex_replace_chars": "",<br>  "stage": "",<br>  "tags": {}<br>}</pre> | no |
 | delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | `string` | `"-"` | no |
 | enable\_point\_in\_time\_recovery | Enable DynamoDB point-in-time recovery | `bool` | `false` | no |
+| enable\_public\_access\_block | Enable Bucket Public Access Block | `bool` | `true` | no |
 | enable\_server\_side\_encryption | Enable DynamoDB server-side encryption | `bool` | `true` | no |
 | environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT' | `string` | `""` | no |
 | force\_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | `bool` | `false` | no |
