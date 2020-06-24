@@ -101,8 +101,18 @@ We literally have [*hundreds of terraform modules*][terraform_modules] that are 
 Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest releases](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases).
 
 
-1. Define the module in your `.tf` file using local state:
+
+### Create
+
+Follow this procedure just once to create your deployment.
+
+1. Add the `terraform_state_backend` module to your `main.tf` file. The
+   comment will help you remember to follow this procedure in the future:
    ```hcl
+    # You cannot create a new backend by simply defining this and then
+    # immediately proceeding to "terraform apply". The S3 backend must
+    # be bootstrapped according to the simple yet essential procedure in
+    # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
     module "terraform_state_backend" {
       source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
       namespace     = "eg"
@@ -110,30 +120,75 @@ Instead pin to the release tag (e.g. `?ref=tags/x.y.z`) of one of our [latest re
       name          = "terraform"
       attributes    = ["state"]
       region        = "us-east-1"
-    }
-   ```
-
-1. `terraform init`
-
-1. `terraform apply`. This will create the state bucket and locking table.
-
-1. Then add a `backend` that uses the new bucket and table:
-   ```hcl
-    backend "s3" {
-       region         = "us-east-1"
-       bucket         = "< the name of the S3 bucket >"
-       key            = "terraform.tfstate"
-       dynamodb_table = "< the name of the DynamoDB table >"
-       encrypt        = true
-      }
+      terraform_backend_config_file_path = "."
+      terraform_backend_config_file_name = "backend.tf"
+      force_destroy                      = false
     }
 
+    # Your Terraform configuration
     module "another_module" {
       source = "....."
     }
    ```
+   Module inputs `terraform_backend_config_file_path` and
+   `terraform_backend_config_file_name` control the name of the backend
+   definition file. Note that when `terraform_backend_config_file_path` is
+   empty (the default), no file is created.
 
-1. `terraform init`. Terraform will detect that you're trying to move your state into S3 and ask, "Do you want to copy existing state to the new backend?" Enter "yes". Now state is stored in the bucket and the DynamoDB table will be used to lock the state to prevent concurrent modifications.
+1. `terraform init`. This downloads Terraform modules and providers.
+
+1. `terraform apply -auto-approve`. This creates the state bucket and DynamoDB locking
+   table, along with anything else you have defined in your `*.tf` file(s). At
+   this point, the Terraform state is still stored locally.
+   
+   Module `terraform_state_backend` also creates a new `backend.tf` file
+   that defines the S3 state backend. For example:
+   ```hcl
+    backend "s3" {
+      region         = "us-east-1"
+      bucket         = "< the name of the S3 state bucket >"
+      key            = "terraform.tfstate"
+      dynamodb_table = "< the name of the DynamoDB locking table >"
+      profile        = ""
+      role_arn       = ""
+      encrypt        = true
+    }
+   ```
+
+   Henceforth, Terraform will also read this newly-created backend definition
+   file.
+
+1. `terraform init -force-copy`. Terraform detects that you want to move your
+   Terraform state to the S3 backend, and it does so per `-auto-approve`. Now the
+   state is stored in the S3 bucket, and the DynamoDB table will be used to lock
+   the state to prevent concurrent modification.
+
+This concludes the one-time preparation. Now you can extend and modify your
+Terraform configuration as usual.
+
+### Destroy
+
+Follow this procedure to delete your deployment.
+
+1. In `main.tf`, change the `terraform_state_backend` module arguments as
+   follows:
+   ```hcl
+    module "terraform_state_backend" {
+        ...
+      terraform_backend_config_file_path = ""
+      force_destroy                      = true
+    }
+    ```
+1. `terraform apply -target module.terraform_state_backend -auto-approve`.
+   This implements the above modifications by deleting the `backend.tf` file
+   and enabling deletion of the S3 state bucket.
+1. `terraform init -force-copy`. Terraform detects that you want to move your
+   Terraform state from the S3 backend to local files, and it does so per
+   `-auto-approve`. Now the state is once again stored locally and the S3
+   state bucket can be safely deleted.
+1. `terraform destroy`. This deletes all resources in your deployment.
+1. Examine local state file `terraform.tfstate` to verify that it contains
+   no resources.
 
 <br/>
 
@@ -206,7 +261,7 @@ Available targets:
 | stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | `string` | `""` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | `map(string)` | `{}` | no |
 | terraform\_backend\_config\_file\_name | Name of terraform backend config file | `string` | `"terraform.tf"` | no |
-| terraform\_backend\_config\_file\_path | The path to terrafrom project directory | `string` | `""` | no |
+| terraform\_backend\_config\_file\_path | Directory for the terraform backend config file, usually `.`. The default is to create no file. | `string` | `""` | no |
 | terraform\_backend\_config\_template\_file | The path to the template used to generate the config file | `string` | `""` | no |
 | terraform\_state\_file | The path to the state file inside the bucket | `string` | `"terraform.tfstate"` | no |
 | terraform\_version | The minimum required terraform version | `string` | `"0.12.2"` | no |
@@ -369,8 +424,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 
 ### Contributors
 
-|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] | [![Vladimir][SweetOps_avatar]][SweetOps_homepage]<br/>[Vladimir][SweetOps_homepage] | [![Chris Weyl][rsrchboy_avatar]][rsrchboy_homepage]<br/>[Chris Weyl][rsrchboy_homepage] |
-|---|---|---|---|---|
+|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] | [![Vladimir][SweetOps_avatar]][SweetOps_homepage]<br/>[Vladimir][SweetOps_homepage] | [![Chris Weyl][rsrchboy_avatar]][rsrchboy_homepage]<br/>[Chris Weyl][rsrchboy_homepage] | [![John McGehee][jmcgeheeiv_avatar]][jmcgeheeiv_homepage]<br/>[John McGehee][jmcgeheeiv_homepage] | [![Oliver L Schoenborn][schollii_avatar]][schollii_homepage]<br/>[Oliver L Schoenborn][schollii_homepage] |
+|---|---|---|---|---|---|---|
 
   [aknysh_homepage]: https://github.com/aknysh
   [aknysh_avatar]: https://img.cloudposse.com/150x150/https://github.com/aknysh.png
@@ -382,6 +437,10 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [SweetOps_avatar]: https://img.cloudposse.com/150x150/https://github.com/SweetOps.png
   [rsrchboy_homepage]: https://github.com/rsrchboy
   [rsrchboy_avatar]: https://img.cloudposse.com/150x150/https://github.com/rsrchboy.png
+  [jmcgeheeiv_homepage]: https://github.com/jmcgeheeiv
+  [jmcgeheeiv_avatar]: https://img.cloudposse.com/150x150/https://github.com/jmcgeheeiv.png
+  [schollii_homepage]: https://github.com/schollii
+  [schollii_avatar]: https://img.cloudposse.com/150x150/https://github.com/schollii.png
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]

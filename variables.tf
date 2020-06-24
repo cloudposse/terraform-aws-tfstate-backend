@@ -200,7 +200,7 @@ variable "terraform_backend_config_file_name" {
 variable "terraform_backend_config_file_path" {
   type        = string
   default     = ""
-  description = "The path to terrafrom project directory"
+  description = "Directory for the terraform backend config file, usually `.`. The default is to create no file."
 }
 
 variable "terraform_backend_config_template_file" {

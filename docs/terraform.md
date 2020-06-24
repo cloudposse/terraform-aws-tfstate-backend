@@ -50,7 +50,7 @@
 | stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | `string` | `""` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | `map(string)` | `{}` | no |
 | terraform\_backend\_config\_file\_name | Name of terraform backend config file | `string` | `"terraform.tf"` | no |
-| terraform\_backend\_config\_file\_path | The path to terrafrom project directory | `string` | `""` | no |
+| terraform\_backend\_config\_file\_path | Directory for the terraform backend config file, usually `.`. The default is to create no file. | `string` | `""` | no |
 | terraform\_backend\_config\_template\_file | The path to the template used to generate the config file | `string` | `""` | no |
 | terraform\_state\_file | The path to the state file inside the bucket | `string` | `"terraform.tfstate"` | no |
 | terraform\_version | The minimum required terraform version | `string` | `"0.12.2"` | no |
