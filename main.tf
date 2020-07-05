@@ -14,6 +14,8 @@ locals {
 
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
+  terraform_backend_config_file_exists = fileexists(local.terraform_backend_config_file)
+
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
 }
 
@@ -246,8 +248,10 @@ data "template_file" "terraform_backend_config" {
   }
 }
 
+# We only write the backend config file if the file doesn't exist and the
+# module was given `terraform_backend_config_file_path`
 resource "local_file" "terraform_backend_config" {
-  count    = var.terraform_backend_config_file_path != "" ? 1 : 0
+  count    = !local.terraform_backend_config_file_exists && var.terraform_backend_config_file_path != "" ? 1 : 0
   content  = data.template_file.terraform_backend_config.rendered
   filename = local.terraform_backend_config_file
 }
