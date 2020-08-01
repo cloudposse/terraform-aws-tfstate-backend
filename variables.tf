@@ -221,6 +221,12 @@ variable "terraform_state_file" {
   description = "The path to the state file inside the bucket"
 }
 
+variable "enable_overwriting_backend_config_file" {
+  type        = bool
+  default     = true
+  description = "If false, the backend config file will not be overwritten if it exists."
+}
+
 variable "s3_bucket_name" {
   type        = string
   default     = ""
