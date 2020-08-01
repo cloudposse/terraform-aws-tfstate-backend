@@ -29,6 +29,7 @@
 | block\_public\_policy | Whether Amazon S3 should block public bucket policies for this bucket | `bool` | `true` | no |
 | context | Default context to use for passing state between label invocations | <pre>object({<br>    namespace           = string<br>    environment         = string<br>    stage               = string<br>    name                = string<br>    enabled             = bool<br>    delimiter           = string<br>    attributes          = list(string)<br>    label_order         = list(string)<br>    tags                = map(string)<br>    additional_tag_map  = map(string)<br>    regex_replace_chars = string<br>  })</pre> | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": "",<br>  "enabled": true,<br>  "environment": "",<br>  "label_order": [],<br>  "name": "",<br>  "namespace": "",<br>  "regex_replace_chars": "",<br>  "stage": "",<br>  "tags": {}<br>}</pre> | no |
 | delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | `string` | `"-"` | no |
+| enable\_overwriting\_backend\_config\_file | If false, the backend config file will not be overwritten if it exists. | `bool` | `true` | no |
 | enable\_point\_in\_time\_recovery | Enable DynamoDB point-in-time recovery | `bool` | `false` | no |
 | enable\_public\_access\_block | Enable Bucket Public Access Block | `bool` | `true` | no |
 | enable\_server\_side\_encryption | Enable DynamoDB server-side encryption | `bool` | `true` | no |
