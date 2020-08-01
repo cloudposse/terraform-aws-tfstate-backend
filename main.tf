@@ -16,7 +16,7 @@ locals {
 
   terraform_backend_config_file_exists = fileexists(local.terraform_backend_config_file)
 
-  overwrite_backend_config_file = (!local.terraform_backend_config_file_exists || var.enable_backend_config_file_overwrite) && var.terraform_backend_config_file_path != ""
+  overwrite_backend_config_file = (! local.terraform_backend_config_file_exists || var.enable_backend_config_file_overwrite) && var.terraform_backend_config_file_path != ""
 
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
 }
