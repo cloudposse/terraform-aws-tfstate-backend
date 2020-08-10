@@ -24,6 +24,7 @@
 | additional\_tag\_map | Additional tags for appending to each tag map | `map(string)` | `{}` | no |
 | arn\_format | ARN format to be used. May be changed to support deployment in GovCloud/China regions. | `string` | `"arn:aws"` | no |
 | attributes | Additional attributes (e.g. `state`) | `list(string)` | <pre>[<br>  "state"<br>]</pre> | no |
+| backend\_config\_file\_overwrite\_enabled | If false, the backend config file will not be overwritten if it exists. | `bool` | `true` | no |
 | billing\_mode | DynamoDB billing mode | `string` | `"PROVISIONED"` | no |
 | block\_public\_acls | Whether Amazon S3 should block public ACLs for this bucket | `bool` | `true` | no |
 | block\_public\_policy | Whether Amazon S3 should block public bucket policies for this bucket | `bool` | `true` | no |
