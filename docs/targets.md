@@ -1,6 +1,5 @@
-<!-- markdownlint-disable -->
 ## Makefile Targets
-```text
+```
 Available targets:
 
   help                                Help screen
@@ -9,4 +8,3 @@ Available targets:
   lint                                Lint terraform code
 
 ```
-<!-- markdownlint-restore -->
