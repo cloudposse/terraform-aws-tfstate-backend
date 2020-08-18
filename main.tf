@@ -64,6 +64,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 
       values = [
         "AES256",
+        "aws:kms",
       ]
     }
   }
