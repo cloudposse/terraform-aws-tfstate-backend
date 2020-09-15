@@ -10,7 +10,7 @@ locals {
     "%s/%s",
     var.terraform_backend_config_file_path,
     var.terraform_backend_config_file_name
-  )r
+  )
 
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
@@ -224,7 +224,7 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 }
 
 data "aws_region" "current" {}
-    
+
 data "template_file" "terraform_backend_config" {
   template = file(local.terraform_backend_config_template_file)
 
