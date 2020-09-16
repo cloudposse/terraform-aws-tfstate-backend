@@ -141,6 +141,24 @@ resource "aws_s3_bucket" "default" {
     }
   }
 
+  dynamic "replication_configuration" {
+    for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
+    content {
+      role = aws_iam_role.replication[0].arn
+
+      rules {
+        id     = module.base_label.id
+        prefix = ""
+        status = "Enabled"
+
+        destination {
+          bucket        = var.s3_replica_bucket_arn
+          storage_class = "STANDARD"
+        }
+      }
+    }
+  }
+
   tags = module.s3_bucket_label.tags
 }
 
