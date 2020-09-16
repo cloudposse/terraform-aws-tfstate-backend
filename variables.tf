@@ -82,11 +82,6 @@ variable "label_order" {
   description = "The naming order of the id output and Name tag"
 }
 
-variable "region" {
-  type        = string
-  description = "AWS Region the S3 bucket should reside in"
-}
-
 variable "arn_format" {
   type        = string
   default     = "arn:aws"

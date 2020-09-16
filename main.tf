@@ -125,7 +125,6 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 resource "aws_s3_bucket" "default" {
   bucket        = substr(local.bucket_name, 0, 63)
   acl           = var.acl
-  region        = var.region
   force_destroy = var.force_destroy
   policy        = local.policy
 
@@ -225,11 +224,13 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
   tags = module.dynamodb_table_label.tags
 }
 
+data "aws_region" "current" {}
+
 data "template_file" "terraform_backend_config" {
   template = file(local.terraform_backend_config_template_file)
 
   vars = {
-    region = var.region
+    region = data.aws_region.current.name
     bucket = aws_s3_bucket.default.id
 
     dynamodb_table = element(
