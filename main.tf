@@ -156,12 +156,13 @@ resource "aws_s3_bucket_public_access_block" "default" {
 
 module "dynamodb_table_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
+  enabled    = var.enable_dynamodb
   context    = module.base_label.context
   attributes = compact(concat(var.attributes, ["lock"]))
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
-  count          = var.enable_server_side_encryption ? 1 : 0
+  count          = var.enable_dynamodb && var.enable_server_side_encryption ? 1 : 0
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
@@ -195,7 +196,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = var.enable_server_side_encryption ? 0 : 1
+  count          = var.enable_dynamodb && var.enable_server_side_encryption ? 0 : 1
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
