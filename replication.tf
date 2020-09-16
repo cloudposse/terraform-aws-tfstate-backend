@@ -9,14 +9,14 @@ data "aws_iam_policy_document" "replication_sts" {
   count = var.s3_replication_enabled ? 1 : 0
 
   statement {
-    sid     = "AllowPrimaryToAssumeServiceRole"
-    effect  = "Allow"
+    sid    = "AllowPrimaryToAssumeServiceRole"
+    effect = "Allow"
     actions = [
       "sts:AssumeRole"
     ]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["s3.amazonaws.com"]
     }
   }
@@ -33,8 +33,8 @@ data "aws_iam_policy_document" "replication" {
   count = var.s3_replication_enabled ? 1 : 0
 
   statement {
-    sid     = "AllowPrimaryToGetReplicationConfiguration"
-    effect  = "Allow"
+    sid    = "AllowPrimaryToGetReplicationConfiguration"
+    effect = "Allow"
     actions = [
       "s3:Get*",
       "s3:ListBucket"
@@ -46,8 +46,8 @@ data "aws_iam_policy_document" "replication" {
   }
 
   statement {
-    sid     = "AllowPrimaryToReplicate"
-    effect  = "Allow"
+    sid    = "AllowPrimaryToReplicate"
+    effect = "Allow"
     actions = [
       "s3:ReplicateObject",
       "s3:ReplicateDelete",
@@ -60,7 +60,7 @@ data "aws_iam_policy_document" "replication" {
 }
 
 resource "aws_iam_role_policy_attachment" "replication" {
-  count = var.s3_replication_enabled ? 1 : 0
+  count      = var.s3_replication_enabled ? 1 : 0
   role       = aws_iam_role.replication[0].name
   policy_arn = aws_iam_policy.replication[0].arn
 }

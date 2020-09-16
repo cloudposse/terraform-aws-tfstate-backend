@@ -228,8 +228,8 @@ variable "s3_bucket_name" {
 }
 
 variable "s3_replication_enabled" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Set this to true and specify `s3_replica_bucket_arn` to enable replication"
 }
 
