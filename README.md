@@ -191,7 +191,7 @@ To enable S3 bucket replication in this module, set `s3_replication_enabled` to 
       force_destroy                      = false
 
       s3_replication_enabled = true
-      s3_replica_bucket_arn  = "arn:aws:s3::eg-test-terraform-tfstate-replica"
+      s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
     }
    ```
 
