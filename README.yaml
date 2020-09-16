@@ -148,6 +148,26 @@ usage: |-
 
   ![s3-bucket-with-terraform-state](images/s3-bucket-with-terraform-state.png)
 
+  ### Bucket Replication (Disaster Recovery)
+  
+  To enable S3 bucket replication in this module, set `s3_replication_enabled` to `true` and populate `s3_replica_bucket_arn` with the ARN of an existing bucket.
+
+     ```hcl
+      module "terraform_state_backend" {
+        source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+        namespace     = "eg"
+        stage         = "test"
+        name          = "terraform"
+        attributes    = ["state"]
+        region        = "us-east-1"
+        terraform_backend_config_file_path = "."
+        terraform_backend_config_file_name = "backend.tf"
+        force_destroy                      = false
+
+        s3_replication_enabled = true
+        s3_replica_bucket_arn  = "arn:aws:s3::eg-test-terraform-tfstate-replica"
+      }
+     ```
 
 include:
   - "docs/targets.md"
