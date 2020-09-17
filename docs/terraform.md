@@ -1,3 +1,4 @@
+<!-- markdownlint-disable -->
 ## Requirements
 
 | Name | Version |
@@ -69,3 +70,4 @@
 | s3\_bucket\_id | S3 bucket ID |
 | terraform\_backend\_config | Rendered Terraform backend config file |
 
+<!-- markdownlint-restore -->
