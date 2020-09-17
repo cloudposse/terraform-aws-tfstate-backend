@@ -213,7 +213,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = var.enable_dynamodb || var.enable_server_side_encryption ? 0 : 1
+  count          = var.enable_dynamodb && var.enable_server_side_encryption ? 0 : 1
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
