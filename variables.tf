@@ -139,12 +139,6 @@ variable "enable_public_access_block" {
   default     = true
 }
 
-variable "enable_dynamodb" {
-  type        = bool
-  description = "Enable DynamoDB Locking"
-  default     = true
-}
-
 variable "block_public_acls" {
   type        = bool
   description = "Whether Amazon S3 should block public ACLs for this bucket"
