@@ -263,6 +263,10 @@ data "template_file" "terraform_backend_config" {
     profile              = var.profile
     terraform_version    = var.terraform_version
     terraform_state_file = var.terraform_state_file
+    namespace            = var.namespace
+    stage                = var.stage
+    environment          = var.environment
+    name                 = var.name
   }
 }
 
