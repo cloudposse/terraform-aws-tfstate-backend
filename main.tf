@@ -14,7 +14,7 @@ locals {
 
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
-  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
+  bucket_name = substr(var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id, 0, 63)
 }
 
 module "base_label" {
@@ -123,7 +123,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 }
 
 resource "aws_s3_bucket" "default" {
-  bucket        = substr(local.bucket_name, 0, 63)
+  bucket        = local.bucket_name
   acl           = var.acl
   force_destroy = var.force_destroy
   policy        = local.policy
