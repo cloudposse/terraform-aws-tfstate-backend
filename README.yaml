@@ -73,7 +73,6 @@ usage: |-
         stage      = "test"
         name       = "terraform"
         attributes = ["state"]
-        region     = "us-east-1"
 
         terraform_backend_config_file_path = "."
         terraform_backend_config_file_name = "backend.tf"
@@ -160,7 +159,6 @@ usage: |-
         stage      = "test"
         name       = "terraform"
         attributes = ["state"]
-        region     = "us-east-1"
 
         terraform_backend_config_file_path = "."
         terraform_backend_config_file_name = "backend.tf"
