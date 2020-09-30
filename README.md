@@ -99,6 +99,7 @@ Follow this procedure just once to create your deployment.
       stage      = "test"
       name       = "terraform"
       attributes = ["state"]
+      region     = "us-east-1"
 
       terraform_backend_config_file_path = "."
       terraform_backend_config_file_name = "backend.tf"
@@ -185,6 +186,7 @@ To enable S3 bucket replication in this module, set `s3_replication_enabled` to 
       stage      = "test"
       name       = "terraform"
       attributes = ["state"]
+      region     = "us-east-1"
 
       terraform_backend_config_file_path = "."
       terraform_backend_config_file_name = "backend.tf"
