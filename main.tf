@@ -18,7 +18,7 @@ locals {
 }
 
 module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
   context = module.this.context
 }
 
@@ -157,7 +157,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 module "dynamodb_table_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.19.2"
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
   context    = module.this.context
   attributes = compact(concat(var.attributes, ["lock"]))
 }
