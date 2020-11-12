@@ -17,24 +17,9 @@ locals {
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
 }
 
-module "base_label" {
-  source              = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
-  namespace           = var.namespace
-  environment         = var.environment
-  stage               = var.stage
-  name                = var.name
-  delimiter           = var.delimiter
-  attributes          = var.attributes
-  tags                = var.tags
-  additional_tag_map  = var.additional_tag_map
-  context             = var.context
-  label_order         = var.label_order
-  regex_replace_chars = var.regex_replace_chars
-}
-
 module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
-  context = module.base_label.context
+  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
+  context = module.this.context
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -147,7 +132,7 @@ resource "aws_s3_bucket" "default" {
       role = aws_iam_role.replication[0].arn
 
       rules {
-        id     = module.base_label.id
+        id     = module.this.id
         prefix = ""
         status = "Enabled"
 
@@ -172,8 +157,8 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 module "dynamodb_table_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.17.0"
-  context    = module.base_label.context
+  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
+  context    = module.this.context
   attributes = compact(concat(var.attributes, ["lock"]))
 }
 
