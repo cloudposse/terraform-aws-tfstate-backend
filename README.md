@@ -120,7 +120,7 @@ Follow this procedure just once to create your deployment.
 1. `terraform apply -auto-approve`. This creates the state bucket and DynamoDB locking
    table, along with anything else you have defined in your `*.tf` file(s). At
    this point, the Terraform state is still stored locally.
-   
+
    Module `terraform_state_backend` also creates a new `backend.tf` file
    that defines the S3 state backend. For example:
    ```hcl
@@ -219,8 +219,7 @@ Available targets:
 |------|---------|
 | terraform | >= 0.12.0 |
 | aws | >= 2.0 |
-| local | >= 1.2 |
-| null | >= 2.0 |
+| local | >= 1.3 |
 | template | >= 2.0 |
 
 ## Providers
@@ -228,7 +227,7 @@ Available targets:
 | Name | Version |
 |------|---------|
 | aws | >= 2.0 |
-| local | >= 1.2 |
+| local | >= 1.3 |
 | template | >= 2.0 |
 
 ## Inputs
