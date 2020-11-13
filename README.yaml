@@ -16,6 +16,20 @@ license: "APACHE2"
 # Canonical GitHub repo
 github_repo: cloudposse/terraform-aws-tfstate-backend
 
+# Tags of this project
+tags:
+  - aws
+  - terraform
+  - terraform-modules
+  - terraform-state
+  - terraform-state-backend
+  - remote-state
+  - s3
+
+# Categories of this project
+categories:
+  - terraform-modules/state
+  - terraform-modules/state-backend
 
 # Badges to display
 badges:
@@ -55,9 +69,9 @@ description: |-
 
 # How to use this project
 usage: |-
-  
+
   ### Create
-  
+
   Follow this procedure just once to create your deployment.
 
   1. Add the `terraform_state_backend` module to your `main.tf` file. The
@@ -94,7 +108,7 @@ usage: |-
   1. `terraform apply -auto-approve`. This creates the state bucket and DynamoDB locking
      table, along with anything else you have defined in your `*.tf` file(s). At
      this point, the Terraform state is still stored locally.
-     
+
      Module `terraform_state_backend` also creates a new `backend.tf` file
      that defines the S3 state backend. For example:
      ```hcl
@@ -116,14 +130,14 @@ usage: |-
      Terraform state to the S3 backend, and it does so per `-auto-approve`. Now the
      state is stored in the S3 bucket, and the DynamoDB table will be used to lock
      the state to prevent concurrent modification.
-  
+
   This concludes the one-time preparation. Now you can extend and modify your
   Terraform configuration as usual.
 
   ### Destroy
-  
+
   Follow this procedure to delete your deployment.
-  
+
   1. In `main.tf`, change the `terraform_state_backend` module arguments as
      follows:
      ```hcl
@@ -143,13 +157,13 @@ usage: |-
   1. `terraform destroy`. This deletes all resources in your deployment.
   1. Examine local state file `terraform.tfstate` to verify that it contains
      no resources.
-  
+
   <br/>
 
   ![s3-bucket-with-terraform-state](images/s3-bucket-with-terraform-state.png)
 
   ### Bucket Replication (Disaster Recovery)
-  
+
   To enable S3 bucket replication in this module, set `s3_replication_enabled` to `true` and populate `s3_replica_bucket_arn` with the ARN of an existing bucket.
 
      ```hcl

@@ -5,8 +5,7 @@
 |------|---------|
 | terraform | >= 0.12.0 |
 | aws | >= 2.0 |
-| local | >= 1.2 |
-| null | >= 2.0 |
+| local | >= 1.3 |
 | template | >= 2.0 |
 
 ## Providers
@@ -14,7 +13,7 @@
 | Name | Version |
 |------|---------|
 | aws | >= 2.0 |
-| local | >= 1.2 |
+| local | >= 1.3 |
 | template | >= 2.0 |
 
 ## Inputs

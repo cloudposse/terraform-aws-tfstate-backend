@@ -14,12 +14,7 @@ locals {
 
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
-  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
-}
-
-module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
-  context = module.this.context
+  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -36,7 +31,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     }
 
     actions = [
-      "s3:PutObject",
+      "s3:PutObject"
     ]
 
     resources = [
@@ -49,7 +44,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 
       values = [
         "AES256",
-        "aws:kms",
+        "aws:kms"
       ]
     }
   }
@@ -65,7 +60,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     }
 
     actions = [
-      "s3:PutObject",
+      "s3:PutObject"
     ]
 
     resources = [
@@ -77,7 +72,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
       variable = "s3:x-amz-server-side-encryption"
 
       values = [
-        "true",
+        "true"
       ]
     }
   }
@@ -144,7 +139,7 @@ resource "aws_s3_bucket" "default" {
     }
   }
 
-  tags = module.s3_bucket_label.tags
+  tags = module.this.tags
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
@@ -158,8 +153,8 @@ resource "aws_s3_bucket_public_access_block" "default" {
 
 module "dynamodb_table_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.21.0"
-  context    = module.this.context
   attributes = compact(concat(var.attributes, ["lock"]))
+  context    = module.this.context
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
