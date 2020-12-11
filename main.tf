@@ -14,27 +14,7 @@ locals {
 
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
-  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.s3_bucket_label.id
-}
-
-module "base_label" {
-  source              = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.22.0"
-  namespace           = var.namespace
-  environment         = var.environment
-  stage               = var.stage
-  name                = var.name
-  delimiter           = var.delimiter
-  attributes          = var.attributes
-  tags                = var.tags
-  additional_tag_map  = var.additional_tag_map
-  context             = var.context
-  label_order         = var.label_order
-  regex_replace_chars = var.regex_replace_chars
-}
-
-module "s3_bucket_label" {
-  source  = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.22.0"
-  context = module.base_label.context
+  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -51,7 +31,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     }
 
     actions = [
-      "s3:PutObject",
+      "s3:PutObject"
     ]
 
     resources = [
@@ -64,7 +44,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 
       values = [
         "AES256",
-        "aws:kms",
+        "aws:kms"
       ]
     }
   }
@@ -80,7 +60,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
     }
 
     actions = [
-      "s3:PutObject",
+      "s3:PutObject"
     ]
 
     resources = [
@@ -92,7 +72,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
       variable = "s3:x-amz-server-side-encryption"
 
       values = [
-        "true",
+        "true"
       ]
     }
   }
@@ -141,7 +121,25 @@ resource "aws_s3_bucket" "default" {
     }
   }
 
-  tags = module.s3_bucket_label.tags
+  dynamic "replication_configuration" {
+    for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
+    content {
+      role = aws_iam_role.replication[0].arn
+
+      rules {
+        id     = module.this.id
+        prefix = ""
+        status = "Enabled"
+
+        destination {
+          bucket        = var.s3_replica_bucket_arn
+          storage_class = "STANDARD"
+        }
+      }
+    }
+  }
+
+  tags = module.this.tags
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
@@ -157,6 +155,7 @@ module "dynamodb_table_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.22.0"
   context    = module.base_label.context
   attributes = compact(concat(var.attributes, ["lock"]))
+  context    = module.this.context
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
@@ -245,6 +244,10 @@ data "template_file" "terraform_backend_config" {
     profile              = var.profile
     terraform_version    = var.terraform_version
     terraform_state_file = var.terraform_state_file
+    namespace            = var.namespace
+    stage                = var.stage
+    environment          = var.environment
+    name                 = var.name
   }
 }
 

@@ -94,12 +94,12 @@ Follow this procedure just once to create your deployment.
     # be bootstrapped according to the simple yet essential procedure in
     # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
     module "terraform_state_backend" {
-      source        = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
-      namespace     = "eg"
-      stage         = "test"
-      name          = "terraform"
-      attributes    = ["state"]
-      region        = "us-east-1"
+      source     = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+      namespace  = "eg"
+      stage      = "test"
+      name       = "terraform"
+      attributes = ["state"]
+
       terraform_backend_config_file_path = "."
       terraform_backend_config_file_name = "backend.tf"
       force_destroy                      = false
@@ -120,7 +120,7 @@ Follow this procedure just once to create your deployment.
 1. `terraform apply -auto-approve`. This creates the state bucket and DynamoDB locking
    table, along with anything else you have defined in your `*.tf` file(s). At
    this point, the Terraform state is still stored locally.
-   
+
    Module `terraform_state_backend` also creates a new `backend.tf` file
    that defines the S3 state backend. For example:
    ```hcl
@@ -174,6 +174,27 @@ Follow this procedure to delete your deployment.
 
 ![s3-bucket-with-terraform-state](images/s3-bucket-with-terraform-state.png)
 
+### Bucket Replication (Disaster Recovery)
+
+To enable S3 bucket replication in this module, set `s3_replication_enabled` to `true` and populate `s3_replica_bucket_arn` with the ARN of an existing bucket.
+
+   ```hcl
+    module "terraform_state_backend" {
+      source     = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+      namespace  = "eg"
+      stage      = "test"
+      name       = "terraform"
+      attributes = ["state"]
+
+      terraform_backend_config_file_path = "."
+      terraform_backend_config_file_name = "backend.tf"
+      force_destroy                      = false
+
+      s3_replication_enabled = true
+      s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
+    }
+   ```
+
 
 
 
@@ -198,8 +219,7 @@ Available targets:
 |------|---------|
 | terraform | >= 0.12.0 |
 | aws | >= 2.0 |
-| local | >= 1.2 |
-| null | >= 2.0 |
+| local | >= 1.3 |
 | template | >= 2.0 |
 
 ## Providers
@@ -207,7 +227,7 @@ Available targets:
 | Name | Version |
 |------|---------|
 | aws | >= 2.0 |
-| local | >= 1.2 |
+| local | >= 1.3 |
 | template | >= 2.0 |
 
 ## Inputs
@@ -215,32 +235,36 @@ Available targets:
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | acl | The canned ACL to apply to the S3 bucket | `string` | `"private"` | no |
-| additional\_tag\_map | Additional tags for appending to each tag map | `map(string)` | `{}` | no |
+| additional\_tag\_map | Additional tags for appending to tags\_as\_list\_of\_maps. Not added to `tags`. | `map(string)` | `{}` | no |
 | arn\_format | ARN format to be used. May be changed to support deployment in GovCloud/China regions. | `string` | `"arn:aws"` | no |
-| attributes | Additional attributes (e.g. `state`) | `list(string)` | <pre>[<br>  "state"<br>]</pre> | no |
+| attributes | Additional attributes (e.g. `1`) | `list(string)` | `[]` | no |
 | billing\_mode | DynamoDB billing mode | `string` | `"PROVISIONED"` | no |
 | block\_public\_acls | Whether Amazon S3 should block public ACLs for this bucket | `bool` | `true` | no |
 | block\_public\_policy | Whether Amazon S3 should block public bucket policies for this bucket | `bool` | `true` | no |
-| context | Default context to use for passing state between label invocations | <pre>object({<br>    namespace           = string<br>    environment         = string<br>    stage               = string<br>    name                = string<br>    enabled             = bool<br>    delimiter           = string<br>    attributes          = list(string)<br>    label_order         = list(string)<br>    tags                = map(string)<br>    additional_tag_map  = map(string)<br>    regex_replace_chars = string<br>  })</pre> | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": "",<br>  "enabled": true,<br>  "environment": "",<br>  "label_order": [],<br>  "name": "",<br>  "namespace": "",<br>  "regex_replace_chars": "",<br>  "stage": "",<br>  "tags": {}<br>}</pre> | no |
-| delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes` | `string` | `"-"` | no |
+| context | Single object for setting entire context at once.<br>See description of individual variables for details.<br>Leave string and numeric variables as `null` to use default value.<br>Individual variable settings (non-null) override settings in context object,<br>except for attributes, tags, and additional\_tag\_map, which are merged. | <pre>object({<br>    enabled             = bool<br>    namespace           = string<br>    environment         = string<br>    stage               = string<br>    name                = string<br>    delimiter           = string<br>    attributes          = list(string)<br>    tags                = map(string)<br>    additional_tag_map  = map(string)<br>    regex_replace_chars = string<br>    label_order         = list(string)<br>    id_length_limit     = number<br>  })</pre> | <pre>{<br>  "additional_tag_map": {},<br>  "attributes": [],<br>  "delimiter": null,<br>  "enabled": true,<br>  "environment": null,<br>  "id_length_limit": null,<br>  "label_order": [],<br>  "name": null,<br>  "namespace": null,<br>  "regex_replace_chars": null,<br>  "stage": null,<br>  "tags": {}<br>}</pre> | no |
+| delimiter | Delimiter to be used between `namespace`, `environment`, `stage`, `name` and `attributes`.<br>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
 | enable\_point\_in\_time\_recovery | Enable DynamoDB point-in-time recovery | `bool` | `false` | no |
 | enable\_public\_access\_block | Enable Bucket Public Access Block | `bool` | `true` | no |
 | enable\_server\_side\_encryption | Enable DynamoDB server-side encryption | `bool` | `true` | no |
-| environment | Environment, e.g. 'prod', 'staging', 'dev', 'pre-prod', 'UAT' | `string` | `""` | no |
+| enabled | Set to false to prevent the module from creating any resources | `bool` | `null` | no |
+| environment | Environment, e.g. 'uw2', 'us-west-2', OR 'prod', 'staging', 'dev', 'UAT' | `string` | `null` | no |
 | force\_destroy | A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable | `bool` | `false` | no |
+| id\_length\_limit | Limit `id` to this many characters.<br>Set to `0` for unlimited length.<br>Set to `null` for default, which is `0`.<br>Does not affect `id_full`. | `number` | `null` | no |
 | ignore\_public\_acls | Whether Amazon S3 should ignore public ACLs for this bucket | `bool` | `true` | no |
-| label\_order | The naming order of the id output and Name tag | `list(string)` | `[]` | no |
+| label\_order | The naming order of the id output and Name tag.<br>Defaults to ["namespace", "environment", "stage", "name", "attributes"].<br>You can omit any of the 5 elements, but at least one must be present. | `list(string)` | `null` | no |
 | mfa\_delete | A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 ) | `bool` | `false` | no |
-| name | Solution name, e.g. 'app' or 'jenkins' | `string` | `"terraform"` | no |
-| namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `""` | no |
+| name | Solution name, e.g. 'app' or 'jenkins' | `string` | `null` | no |
+| namespace | Namespace, which could be your organization name or abbreviation, e.g. 'eg' or 'cp' | `string` | `null` | no |
 | prevent\_unencrypted\_uploads | Prevent uploads of unencrypted objects to S3 | `bool` | `true` | no |
 | profile | AWS profile name as set in the shared credentials file | `string` | `""` | no |
 | read\_capacity | DynamoDB read capacity units | `number` | `5` | no |
-| regex\_replace\_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`. By default only hyphens, letters and digits are allowed, all other chars are removed | `string` | `"/[^a-zA-Z0-9-]/"` | no |
+| regex\_replace\_chars | Regex to replace chars with empty string in `namespace`, `environment`, `stage` and `name`.<br>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | restrict\_public\_buckets | Whether Amazon S3 should restrict public bucket policies for this bucket | `bool` | `true` | no |
 | role\_arn | The role to be assumed | `string` | `""` | no |
 | s3\_bucket\_name | S3 bucket name. If not provided, the name will be generated by the label module in the format namespace-stage-name | `string` | `""` | no |
-| stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | `string` | `""` | no |
+| s3\_replica\_bucket\_arn | The ARN of the S3 replica bucket (destination) | `string` | `""` | no |
+| s3\_replication\_enabled | Set this to true and specify `s3_replica_bucket_arn` to enable replication | `bool` | `false` | no |
+| stage | Stage, e.g. 'prod', 'staging', 'dev', OR 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
 | tags | Additional tags (e.g. `map('BusinessUnit','XYZ')` | `map(string)` | `{}` | no |
 | terraform\_backend\_config\_file\_name | Name of terraform backend config file | `string` | `"terraform.tf"` | no |
 | terraform\_backend\_config\_file\_path | Directory for the terraform backend config file, usually `.`. The default is to create no file. | `string` | `""` | no |
