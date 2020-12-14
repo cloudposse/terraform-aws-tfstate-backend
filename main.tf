@@ -155,7 +155,6 @@ module "dynamodb_table_label" {
   source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.22.0"
   context    = module.base_label.context
   attributes = compact(concat(var.attributes, ["lock"]))
-  context    = module.this.context
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
