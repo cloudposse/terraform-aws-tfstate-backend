@@ -152,7 +152,8 @@ resource "aws_s3_bucket_public_access_block" "default" {
 }
 
 module "dynamodb_table_label" {
-  source     = "git::https://github.com/cloudposse/terraform-null-label.git?ref=tags/0.22.0"
+  source     = "cloudposse/label/null"
+  version    = "0.22.0"
   attributes = compact(concat(var.attributes, ["lock"]))
   context    = module.this.context
 }
