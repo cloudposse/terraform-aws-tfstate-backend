@@ -103,7 +103,9 @@ Follow this procedure just once to create your deployment.
     # be bootstrapped according to the simple yet essential procedure in
     # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
     module "terraform_state_backend" {
-      source     = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+      source = "cloudposse/tfstate-backend/aws"
+      # Cloud Posse recommends pinning every module to a specific version
+      # version     = "x.x.x"
       namespace  = "eg"
       stage      = "test"
       name       = "terraform"
@@ -189,7 +191,9 @@ To enable S3 bucket replication in this module, set `s3_replication_enabled` to 
 
    ```hcl
     module "terraform_state_backend" {
-      source     = "git::https://github.com/cloudposse/terraform-aws-tfstate-backend.git?ref=master"
+      source = "cloudposse/tfstate-backend/aws"
+      # Cloud Posse recommends pinning every module to a specific version
+      # version     = "x.x.x"
       namespace  = "eg"
       stage      = "test"
       name       = "terraform"
@@ -385,7 +389,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyright
 
-Copyright © 2017-2020 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2021 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
