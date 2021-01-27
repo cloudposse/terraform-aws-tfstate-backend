@@ -40,7 +40,7 @@ variable "mfa_delete" {
 variable "enable_point_in_time_recovery" {
   type        = bool
   description = "Enable DynamoDB point-in-time recovery"
-  default     = false
+  default     = true
 }
 
 variable "enable_server_side_encryption" {
@@ -142,4 +142,13 @@ variable "s3_replica_bucket_arn" {
   type        = string
   default     = ""
   description = "The ARN of the S3 replica bucket (destination)"
+}
+
+variable "logging" {
+  type = object({
+    bucket_name = string
+    prefix      = string
+  })
+  default     = null
+  description = "Bucket access logging configuration."
 }

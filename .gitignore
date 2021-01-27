@@ -1,6 +1,7 @@
 # Compiled files
 *.tfstate
 *.tfstate.backup
+**/.terraform.lock.hcl
 
 # Module directory
 .terraform/

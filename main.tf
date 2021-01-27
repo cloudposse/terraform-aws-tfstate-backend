@@ -103,6 +103,8 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 }
 
 resource "aws_s3_bucket" "default" {
+  #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
+  #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
   acl           = var.acl
   force_destroy = var.force_destroy
@@ -136,6 +138,14 @@ resource "aws_s3_bucket" "default" {
           storage_class = "STANDARD"
         }
       }
+    }
+  }
+
+  dynamic "logging" {
+    for_each = var.logging == null ? [] : [1]
+    content {
+      target_bucket = var.logging["bucket_name"]
+      target_prefix = var.logging["prefix"]
     }
   }
 
