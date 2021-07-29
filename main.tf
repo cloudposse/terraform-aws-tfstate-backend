@@ -245,7 +245,7 @@ data "template_file" "terraform_backend_config" {
 
   vars = {
     region = data.aws_region.current.name
-    bucket = aws_s3_bucket.default.id
+    bucket = join("", aws_s3_bucket.default.*.id)
 
     dynamodb_table = element(
       coalescelist(
