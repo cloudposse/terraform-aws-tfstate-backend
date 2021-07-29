@@ -161,6 +161,6 @@ variable "bucket_enabled" {
 
 variable "dynamodb_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Whether to create the dynamodb table."
 }
