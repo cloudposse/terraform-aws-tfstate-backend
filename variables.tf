@@ -152,3 +152,15 @@ variable "logging" {
   default     = null
   description = "Bucket access logging configuration."
 }
+
+variable "bucket_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether to create the s3 bucket."
+}
+
+variable "dynamodb_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to create the dynamodb table."
+}
