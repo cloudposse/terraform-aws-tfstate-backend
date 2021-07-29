@@ -16,8 +16,8 @@ output "s3_bucket_arn" {
 output "dynamodb_table_name" {
   value = element(
     coalescelist(
-      join("", aws_dynamodb_table.with_server_side_encryption.*.name),
-      join("", aws_dynamodb_table.without_server_side_encryption.*.name),
+      aws_dynamodb_table.with_server_side_encryption.*.name,
+      aws_dynamodb_table.without_server_side_encryption.*.name,
       [""]
     ),
     0
@@ -28,8 +28,8 @@ output "dynamodb_table_name" {
 output "dynamodb_table_id" {
   value = element(
     coalescelist(
-      join("", aws_dynamodb_table.with_server_side_encryption.*.id),
-      join("", aws_dynamodb_table.without_server_side_encryption.*.id),
+      aws_dynamodb_table.with_server_side_encryption.*.id,
+      aws_dynamodb_table.without_server_side_encryption.*.id,
       [""]
     ),
     0
@@ -40,8 +40,8 @@ output "dynamodb_table_id" {
 output "dynamodb_table_arn" {
   value = element(
     coalescelist(
-      join("", aws_dynamodb_table.with_server_side_encryption.*.arn),
-      join("", aws_dynamodb_table.without_server_side_encryption.*.arn),
+      aws_dynamodb_table.with_server_side_encryption.*.arn,
+      aws_dynamodb_table.without_server_side_encryption.*.arn,
       [""]
     ),
     0
