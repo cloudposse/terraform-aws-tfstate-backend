@@ -1,6 +1,6 @@
 locals {
   enabled = module.this.enabled
-  
+
   bucket_enabled   = local.enabled && var.bucket_enabled
   dynamodb_enabled = local.enabled && var.dynamodb_enabled
 
