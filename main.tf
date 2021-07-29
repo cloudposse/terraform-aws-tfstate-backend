@@ -234,10 +234,9 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 
 data "aws_region" "current" {}
 
-data "template_file" "terraform_backend_config" {
-  template = file(local.terraform_backend_config_template_file)
-
-  vars = {
+resource "local_file" "terraform_backend_config" {
+  count           = var.terraform_backend_config_file_path != "" ? 1 : 0
+  content         = templatefile(local.terraform_backend_config_template_file, {
     region = data.aws_region.current.name
     bucket = aws_s3_bucket.default.id
 
@@ -259,11 +258,7 @@ data "template_file" "terraform_backend_config" {
     environment          = var.environment
     name                 = var.name
   }
-}
-
-resource "local_file" "terraform_backend_config" {
-  count           = var.terraform_backend_config_file_path != "" ? 1 : 0
-  content         = data.template_file.terraform_backend_config.rendered
+  })
   filename        = local.terraform_backend_config_file
   file_permission = "0644"
 }
