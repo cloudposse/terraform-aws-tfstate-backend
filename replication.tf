@@ -40,7 +40,7 @@ data "aws_iam_policy_document" "replication" {
       "s3:ListBucket"
     ]
     resources = [
-      "${join("", aws_s3_bucket.default.*.arn)}",
+      join("", aws_s3_bucket.default.*.arn),
       "${join("", aws_s3_bucket.default.*.arn)}/*"
     ]
   }
