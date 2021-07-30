@@ -39,7 +39,7 @@ locals {
     name                 = var.name
   })
 
-  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id  
+  bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
