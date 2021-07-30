@@ -254,7 +254,8 @@ data "template_file" "terraform_backend_config" {
     dynamodb_table = element(
       coalescelist(
         aws_dynamodb_table.with_server_side_encryption.*.name,
-        aws_dynamodb_table.without_server_side_encryption.*.name
+        aws_dynamodb_table.without_server_side_encryption.*.name,
+        [""]
       ),
       0
     )
