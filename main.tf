@@ -239,7 +239,7 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 data "aws_region" "current" {}
 
 resource "local_file" "terraform_backend_config" {
-  count = local.enabeld && var.terraform_backend_config_file_path != "" ? 1 : 0
+  count = local.enabled && var.terraform_backend_config_file_path != "" ? 1 : 0
   content = templatefile(local.terraform_backend_config_template_file, {
     region = data.aws_region.current.name
     bucket = join("", aws_s3_bucket.default.*.id)
