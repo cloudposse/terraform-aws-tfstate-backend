@@ -1,5 +1,7 @@
 locals {
-  prevent_unencrypted_uploads = var.prevent_unencrypted_uploads && var.enable_server_side_encryption ? true : false
+  enabled = module.this.enabled
+
+  prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads && var.enable_server_side_encryption
 
   policy = local.prevent_unencrypted_uploads ? join(
     "",
@@ -103,6 +105,8 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 }
 
 resource "aws_s3_bucket" "default" {
+  count = local.enabled ? 1 : 0
+
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
@@ -153,8 +157,8 @@ resource "aws_s3_bucket" "default" {
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
-  count                   = var.enable_public_access_block ? 1 : 0
-  bucket                  = aws_s3_bucket.default.id
+  count                   = local.enabled && var.enable_public_access_block ? 1 : 0
+  bucket                  = join("", aws_s3_bucket.default.*.id)
   block_public_acls       = var.block_public_acls
   ignore_public_acls      = var.ignore_public_acls
   block_public_policy     = var.block_public_policy
@@ -169,7 +173,7 @@ module "dynamodb_table_label" {
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
-  count          = var.enable_server_side_encryption ? 1 : 0
+  count          = local.enabled && var.enable_server_side_encryption ? 1 : 0
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
@@ -203,7 +207,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = var.enable_server_side_encryption ? 0 : 1
+  count          = local.enabled && ! var.enable_server_side_encryption ? 1 : 0
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
@@ -238,7 +242,7 @@ resource "local_file" "terraform_backend_config" {
   count           = var.terraform_backend_config_file_path != "" ? 1 : 0
   content         = templatefile(local.terraform_backend_config_template_file, {
     region = data.aws_region.current.name
-    bucket = aws_s3_bucket.default.id
+    bucket = join("", aws_s3_bucket.default.*.id)
 
     dynamodb_table = element(
       coalescelist(
@@ -257,7 +261,6 @@ resource "local_file" "terraform_backend_config" {
     stage                = var.stage
     environment          = var.environment
     name                 = var.name
-  }
   })
   filename        = local.terraform_backend_config_file
   file_permission = "0644"

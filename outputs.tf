@@ -1,15 +1,15 @@
 output "s3_bucket_domain_name" {
-  value       = aws_s3_bucket.default.bucket_domain_name
+  value       = join("", aws_s3_bucket.default.*.bucket_domain_name)
   description = "S3 bucket domain name"
 }
 
 output "s3_bucket_id" {
-  value       = aws_s3_bucket.default.id
+  value       = join("", aws_s3_bucket.default.*.id)
   description = "S3 bucket ID"
 }
 
 output "s3_bucket_arn" {
-  value       = aws_s3_bucket.default.arn
+  value       = join("", aws_s3_bucket.default.*.arn)
   description = "S3 bucket ARN"
 }
 
@@ -50,6 +50,6 @@ output "dynamodb_table_arn" {
 }
 
 output "terraform_backend_config" {
-  value       = data.template_file.terraform_backend_config.rendered
+  value       = join("", data.template_file.terraform_backend_config.*.rendered)
   description = "Rendered Terraform backend config file"
 }
