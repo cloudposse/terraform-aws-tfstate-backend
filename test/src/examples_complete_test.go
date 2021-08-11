@@ -44,7 +44,7 @@ func TestExamplesComplete(t *testing.T) {
 
 	// Run `terraform output` to get the value of an output variable
 	dynamodbTableName := terraform.Output(t, terraformOptions, "dynamodb_table_name")
-	expectedDynamodbTableName := "eg-test-terraform-tfstate-backend-lock-" + randId
+	expectedDynamodbTableName := "eg-test-terraform-tfstate-backend-" + randId + "-lock"
 	// Verify we're getting back the outputs we expect
 	assert.Equal(t, expectedDynamodbTableName, dynamodbTableName)
 }
