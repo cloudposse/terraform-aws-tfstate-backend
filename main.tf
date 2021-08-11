@@ -1,6 +1,9 @@
 locals {
   enabled = module.this.enabled
 
+  bucket_enabled   = local.enabled && var.bucket_enabled
+  dynamodb_enabled = local.enabled && var.dynamodb_enabled
+
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads && var.enable_server_side_encryption
 
   policy = local.prevent_unencrypted_uploads ? join(
@@ -128,7 +131,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 }
 
 resource "aws_s3_bucket" "default" {
-  count = local.enabled ? 1 : 0
+  count = local.bucket_enabled ? 1 : 0
 
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
@@ -180,7 +183,7 @@ resource "aws_s3_bucket" "default" {
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
-  count                   = local.enabled && var.enable_public_access_block ? 1 : 0
+  count                   = local.bucket_enabled && var.enable_public_access_block ? 1 : 0
   bucket                  = join("", aws_s3_bucket.default.*.id)
   block_public_acls       = var.block_public_acls
   ignore_public_acls      = var.ignore_public_acls
@@ -193,10 +196,11 @@ module "dynamodb_table_label" {
   version    = "0.22.0"
   attributes = compact(concat(var.attributes, ["lock"]))
   context    = module.this.context
+  enabled    = local.dynamodb_enabled
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
-  count          = local.enabled && var.enable_server_side_encryption ? 1 : 0
+  count          = local.dynamodb_enabled && var.enable_server_side_encryption ? 1 : 0
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
@@ -230,7 +234,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = local.enabled && ! var.enable_server_side_encryption ? 1 : 0
+  count          = local.dynamodb_enabled && ! var.enable_server_side_encryption ? 1 : 0
   name           = module.dynamodb_table_label.id
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
