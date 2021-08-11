@@ -7,5 +7,8 @@ module "tfstate_backend" {
 
   force_destroy = true
 
+  bucket_enabled   = var.bucket_enabled
+  dynamodb_enabled = var.dynamodb_enabled
+
   context = module.this.context
 }
