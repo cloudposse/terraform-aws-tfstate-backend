@@ -19,6 +19,29 @@ locals {
 
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
+  terraform_backend_config_content = templatefile(local.terraform_backend_config_template_file, {
+    region = data.aws_region.current.name
+    bucket = join("", aws_s3_bucket.default.*.id)
+
+    dynamodb_table = element(
+      coalescelist(
+        aws_dynamodb_table.with_server_side_encryption.*.name,
+        aws_dynamodb_table.without_server_side_encryption.*.name
+      ),
+      0
+    )
+
+    encrypt              = var.enable_server_side_encryption ? "true" : "false"
+    role_arn             = var.role_arn
+    profile              = var.profile
+    terraform_version    = var.terraform_version
+    terraform_state_file = var.terraform_state_file
+    namespace            = var.namespace
+    stage                = var.stage
+    environment          = var.environment
+    name                 = var.name
+  })
+
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
 }
 
@@ -242,39 +265,9 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 
 data "aws_region" "current" {}
 
-data "template_file" "terraform_backend_config" {
-  count = local.enabled ? 1 : 0
-
-  template = file(local.terraform_backend_config_template_file)
-
-  vars = {
-    region = data.aws_region.current.name
-    bucket = join("", aws_s3_bucket.default.*.id)
-
-    dynamodb_table = element(
-      coalescelist(
-        aws_dynamodb_table.with_server_side_encryption.*.name,
-        aws_dynamodb_table.without_server_side_encryption.*.name,
-        [""]
-      ),
-      0
-    )
-
-    encrypt              = var.enable_server_side_encryption ? "true" : "false"
-    role_arn             = var.role_arn
-    profile              = var.profile
-    terraform_version    = var.terraform_version
-    terraform_state_file = var.terraform_state_file
-    namespace            = var.namespace
-    stage                = var.stage
-    environment          = var.environment
-    name                 = var.name
-  }
-}
-
 resource "local_file" "terraform_backend_config" {
   count           = local.enabled && var.terraform_backend_config_file_path != "" ? 1 : 0
-  content         = join("", data.template_file.terraform_backend_config.*.rendered)
+  content         = local.terraform_backend_config_content
   filename        = local.terraform_backend_config_file
   file_permission = "0644"
 }
