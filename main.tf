@@ -194,14 +194,6 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
     enabled = var.enable_point_in_time_recovery
   }
 
-  lifecycle {
-    ignore_changes = [
-      billing_mode,
-      read_capacity,
-      write_capacity,
-    ]
-  }
-
   attribute {
     name = "LockID"
     type = "S"
@@ -222,14 +214,6 @@ resource "aws_dynamodb_table" "without_server_side_encryption" {
 
   point_in_time_recovery {
     enabled = var.enable_point_in_time_recovery
-  }
-
-  lifecycle {
-    ignore_changes = [
-      billing_mode,
-      read_capacity,
-      write_capacity,
-    ]
   }
 
   attribute {
