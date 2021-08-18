@@ -168,5 +168,5 @@ variable "dynamodb_enabled" {
 variable "dynamodb_table_name" {
   type        = string
   default     = null
-  description = "Override the name of the dynamodb table which defaults to using `module.dynamodb_table_label.id`."
+  description = "Override the name of the DynamoDB table which defaults to using `module.dynamodb_table_label.id`"
 }
