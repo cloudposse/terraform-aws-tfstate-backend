@@ -4,7 +4,7 @@ locals {
   bucket_enabled   = local.enabled && var.bucket_enabled
   dynamodb_enabled = local.enabled && var.dynamodb_enabled
 
-  dynamodb_table_name = coalesce(var.dynamo_table_name, module.dynamodb_table_label.id)
+  dynamodb_table_name = coalesce(var.dynamodb_table_name, module.dynamodb_table_label.id)
 
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads && var.enable_server_side_encryption
 
