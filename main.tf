@@ -4,6 +4,8 @@ locals {
   bucket_enabled   = local.enabled && var.bucket_enabled
   dynamodb_enabled = local.enabled && var.dynamodb_enabled
 
+  dynamodb_table_name = coalesce(var.dynamodb_table_name, module.dynamodb_table_label.id)
+
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads && var.enable_server_side_encryption
 
   policy = local.prevent_unencrypted_uploads ? join(
@@ -201,7 +203,7 @@ module "dynamodb_table_label" {
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
   count          = local.dynamodb_enabled && var.enable_server_side_encryption ? 1 : 0
-  name           = module.dynamodb_table_label.id
+  name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
   write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
@@ -227,7 +229,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
   count          = local.dynamodb_enabled && ! var.enable_server_side_encryption ? 1 : 0
-  name           = module.dynamodb_table_label.id
+  name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
   write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
