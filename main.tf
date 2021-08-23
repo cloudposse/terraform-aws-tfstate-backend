@@ -193,7 +193,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 
 module "dynamodb_table_label" {
   source     = "cloudposse/label/null"
-  version    = "0.24.1"
+  version    = "0.25.0"
   attributes = ["lock"]
   context    = module.this.context
   enabled    = local.dynamodb_enabled
