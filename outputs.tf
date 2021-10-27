@@ -14,7 +14,7 @@ output "s3_bucket_arn" {
 }
 
 output "dynamodb_table_name" {
-  value = local.dynamodb_table_name
+  value       = local.dynamodb_table_name
   description = "DynamoDB table name"
 }
 
