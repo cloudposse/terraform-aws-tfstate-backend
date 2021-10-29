@@ -153,6 +153,12 @@ variable "logging" {
   description = "Bucket access logging configuration."
 }
 
+variable "logging_bucket_enabled" {
+  type        = bool
+  default     = false
+  description = "Whether to create the s3 access log bucket."
+}
+
 variable "bucket_enabled" {
   type        = bool
   default     = true
