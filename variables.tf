@@ -159,6 +159,24 @@ variable "logging_bucket_enabled" {
   description = "Whether to create the s3 access log bucket."
 }
 
+variable "logging_bucket_standard_transition_days" {
+  type        = number
+  default     = 30
+  description = "Whether to create the s3 access log bucket."
+}
+
+variable "logging_bucket_glacier_transition_days" {
+  type        = number
+  default     = 60
+  description = "Whether to create the s3 access log bucket."
+}
+
+variable "logging_bucket_expiration_days" {
+  type        = number
+  default     = 90
+  description = "Whether to create the s3 access log bucket."
+}
+
 variable "bucket_enabled" {
   type        = bool
   default     = true

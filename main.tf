@@ -135,15 +135,15 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 
 module "log_storage" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.37.1"
+  version = "0.26.0"
 
   enabled                  = local.logging_bucket_enabled
   acl                      = "log-delivery-write"
   attributes               = ["logs"]
   access_log_bucket_prefix = try(var.logging["prefix"], "logs/")
-  standard_transition_days = 30
-  glacier_transition_days  = 60
-  expiration_days          = 90
+  standard_transition_days = var.logging_bucket_standard_transition_days
+  glacier_transition_days  = var.logging_bucket_glacier_transition_days
+  expiration_days          = var.logging_bucket_expiration_days
 
   context = module.this.context
 }
