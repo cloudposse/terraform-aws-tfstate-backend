@@ -1,9 +1,8 @@
 locals {
   enabled = module.this.enabled
 
-  bucket_enabled         = local.enabled && var.bucket_enabled
-  dynamodb_enabled       = local.enabled && var.dynamodb_enabled
-  logging_bucket_enabled = local.bucket_enabled && var.logging_bucket_enabled
+  bucket_enabled   = local.enabled && var.bucket_enabled
+  dynamodb_enabled = local.enabled && var.dynamodb_enabled
 
   dynamodb_table_name = coalesce(var.dynamodb_table_name, module.dynamodb_table_label.id)
 
@@ -46,6 +45,10 @@ locals {
   })
 
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
+
+  logging_bucket_enabled      = local.bucket_enabled && var.logging_bucket_enabled
+  logging_bucket_name_default = try(var.logging["bucket_name"], "${local.bucket_name}-logs")
+  logging_prefix_default      = try(var.logging["prefix"], "logs/")
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -138,19 +141,19 @@ module "log_storage" {
   version = "0.26.0"
 
   enabled                  = local.logging_bucket_enabled
+  access_log_bucket_prefix = local.logging_prefix_default
   acl                      = "log-delivery-write"
-  attributes               = ["logs"]
-  access_log_bucket_prefix = try(var.logging["prefix"], "logs/")
-  standard_transition_days = var.logging_bucket_standard_transition_days
-  glacier_transition_days  = var.logging_bucket_glacier_transition_days
   expiration_days          = var.logging_bucket_expiration_days
+  glacier_transition_days  = var.logging_bucket_glacier_transition_days
+  name                     = local.logging_bucket_name_default
+  standard_transition_days = var.logging_bucket_standard_transition_days
 
   context = module.this.context
 }
 
 locals {
-  logging_bucket_name = local.logging_bucket_enabled ? module.log_storage.bucket_id : var.logging["bucket_name"]
-  logging_prefix      = local.logging_bucket_enabled ? module.log_storage.prefix : var.logging["prefix"]
+  logging_bucket_name = local.logging_bucket_enabled ? module.log_storage.bucket_id : local.logging_bucket_default
+  logging_prefix      = local.logging_bucket_enabled ? module.log_storage.prefix : local.logging_prefix_default
 }
 
 resource "aws_s3_bucket" "default" {
@@ -249,7 +252,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = local.dynamodb_enabled && ! var.enable_server_side_encryption ? 1 : 0
+  count          = local.dynamodb_enabled && !var.enable_server_side_encryption ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
