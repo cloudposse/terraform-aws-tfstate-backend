@@ -49,6 +49,8 @@ locals {
   logging_bucket_enabled      = local.bucket_enabled && var.logging_bucket_enabled
   logging_bucket_name_default = try(var.logging["bucket_name"], "${local.bucket_name}-logs")
   logging_prefix_default      = try(var.logging["prefix"], "logs/")
+  logging_bucket_name         = local.logging_bucket_enabled ? module.log_storage.bucket_id : local.logging_bucket_name_default
+  logging_prefix              = local.logging_bucket_enabled ? module.log_storage.prefix : local.logging_prefix_default
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -149,11 +151,6 @@ module "log_storage" {
   standard_transition_days = var.logging_bucket_standard_transition_days
 
   context = module.this.context
-}
-
-locals {
-  logging_bucket_name = local.logging_bucket_enabled ? module.log_storage.bucket_id : local.logging_bucket_name_default
-  logging_prefix      = local.logging_bucket_enabled ? module.log_storage.prefix : local.logging_prefix_default
 }
 
 resource "aws_s3_bucket" "default" {
