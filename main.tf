@@ -45,6 +45,12 @@ locals {
   })
 
   bucket_name = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
+
+  logging_bucket_enabled      = local.bucket_enabled && var.logging_bucket_enabled
+  logging_bucket_name_default = try(var.logging["bucket_name"], "${local.bucket_name}-logs")
+  logging_prefix_default      = try(var.logging["prefix"], "logs/")
+  logging_bucket_name         = local.logging_bucket_enabled ? module.log_storage.bucket_id : local.logging_bucket_name_default
+  logging_prefix              = local.logging_bucket_enabled ? module.log_storage.prefix : local.logging_prefix_default
 }
 
 data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
@@ -132,6 +138,21 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
   }
 }
 
+module "log_storage" {
+  source  = "cloudposse/s3-log-storage/aws"
+  version = "0.26.0"
+
+  enabled                  = local.logging_bucket_enabled
+  access_log_bucket_prefix = local.logging_prefix_default
+  acl                      = "log-delivery-write"
+  expiration_days          = var.logging_bucket_expiration_days
+  glacier_transition_days  = var.logging_bucket_glacier_transition_days
+  name                     = local.logging_bucket_name_default
+  standard_transition_days = var.logging_bucket_standard_transition_days
+
+  context = module.this.context
+}
+
 resource "aws_s3_bucket" "default" {
   count = local.bucket_enabled ? 1 : 0
 
@@ -176,8 +197,8 @@ resource "aws_s3_bucket" "default" {
   dynamic "logging" {
     for_each = var.logging == null ? [] : [1]
     content {
-      target_bucket = var.logging["bucket_name"]
-      target_prefix = var.logging["prefix"]
+      target_bucket = local.logging_bucket_name
+      target_prefix = local.logging_prefix
     }
   }
 
