@@ -14,7 +14,14 @@ output "s3_bucket_arn" {
 }
 
 output "dynamodb_table_name" {
-  value       = local.dynamodb_table_name
+  value = element(
+    coalescelist(
+      aws_dynamodb_table.with_server_side_encryption.*.name,
+      aws_dynamodb_table.without_server_side_encryption.*.name,
+      [""]
+    ),
+    0
+  )
   description = "DynamoDB table name"
 }
 
