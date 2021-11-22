@@ -25,13 +25,7 @@ locals {
     region = data.aws_region.current.name
     bucket = join("", aws_s3_bucket.default.*.id)
 
-    dynamodb_table = local.dynamodb_enabled ? element(
-      coalescelist(
-        aws_dynamodb_table.with_server_side_encryption.*.name,
-        aws_dynamodb_table.without_server_side_encryption.*.name
-      ),
-      0
-    ) : ""
+    dynamodb_table = local.dynamodb_enabled ? aws_dynamodb_table.default[0].name : ""
 
     encrypt              = var.enable_server_side_encryption ? "true" : "false"
     role_arn             = var.role_arn
@@ -222,8 +216,8 @@ module "dynamodb_table_label" {
   enabled    = local.dynamodb_enabled
 }
 
-resource "aws_dynamodb_table" "with_server_side_encryption" {
-  count          = local.dynamodb_enabled && var.enable_server_side_encryption ? 1 : 0
+resource "aws_dynamodb_table" "default" {
+  count          = local.dynamodb_enabled ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
@@ -233,30 +227,8 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
   hash_key = "LockID"
 
   server_side_encryption {
-    enabled = true
+    enabled = var.enable_server_side_encryption ? true : false
   }
-
-  point_in_time_recovery {
-    enabled = var.enable_point_in_time_recovery
-  }
-
-  attribute {
-    name = "LockID"
-    type = "S"
-  }
-
-  tags = module.dynamodb_table_label.tags
-}
-
-resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = local.dynamodb_enabled && ! var.enable_server_side_encryption ? 1 : 0
-  name           = local.dynamodb_table_name
-  billing_mode   = var.billing_mode
-  read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
-  write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
-
-  # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
-  hash_key = "LockID"
 
   point_in_time_recovery {
     enabled = var.enable_point_in_time_recovery
