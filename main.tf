@@ -25,7 +25,7 @@ locals {
     region = data.aws_region.current.name
     bucket = join("", aws_s3_bucket.default.*.id)
 
-    dynamodb_table = local.dynamodb_enabled ? aws_dynamodb_table.default[0].name : ""
+    dynamodb_table = local.dynamodb_enabled ? aws_dynamodb_table.with_server_side_encryption[0].name : ""
 
     encrypt              = var.enable_server_side_encryption ? "true" : "false"
     role_arn             = var.role_arn
@@ -216,7 +216,7 @@ module "dynamodb_table_label" {
   enabled    = local.dynamodb_enabled
 }
 
-resource "aws_dynamodb_table" "default" {
+resource "aws_dynamodb_table" "with_server_side_encryption" {
   count          = local.dynamodb_enabled ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode

@@ -16,7 +16,7 @@ output "s3_bucket_arn" {
 output "dynamodb_table_name" {
   value = element(
     coalescelist(
-      aws_dynamodb_table.default.*.name,
+      aws_dynamodb_table.with_server_side_encryption.*.name,
       [""]
     ),
     0
@@ -27,7 +27,7 @@ output "dynamodb_table_name" {
 output "dynamodb_table_id" {
   value = element(
     coalescelist(
-      aws_dynamodb_table.default.*.id,
+      aws_dynamodb_table.with_server_side_encryption.*.id,
       [""]
     ),
     0
@@ -38,7 +38,7 @@ output "dynamodb_table_id" {
 output "dynamodb_table_arn" {
   value = element(
     coalescelist(
-      aws_dynamodb_table.default.*.arn,
+      aws_dynamodb_table.with_server_side_encryption.*.arn,
       [""]
     ),
     0
