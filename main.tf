@@ -182,7 +182,7 @@ resource "aws_s3_bucket" "default" {
       role = aws_iam_role.replication[0].arn
 
       rules {
-        id     = var.s3_bucket_name != "" ? var.s3_bucket_name : module.this.id
+        id     = local.bucket_name
         prefix = ""
         status = "Enabled"
 
