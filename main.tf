@@ -140,7 +140,7 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
 
 module "log_storage" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.26.0"
+  version = "0.28.0"
 
   enabled                  = local.logging_bucket_enabled
   access_log_bucket_prefix = local.logging_prefix_default
