@@ -264,7 +264,7 @@ Available targets:
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_dynamodb_table_label"></a> [dynamodb\_table\_label](#module\_dynamodb\_table\_label) | cloudposse/label/null | 0.25.0 |
-| <a name="module_log_storage"></a> [log\_storage](#module\_log\_storage) | cloudposse/s3-log-storage/aws | 0.26.0 |
+| <a name="module_log_storage"></a> [log\_storage](#module\_log\_storage) | cloudposse/s3-log-storage/aws | 0.28.0 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
 ## Resources
@@ -441,7 +441,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyright
 
-Copyright © 2017-2021 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2022 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
