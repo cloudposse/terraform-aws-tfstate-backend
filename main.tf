@@ -158,51 +158,113 @@ resource "aws_s3_bucket" "default" {
 
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
-  bucket        = substr(local.bucket_name, 0, 63)
-  acl           = var.acl
+  bucket = substr(local.bucket_name, 0, 63)
+  # acl           = var.acl
   force_destroy = var.force_destroy
-  policy        = local.policy
+  # policy        = local.policy
 
-  versioning {
-    enabled    = true
-    mfa_delete = var.mfa_delete
-  }
+  # versioning {
+  #   enabled    = true
+  #   mfa_delete = var.mfa_delete
+  # }
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  # server_side_encryption_configuration {
+  #   rule {
+  #     apply_server_side_encryption_by_default {
+  #       sse_algorithm = "AES256"
+  #     }
+  #   }
+  # }
 
-  dynamic "replication_configuration" {
-    for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
-    content {
-      role = aws_iam_role.replication[0].arn
+  # dynamic "replication_configuration" {
+  #   for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
+  #   content {
+  #     role = aws_iam_role.replication[0].arn
 
-      rules {
-        id     = module.this.id
-        prefix = ""
-        status = "Enabled"
+  #     rules {
+  #       id     = module.this.id
+  #       prefix = ""
+  #       status = "Enabled"
 
-        destination {
-          bucket        = var.s3_replica_bucket_arn
-          storage_class = "STANDARD"
-        }
-      }
-    }
-  }
+  #       destination {
+  #         bucket        = var.s3_replica_bucket_arn
+  #         storage_class = "STANDARD"
+  #       }
+  #     }
+  #   }
+  # }
 
-  dynamic "logging" {
-    for_each = var.logging == null ? [] : [1]
-    content {
-      target_bucket = local.logging_bucket_name
-      target_prefix = local.logging_prefix
-    }
-  }
+  # dynamic "logging" {
+  #   for_each = var.logging == null ? [] : [1]
+  #   content {
+  #     target_bucket = local.logging_bucket_name
+  #     target_prefix = local.logging_prefix
+  #   }
+  # }
 
   tags = module.this.tags
+}
+
+# Bucket policy
+resource "aws_s3_bucket_policy" "prevent_unencrypted_uploads" {
+  bucket = aws_s3_bucket.default.id
+  policy = local.policy
+}
+
+# S3 acl resource support for AWS provider V4
+resource "aws_s3_bucket_acl" "default" {
+  bucket = aws_s3_bucket.default.id
+  acl    = var.acl
+}
+
+# S3 logging resource support for AWS provider v4
+resource "aws_s3_bucket_logging" "default" {
+  for_each = var.logging == null ? [] : [1]
+  bucket   = aws_s3_bucket.default.id
+
+  target_bucket = local.logging_bucket_name
+  target_prefix = local.logging_prefix
+}
+
+# S3 versioning resource support for AWS provider v4
+resource "aws_s3_bucket_versioning" "default" {
+  bucket = aws_s3_bucket.default.id
+  versioning_configuration {
+    status     = "Enabled"
+    mfa_delete = var.mfa_delete
+  }
+}
+
+# S3 server side encryption support for AWS provider v4
+resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
+  bucket = aws_s3_bucket.default.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
+}
+
+# S3 bucket replication configuration support for AWS provider v4
+resource "aws_s3_bucket_replication_configuration" "default" {
+  for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
+
+  depends_on = [aws_s3_bucket_versioning.default]
+
+  role   = aws_iam_role.replication[0].arn
+  bucket = aws_s3_bucket.default.id
+
+  rule {
+    id     = module.this.id
+    prefix = ""
+    status = "Enabled"
+
+    destination {
+      bucket        = var.s3_replica_bucket_arn
+      storage_class = "STANDARD"
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
@@ -249,7 +311,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = local.dynamodb_enabled && ! var.enable_server_side_encryption ? 1 : 0
+  count          = local.dynamodb_enabled && !var.enable_server_side_encryption ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
