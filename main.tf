@@ -138,19 +138,51 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
   }
 }
 
+# module "log_storage" {
+#   source  = "cloudposse/s3-log-storage/aws"
+#   version = "0.26.0"
+
+#   enabled                  = local.logging_bucket_enabled
+#   access_log_bucket_prefix = local.logging_prefix_default
+#   acl                      = "log-delivery-write"
+#   expiration_days          = var.logging_bucket_expiration_days
+#   glacier_transition_days  = var.logging_bucket_glacier_transition_days
+#   name                     = local.logging_bucket_name_default
+#   standard_transition_days = var.logging_bucket_standard_transition_days
+
+#   context = module.this.context
+# }
+
 module "log_storage" {
-  source  = "cloudposse/s3-log-storage/aws"
-  version = "0.26.0"
-
-  enabled                  = local.logging_bucket_enabled
-  access_log_bucket_prefix = local.logging_prefix_default
-  acl                      = "log-delivery-write"
-  expiration_days          = var.logging_bucket_expiration_days
-  glacier_transition_days  = var.logging_bucket_glacier_transition_days
+  source                   = "cloudposse/s3-log-storage/aws"
+  version                  = "0.28.0"
   name                     = local.logging_bucket_name_default
-  standard_transition_days = var.logging_bucket_standard_transition_days
-
-  context = module.this.context
+  context                  = module.this.context
+  access_log_bucket_prefix = local.logging_prefix_default
+  lifecycle_configuration_rules = [
+    {
+      abort_incomplete_multipart_upload_days = 1
+      enabled                                = true
+      expiration = {
+        days = 90
+      }
+      filter_and = {
+        prefix = ""
+      }
+      id = "logs"
+      noncurrent_version_expiration = {
+        newer_noncurrent_versions = 2
+        noncurrent_days           = 30
+      }
+      noncurrent_version_transition = []
+      transition = [
+        {
+          days          = 30
+          storage_class = "GLACIER"
+        },
+      ]
+    }
+  ]
 }
 
 resource "aws_s3_bucket" "default" {
