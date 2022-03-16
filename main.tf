@@ -207,20 +207,20 @@ resource "aws_s3_bucket" "default" {
 
 # Bucket policy
 resource "aws_s3_bucket_policy" "prevent_unencrypted_uploads" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
   policy = local.policy
 }
 
 # S3 acl resource support for AWS provider V4
 resource "aws_s3_bucket_acl" "default" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
   acl    = var.acl
 }
 
 # S3 logging resource support for AWS provider v4
 resource "aws_s3_bucket_logging" "default" {
   for_each = var.logging == null ? [] : [1]
-  bucket   = aws_s3_bucket.default.id
+  bucket   = aws_s3_bucket.default[0].id
 
   target_bucket = local.logging_bucket_name
   target_prefix = local.logging_prefix
@@ -228,7 +228,7 @@ resource "aws_s3_bucket_logging" "default" {
 
 # S3 versioning resource support for AWS provider v4
 resource "aws_s3_bucket_versioning" "default" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
   versioning_configuration {
     status     = "Enabled"
     mfa_delete = var.mfa_delete
@@ -237,7 +237,7 @@ resource "aws_s3_bucket_versioning" "default" {
 
 # S3 server side encryption support for AWS provider v4
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
-  bucket = aws_s3_bucket.default.bucket
+  bucket = aws_s3_bucket.default[0].bucket
 
   rule {
     apply_server_side_encryption_by_default {
@@ -253,7 +253,7 @@ resource "aws_s3_bucket_replication_configuration" "default" {
   depends_on = [aws_s3_bucket_versioning.default]
 
   role   = aws_iam_role.replication[0].arn
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
 
   rule {
     id     = module.this.id
