@@ -251,7 +251,7 @@ resource "aws_s3_bucket_acl" "default" {
 
 # S3 logging resource support for AWS provider v4
 resource "aws_s3_bucket_logging" "default" {
-  for_each = var.logging == null ? toset([]) : toset([1])
+  for_each = var.logging == null ? toset([]) : toset(["true"])
   bucket   = aws_s3_bucket.default[0].id
 
   target_bucket = local.logging_bucket_name
