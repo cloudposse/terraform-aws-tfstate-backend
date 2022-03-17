@@ -251,7 +251,7 @@ resource "aws_s3_bucket_acl" "default" {
 
 # S3 logging resource support for AWS provider v4
 resource "aws_s3_bucket_logging" "default" {
-  for_each = var.logging == null ? [] : [1]
+  for_each = var.logging == null ? toset([]) : toset([1])
   bucket   = aws_s3_bucket.default[0].id
 
   target_bucket = local.logging_bucket_name
@@ -263,7 +263,7 @@ resource "aws_s3_bucket_versioning" "default" {
   bucket = aws_s3_bucket.default[0].id
   versioning_configuration {
     status     = "Enabled"
-    mfa_delete = var.mfa_delete
+    mfa_delete = var.mfa_delete ? "Enabled" : "Disabled"
   }
 }
 
