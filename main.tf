@@ -138,21 +138,6 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
   }
 }
 
-# module "log_storage" {
-#   source  = "cloudposse/s3-log-storage/aws"
-#   version = "0.26.0"
-
-#   enabled                  = local.logging_bucket_enabled
-#   access_log_bucket_prefix = local.logging_prefix_default
-#   acl                      = "log-delivery-write"
-#   expiration_days          = var.logging_bucket_expiration_days
-#   glacier_transition_days  = var.logging_bucket_glacier_transition_days
-#   name                     = local.logging_bucket_name_default
-#   standard_transition_days = var.logging_bucket_standard_transition_days
-
-#   context = module.this.context
-# }
-
 module "log_storage" {
   source                   = "cloudposse/s3-log-storage/aws"
   version                  = "0.28.0"
@@ -190,51 +175,9 @@ resource "aws_s3_bucket" "default" {
 
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
-  bucket = substr(local.bucket_name, 0, 63)
-  # acl           = var.acl
+  bucket        = substr(local.bucket_name, 0, 63)
   force_destroy = var.force_destroy
-  # policy        = local.policy
-
-  # versioning {
-  #   enabled    = true
-  #   mfa_delete = var.mfa_delete
-  # }
-
-  # server_side_encryption_configuration {
-  #   rule {
-  #     apply_server_side_encryption_by_default {
-  #       sse_algorithm = "AES256"
-  #     }
-  #   }
-  # }
-
-  # dynamic "replication_configuration" {
-  #   for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
-  #   content {
-  #     role = aws_iam_role.replication[0].arn
-
-  #     rules {
-  #       id     = module.this.id
-  #       prefix = ""
-  #       status = "Enabled"
-
-  #       destination {
-  #         bucket        = var.s3_replica_bucket_arn
-  #         storage_class = "STANDARD"
-  #       }
-  #     }
-  #   }
-  # }
-
-  # dynamic "logging" {
-  #   for_each = var.logging == null ? [] : [1]
-  #   content {
-  #     target_bucket = local.logging_bucket_name
-  #     target_prefix = local.logging_prefix
-  #   }
-  # }
-
-  tags = module.this.tags
+  tags          = module.this.tags
 }
 
 # Bucket policy
