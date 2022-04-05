@@ -1,15 +1,15 @@
 output "s3_bucket_domain_name" {
-  value       = join("", aws_s3_bucket.default.*.bucket_domain_name)
+  value       = module.tfstate_s3_bucket.bucket_domain_name
   description = "S3 bucket domain name"
 }
 
 output "s3_bucket_id" {
-  value       = join("", aws_s3_bucket.default.*.id)
+  value       = module.tfstate_s3_bucket.bucket_id
   description = "S3 bucket ID"
 }
 
 output "s3_bucket_arn" {
-  value       = join("", aws_s3_bucket.default.*.arn)
+  value       = module.tfstate_s3_bucket.bucket_arn
   description = "S3 bucket ARN"
 }
 

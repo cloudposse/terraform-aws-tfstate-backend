@@ -27,14 +27,11 @@ variable "write_capacity" {
 
 variable "force_destroy" {
   type        = bool
-  description = "A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable"
   default     = false
-}
-
-variable "mfa_delete" {
-  type        = bool
-  description = "A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 )"
-  default     = false
+  description = <<-EOT
+     When `true`, permits a non-empty S3 bucket to be deleted by first deleting all objects in the bucket.
+     THESE OBJECTS ARE NOT RECOVERABLE even if they were versioned and stored in Glacier.
+     EOT
 }
 
 variable "enable_point_in_time_recovery" {

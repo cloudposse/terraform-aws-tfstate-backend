@@ -8,11 +8,6 @@ locals {
 
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads && var.enable_server_side_encryption
 
-  policy = local.prevent_unencrypted_uploads ? join(
-    "",
-    data.aws_iam_policy_document.prevent_unencrypted_uploads.*.json
-  ) : ""
-
   terraform_backend_config_file = format(
     "%s/%s",
     var.terraform_backend_config_file_path,
@@ -23,7 +18,7 @@ locals {
 
   terraform_backend_config_content = templatefile(local.terraform_backend_config_template_file, {
     region = data.aws_region.current.name
-    bucket = join("", aws_s3_bucket.default.*.id)
+    bucket = module.tfstate_s3_bucket.bucket_id
 
     dynamodb_table = local.dynamodb_enabled ? element(
       coalescelist(
@@ -53,94 +48,9 @@ locals {
   logging_prefix              = local.logging_bucket_enabled ? module.log_storage.prefix : local.logging_prefix_default
 }
 
-data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
-  count = local.prevent_unencrypted_uploads ? 1 : 0
-
-  statement {
-    sid = "DenyIncorrectEncryptionHeader"
-
-    effect = "Deny"
-
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
-
-    actions = [
-      "s3:PutObject"
-    ]
-
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "AES256",
-        "aws:kms"
-      ]
-    }
-  }
-
-  statement {
-    sid = "DenyUnEncryptedObjectUploads"
-
-    effect = "Deny"
-
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
-
-    actions = [
-      "s3:PutObject"
-    ]
-
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "true"
-      ]
-    }
-  }
-
-  statement {
-    sid = "EnforceTlsRequestsOnly"
-
-    effect = "Deny"
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-
-    actions = ["s3:*"]
-
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}",
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "Bool"
-      variable = "aws:SecureTransport"
-      values   = ["false"]
-    }
-  }
-}
-
 module "log_storage" {
   source  = "cloudposse/s3-log-storage/aws"
-  version = "0.26.0"
+  version = "0.28.0"
 
   enabled                  = local.logging_bucket_enabled
   access_log_bucket_prefix = local.logging_prefix_default
@@ -153,65 +63,37 @@ module "log_storage" {
   context = module.this.context
 }
 
-resource "aws_s3_bucket" "default" {
-  count = local.bucket_enabled ? 1 : 0
+module "tfstate_s3_bucket" {
+  source  = "cloudposse/s3-bucket/aws"
+  version = "0.49.0"
 
-  #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
-  #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
-  bucket        = substr(local.bucket_name, 0, 63)
-  acl           = var.acl
-  force_destroy = var.force_destroy
-  policy        = local.policy
+  enabled               = local.bucket_enabled
+  bucket_name           = local.bucket_name
+  acl                   = var.acl
+  force_destroy         = var.force_destroy
+  versioning_enabled    = true
+  sse_algorithm         = "AES256"
 
-  versioning {
-    enabled    = true
-    mfa_delete = var.mfa_delete
-  }
+  #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` due to issue in terraform (https://github.com/hashicorp/terraform-provider-aws/issues/629).
+  #mfa_delete = var.mfa_delete
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  allow_encrypted_uploads_only = local.prevent_unencrypted_uploads
+  allow_ssl_requests_only      = local.prevent_unencrypted_uploads
 
-  dynamic "replication_configuration" {
-    for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
-    content {
-      role = aws_iam_role.replication[0].arn
-
-      rules {
-        id     = module.this.id
-        prefix = ""
-        status = "Enabled"
-
-        destination {
-          bucket        = var.s3_replica_bucket_arn
-          storage_class = "STANDARD"
-        }
-      }
-    }
-  }
-
-  dynamic "logging" {
-    for_each = var.logging == null ? [] : [1]
-    content {
-      target_bucket = local.logging_bucket_name
-      target_prefix = local.logging_prefix
-    }
-  }
-
-  tags = module.this.tags
-}
-
-resource "aws_s3_bucket_public_access_block" "default" {
-  count                   = local.bucket_enabled && var.enable_public_access_block ? 1 : 0
-  bucket                  = join("", aws_s3_bucket.default.*.id)
   block_public_acls       = var.block_public_acls
-  ignore_public_acls      = var.ignore_public_acls
   block_public_policy     = var.block_public_policy
+  ignore_public_acls      = var.ignore_public_acls
   restrict_public_buckets = var.restrict_public_buckets
+
+  s3_replication_enabled = var.s3_replication_enabled
+  s3_replica_bucket_arn  = var.s3_replica_bucket_arn
+
+  logging = var.logging == null ? null : {
+    bucket_name = local.logging_bucket_name
+    prefix      = local.logging_prefix
+  }
+
+  context = module.this.context
 }
 
 module "dynamodb_table_label" {
@@ -249,7 +131,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
-  count          = local.dynamodb_enabled && ! var.enable_server_side_encryption ? 1 : 0
+  count          = local.dynamodb_enabled && !var.enable_server_side_encryption ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
   read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
