@@ -67,12 +67,12 @@ module "tfstate_s3_bucket" {
   source  = "cloudposse/s3-bucket/aws"
   version = "0.49.0"
 
-  enabled               = local.bucket_enabled
-  bucket_name           = local.bucket_name
-  acl                   = var.acl
-  force_destroy         = var.force_destroy
-  versioning_enabled    = true
-  sse_algorithm         = "AES256"
+  enabled            = local.bucket_enabled
+  bucket_name        = local.bucket_name
+  acl                = var.acl
+  force_destroy      = var.force_destroy
+  versioning_enabled = true
+  sse_algorithm      = "AES256"
 
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` due to issue in terraform (https://github.com/hashicorp/terraform-provider-aws/issues/629).
   #mfa_delete = var.mfa_delete
