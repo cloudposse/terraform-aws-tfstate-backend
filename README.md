@@ -116,28 +116,28 @@ Follow this procedure just once to create your deployment.
 1. Add the `terraform_state_backend` module to your `main.tf` file. The
    comment will help you remember to follow this procedure in the future:
    ```hcl
-    # You cannot create a new backend by simply defining this and then
-    # immediately proceeding to "terraform apply". The S3 backend must
-    # be bootstrapped according to the simple yet essential procedure in
-    # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
-    module "terraform_state_backend" {
-      source = "cloudposse/tfstate-backend/aws"
-      # Cloud Posse recommends pinning every module to a specific version
-      # version     = "x.x.x"
-      namespace  = "eg"
-      stage      = "test"
-      name       = "terraform"
-      attributes = ["state"]
+   # You cannot create a new backend by simply defining this and then
+   # immediately proceeding to "terraform apply". The S3 backend must
+   # be bootstrapped according to the simple yet essential procedure in
+   # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
+   module "terraform_state_backend" {
+     source = "cloudposse/tfstate-backend/aws"
+     # Cloud Posse recommends pinning every module to a specific version
+     # version     = "x.x.x"
+     namespace  = "eg"
+     stage      = "test"
+     name       = "terraform"
+     attributes = ["state"]
 
-      terraform_backend_config_file_path = "."
-      terraform_backend_config_file_name = "backend.tf"
-      force_destroy                      = false
-    }
+     terraform_backend_config_file_path = "."
+     terraform_backend_config_file_name = "backend.tf"
+     force_destroy                      = false
+   }
 
-    # Your Terraform configuration
-    module "another_module" {
-      source = "....."
-    }
+   # Your Terraform configuration
+   module "another_module" {
+     source = "....."
+   }
    ```
    Module inputs `terraform_backend_config_file_path` and
    `terraform_backend_config_file_name` control the name of the backend
@@ -153,15 +153,15 @@ Follow this procedure just once to create your deployment.
    Module `terraform_state_backend` also creates a new `backend.tf` file
    that defines the S3 state backend. For example:
    ```hcl
-    backend "s3" {
-      region         = "us-east-1"
-      bucket         = "< the name of the S3 state bucket >"
-      key            = "terraform.tfstate"
-      dynamodb_table = "< the name of the DynamoDB locking table >"
-      profile        = ""
-      role_arn       = ""
-      encrypt        = true
-    }
+   backend "s3" {
+     region         = "us-east-1"
+     bucket         = "< the name of the S3 state bucket >"
+     key            = "terraform.tfstate"
+     dynamodb_table = "< the name of the DynamoDB locking table >"
+     profile        = ""
+     role_arn       = ""
+     encrypt        = true
+   }
    ```
 
    Henceforth, Terraform will also read this newly-created backend definition
@@ -183,7 +183,7 @@ Follow this procedure to delete your deployment.
    follows:
    ```hcl
     module "terraform_state_backend" {
-        ...
+      # ...
       terraform_backend_config_file_path = ""
       force_destroy                      = true
     }
@@ -207,24 +207,24 @@ Follow this procedure to delete your deployment.
 
 To enable S3 bucket replication in this module, set `s3_replication_enabled` to `true` and populate `s3_replica_bucket_arn` with the ARN of an existing bucket.
 
-   ```hcl
-    module "terraform_state_backend" {
-      source = "cloudposse/tfstate-backend/aws"
-      # Cloud Posse recommends pinning every module to a specific version
-      # version     = "x.x.x"
-      namespace  = "eg"
-      stage      = "test"
-      name       = "terraform"
-      attributes = ["state"]
+```hcl
+module "terraform_state_backend" {
+  source = "cloudposse/tfstate-backend/aws"
+  # Cloud Posse recommends pinning every module to a specific version
+  # version     = "x.x.x"
+  namespace  = "eg"
+  stage      = "test"
+  name       = "terraform"
+  attributes = ["state"]
 
-      terraform_backend_config_file_path = "."
-      terraform_backend_config_file_name = "backend.tf"
-      force_destroy                      = false
+  terraform_backend_config_file_path = "."
+  terraform_backend_config_file_name = "backend.tf"
+  force_destroy                      = false
 
-      s3_replication_enabled = true
-      s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
-    }
-   ```
+  s3_replication_enabled = true
+  s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
+}
+```
 
 
 
@@ -441,7 +441,7 @@ In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
 
 ## Copyright
 
-Copyright © 2017-2021 [Cloud Posse, LLC](https://cpco.io/copyright)
+Copyright © 2017-2022 [Cloud Posse, LLC](https://cpco.io/copyright)
 
 
 
@@ -499,8 +499,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
 ### Contributors
 
 <!-- markdownlint-disable -->
-|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] | [![Vladimir][SweetOps_avatar]][SweetOps_homepage]<br/>[Vladimir][SweetOps_homepage] | [![Chris Weyl][rsrchboy_avatar]][rsrchboy_homepage]<br/>[Chris Weyl][rsrchboy_homepage] | [![John McGehee][jmcgeheeiv_avatar]][jmcgeheeiv_homepage]<br/>[John McGehee][jmcgeheeiv_homepage] | [![Oliver L Schoenborn][schollii_avatar]][schollii_homepage]<br/>[Oliver L Schoenborn][schollii_homepage] |
-|---|---|---|---|---|---|---|
+|  [![Andriy Knysh][aknysh_avatar]][aknysh_homepage]<br/>[Andriy Knysh][aknysh_homepage] | [![Erik Osterman][osterman_avatar]][osterman_homepage]<br/>[Erik Osterman][osterman_homepage] | [![Maarten van der Hoef][maartenvanderhoef_avatar]][maartenvanderhoef_homepage]<br/>[Maarten van der Hoef][maartenvanderhoef_homepage] | [![Vladimir][SweetOps_avatar]][SweetOps_homepage]<br/>[Vladimir][SweetOps_homepage] | [![Chris Weyl][rsrchboy_avatar]][rsrchboy_homepage]<br/>[Chris Weyl][rsrchboy_homepage] | [![John McGehee][jmcgeheeiv_avatar]][jmcgeheeiv_homepage]<br/>[John McGehee][jmcgeheeiv_homepage] | [![Oliver L Schoenborn][schollii_avatar]][schollii_homepage]<br/>[Oliver L Schoenborn][schollii_homepage] | [![RB][nitrocode_avatar]][nitrocode_homepage]<br/>[RB][nitrocode_homepage] |
+|---|---|---|---|---|---|---|---|
 <!-- markdownlint-restore -->
 
   [aknysh_homepage]: https://github.com/aknysh
@@ -517,6 +517,8 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [jmcgeheeiv_avatar]: https://img.cloudposse.com/150x150/https://github.com/jmcgeheeiv.png
   [schollii_homepage]: https://github.com/schollii
   [schollii_avatar]: https://img.cloudposse.com/150x150/https://github.com/schollii.png
+  [nitrocode_homepage]: https://github.com/nitrocode
+  [nitrocode_avatar]: https://img.cloudposse.com/150x150/https://github.com/nitrocode.png
 
 [![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]
