@@ -77,28 +77,28 @@ usage: |-
   1. Add the `terraform_state_backend` module to your `main.tf` file. The
      comment will help you remember to follow this procedure in the future:
      ```hcl
-      # You cannot create a new backend by simply defining this and then
-      # immediately proceeding to "terraform apply". The S3 backend must
-      # be bootstrapped according to the simple yet essential procedure in
-      # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
-      module "terraform_state_backend" {
-        source = "cloudposse/tfstate-backend/aws"
-        # Cloud Posse recommends pinning every module to a specific version
-        # version     = "x.x.x"
-        namespace  = "eg"
-        stage      = "test"
-        name       = "terraform"
-        attributes = ["state"]
+     # You cannot create a new backend by simply defining this and then
+     # immediately proceeding to "terraform apply". The S3 backend must
+     # be bootstrapped according to the simple yet essential procedure in
+     # https://github.com/cloudposse/terraform-aws-tfstate-backend#usage
+     module "terraform_state_backend" {
+       source = "cloudposse/tfstate-backend/aws"
+       # Cloud Posse recommends pinning every module to a specific version
+       # version     = "x.x.x"
+       namespace  = "eg"
+       stage      = "test"
+       name       = "terraform"
+       attributes = ["state"]
 
-        terraform_backend_config_file_path = "."
-        terraform_backend_config_file_name = "backend.tf"
-        force_destroy                      = false
-      }
+       terraform_backend_config_file_path = "."
+       terraform_backend_config_file_name = "backend.tf"
+       force_destroy                      = false
+     }
 
-      # Your Terraform configuration
-      module "another_module" {
-        source = "....."
-      }
+     # Your Terraform configuration
+     module "another_module" {
+       source = "....."
+     }
      ```
      Module inputs `terraform_backend_config_file_path` and
      `terraform_backend_config_file_name` control the name of the backend
@@ -114,15 +114,15 @@ usage: |-
      Module `terraform_state_backend` also creates a new `backend.tf` file
      that defines the S3 state backend. For example:
      ```hcl
-      backend "s3" {
-        region         = "us-east-1"
-        bucket         = "< the name of the S3 state bucket >"
-        key            = "terraform.tfstate"
-        dynamodb_table = "< the name of the DynamoDB locking table >"
-        profile        = ""
-        role_arn       = ""
-        encrypt        = true
-      }
+     backend "s3" {
+       region         = "us-east-1"
+       bucket         = "< the name of the S3 state bucket >"
+       key            = "terraform.tfstate"
+       dynamodb_table = "< the name of the DynamoDB locking table >"
+       profile        = ""
+       role_arn       = ""
+       encrypt        = true
+     }
      ```
 
      Henceforth, Terraform will also read this newly-created backend definition
@@ -144,7 +144,7 @@ usage: |-
      follows:
      ```hcl
       module "terraform_state_backend" {
-          ...
+        # ...
         terraform_backend_config_file_path = ""
         force_destroy                      = true
       }
@@ -168,24 +168,24 @@ usage: |-
 
   To enable S3 bucket replication in this module, set `s3_replication_enabled` to `true` and populate `s3_replica_bucket_arn` with the ARN of an existing bucket.
 
-     ```hcl
-      module "terraform_state_backend" {
-        source = "cloudposse/tfstate-backend/aws"
-        # Cloud Posse recommends pinning every module to a specific version
-        # version     = "x.x.x"
-        namespace  = "eg"
-        stage      = "test"
-        name       = "terraform"
-        attributes = ["state"]
+  ```hcl
+  module "terraform_state_backend" {
+    source = "cloudposse/tfstate-backend/aws"
+    # Cloud Posse recommends pinning every module to a specific version
+    # version     = "x.x.x"
+    namespace  = "eg"
+    stage      = "test"
+    name       = "terraform"
+    attributes = ["state"]
 
-        terraform_backend_config_file_path = "."
-        terraform_backend_config_file_name = "backend.tf"
-        force_destroy                      = false
+    terraform_backend_config_file_path = "."
+    terraform_backend_config_file_name = "backend.tf"
+    force_destroy                      = false
 
-        s3_replication_enabled = true
-        s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
-      }
-     ```
+    s3_replication_enabled = true
+    s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
+  }
+  ```
 
 include:
   - "docs/targets.md"
@@ -207,3 +207,5 @@ contributors:
     github: "jmcgeheeiv"
   - name: "Oliver L Schoenborn"
     github: "schollii"
+  - name: "RB"
+    github: "nitrocode"
