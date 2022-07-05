@@ -194,3 +194,8 @@ variable "dynamodb_table_name" {
   default     = null
   description = "Override the name of the DynamoDB table which defaults to using `module.dynamodb_table_label.id`"
 }
+variable "permissions_boundary" {
+  type        = string
+  default     = ""
+  description = "ARN of the policy that is used to set the permissions boundary for the IAM role"
+}
