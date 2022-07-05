@@ -3,7 +3,7 @@ resource "aws_iam_role" "replication" {
 
   name                 = format("%s-replication", module.this.id)
   assume_role_policy   = data.aws_iam_policy_document.replication_sts[0].json
-  permissions_boundary = var.permissions_boundary
+  permissions_boundary = var.permissions_boundary ? 1 : 0
 }
 
 data "aws_iam_policy_document" "replication_sts" {
