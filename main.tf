@@ -160,7 +160,6 @@ resource "aws_s3_bucket" "default" {
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
   force_destroy = var.force_destroy
-  policy        = local.policy
 
   versioning {
     enabled    = true
@@ -207,6 +206,11 @@ resource "aws_s3_bucket" "default" {
 resource "aws_s3_bucket_acl" "default" {
   bucket = aws_s3_bucket.default.id
   acl    = var.acl
+}
+
+resource "aws_s3_bucket_policy" "default" {
+  bucket = aws_s3_bucket.default.id
+  policy = local.policy
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
