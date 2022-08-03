@@ -218,3 +218,9 @@ variable "kms_key_deletion_window_in_days" {
   default     = null
   description = "Number of days before AWS deletes the key."
 }
+
+variable "s3_logging_target_bucket" {
+  type        = string
+  default     = null
+  description = "Name of the bucket to contain bucket logs."
+}
