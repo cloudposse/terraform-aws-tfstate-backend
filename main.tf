@@ -179,14 +179,6 @@ resource "aws_s3_bucket" "default" {
     }
   }
 
-  dynamic "logging" {
-    for_each = var.logging == null ? [] : [1]
-    content {
-      target_bucket = local.logging_bucket_name
-      target_prefix = local.logging_prefix
-    }
-  }
-
   tags = module.this.tags
 }
 
@@ -227,6 +219,14 @@ resource "aws_kms_key" "this" {
   enable_key_rotation     = var.kms_key_enable_key_rotation
 
   tags                    = module.this.tags
+}
+
+resource "aws_s3_bucket_logging" "default" {
+  count = var.s3_logging_target_bucket != null ? 1 : 0
+
+  bucket        = aws_s3_bucket.default.id
+  target_bucket = local.logging_bucket_name
+  target_prefix = local.logging_prefix
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
