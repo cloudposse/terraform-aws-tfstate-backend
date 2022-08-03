@@ -196,25 +196,25 @@ variable "dynamodb_table_name" {
 }
 
 variable "sse_algorithm" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = " The server-side encryption algorithm to use. Valid values are `AES256` and `aws:kms`"
 }
 
 variable "kms_key_description" {
-  type = string
-  default = null
+  type        = string
+  default     = null
   description = "The description of the KMS key for the bucket encryption as viewed in AWS console."
 }
 
 variable "kms_key_enable_key_rotation" {
-  type = bool
-  default = null
+  type        = bool
+  default     = null
   description = "Specifies whether to enable key rotation."
 }
 
 variable "kms_key_deletion_window_in_days" {
-  type = number
-  default = null
+  type        = number
+  default     = null
   description = "Number of days before AWS deletes the key."
 }

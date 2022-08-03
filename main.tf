@@ -160,7 +160,7 @@ resource "aws_s3_bucket" "default" {
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
   force_destroy = var.force_destroy
-  tags = module.this.tags
+  tags          = module.this.tags
 }
 
 resource "aws_s3_bucket_acl" "default" {
@@ -199,7 +199,7 @@ resource "aws_kms_key" "this" {
   deletion_window_in_days = var.kms_key_deletion_window_in_days
   enable_key_rotation     = var.kms_key_enable_key_rotation
 
-  tags                    = module.this.tags
+  tags = module.this.tags
 }
 
 resource "aws_s3_bucket_logging" "default" {
