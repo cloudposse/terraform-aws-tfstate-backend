@@ -160,25 +160,6 @@ resource "aws_s3_bucket" "default" {
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
   force_destroy = var.force_destroy
-
-  dynamic "replication_configuration" {
-    for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
-    content {
-      role = aws_iam_role.replication[0].arn
-
-      rules {
-        id     = module.this.id
-        prefix = ""
-        status = "Enabled"
-
-        destination {
-          bucket        = var.s3_replica_bucket_arn
-          storage_class = "STANDARD"
-        }
-      }
-    }
-  }
-
   tags = module.this.tags
 }
 
@@ -227,6 +208,28 @@ resource "aws_s3_bucket_logging" "default" {
   bucket        = aws_s3_bucket.default.id
   target_bucket = local.logging_bucket_name
   target_prefix = local.logging_prefix
+}
+
+resource "aws_s3_bucket_replication_configuration" "default" {
+  count  = var.s3_replication_enabled == true ? 1 : 0
+  bucket = aws_s3_bucket.default.id
+
+  role = aws_iam_role.replication[0].arn
+
+  rule {
+    id     = module.this.id
+    prefix = ""
+    status = "Enabled"
+
+    destination {
+      bucket        = var.s3_replica_bucket_arn
+      storage_class = "STANDARD"
+    }
+  }
+
+  # Versioning can't be disabled when the replication configuration exists.
+  # https://docs.aws.amazon.com/AmazonS3/latest/userguide/replication-and-other-bucket-configs.html#replication-and-versioning
+  depends_on = [aws_s3_bucket_versioning.default]
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
