@@ -161,14 +161,6 @@ resource "aws_s3_bucket" "default" {
   bucket        = substr(local.bucket_name, 0, 63)
   force_destroy = var.force_destroy
 
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
   dynamic "replication_configuration" {
     for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
     content {
@@ -215,6 +207,26 @@ resource "aws_s3_bucket_versioning" "default" {
     status     = "Enabled"
     mfa_delete = var.mfa_delete
   }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
+  bucket = aws_s3_bucket.default.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = var.sse_algorithm
+      kms_master_key_id = aws_kms_key.this.arn
+    }
+  }
+}
+
+resource "aws_kms_key" "this" {
+  count                   = var.sse_algorithm == "aws:kms" ? 1 : 0
+  description             = var.kms_key_description
+  deletion_window_in_days = var.kms_key_deletion_window_in_days
+  enable_key_rotation     = var.kms_key_enable_key_rotation
+
+  tags                    = module.this.tags
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
