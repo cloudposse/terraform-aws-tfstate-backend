@@ -164,17 +164,17 @@ resource "aws_s3_bucket" "default" {
 }
 
 resource "aws_s3_bucket_acl" "default" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
   acl    = var.acl
 }
 
 resource "aws_s3_bucket_policy" "default" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
   policy = local.policy
 }
 
 resource "aws_s3_bucket_versioning" "default" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
 
   versioning_configuration {
     status     = "Enabled"
@@ -183,12 +183,12 @@ resource "aws_s3_bucket_versioning" "default" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
 
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = var.sse_algorithm
-      kms_master_key_id = aws_kms_key.this.arn
+      kms_master_key_id = var.sse_algorithm == "aws:kms" ? aws_kms_key.this[0].arn : null
     }
   }
 }
@@ -205,14 +205,14 @@ resource "aws_kms_key" "this" {
 resource "aws_s3_bucket_logging" "default" {
   count = var.s3_logging_target_bucket != null ? 1 : 0
 
-  bucket        = aws_s3_bucket.default.id
+  bucket        = aws_s3_bucket.default[0].id
   target_bucket = local.logging_bucket_name
   target_prefix = local.logging_prefix
 }
 
 resource "aws_s3_bucket_replication_configuration" "default" {
   count  = var.s3_replication_enabled == true ? 1 : 0
-  bucket = aws_s3_bucket.default.id
+  bucket = aws_s3_bucket.default[0].id
 
   role = aws_iam_role.replication[0].arn
 

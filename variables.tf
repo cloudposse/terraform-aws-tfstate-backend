@@ -32,9 +32,9 @@ variable "force_destroy" {
 }
 
 variable "mfa_delete" {
-  type        = bool
+  type        = string
   description = "A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 )"
-  default     = false
+  default     = "Disabled"
 }
 
 variable "enable_point_in_time_recovery" {
@@ -197,7 +197,7 @@ variable "dynamodb_table_name" {
 
 variable "sse_algorithm" {
   type        = string
-  default     = null
+  default     = "AES256"
   description = " The server-side encryption algorithm to use. Valid values are `AES256` and `aws:kms`"
 }
 
