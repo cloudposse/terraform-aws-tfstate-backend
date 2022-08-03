@@ -159,7 +159,6 @@ resource "aws_s3_bucket" "default" {
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
-  acl           = var.acl
   force_destroy = var.force_destroy
   policy        = local.policy
 
@@ -203,6 +202,11 @@ resource "aws_s3_bucket" "default" {
   }
 
   tags = module.this.tags
+}
+
+resource "aws_s3_bucket_acl" "default" {
+  bucket = aws_s3_bucket.default.id
+  acl    = var.acl
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
