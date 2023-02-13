@@ -13,6 +13,11 @@ output "s3_bucket_arn" {
   description = "S3 bucket ARN"
 }
 
+output "s3_replication_role_arn" {
+  value       = join("", aws_iam_role.replication.*.arn)
+  description = "The ARN of the IAM Role created for replication, if enabled."
+}
+
 output "dynamodb_table_name" {
   value = element(
     coalescelist(
