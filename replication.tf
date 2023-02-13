@@ -1,7 +1,7 @@
 resource "aws_iam_role" "replication" {
   count = local.enabled && var.s3_replication_enabled ? 1 : 0
 
-  name               = format("%s-replication", module.this.id)
+  name               = substr(format("%s-replication", module.this.id), 0, 63)
   assume_role_policy = data.aws_iam_policy_document.replication_sts[0].json
   tags               = module.this.tags
 }
@@ -26,7 +26,7 @@ data "aws_iam_policy_document" "replication_sts" {
 resource "aws_iam_policy" "replication" {
   count = local.enabled && var.s3_replication_enabled ? 1 : 0
 
-  name   = format("%s-replication", module.this.id)
+  name   = substr(format("%s-replication", module.this.id), 0, 63)
   policy = data.aws_iam_policy_document.replication[0].json
   tags   = module.this.tags
 }
