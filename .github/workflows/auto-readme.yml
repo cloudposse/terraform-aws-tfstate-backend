@@ -29,7 +29,7 @@ jobs:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       run: |
         default_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
-        printf "::set-output name=defaultBranch::%s\n" "${default_branch}"
+        echo "defaultBranch=${default_branch}" >> "$GITHUB_OUTPUT"
         printf "defaultBranchRef.name=%s\n" "${default_branch}"
 
     - name: Update readme
@@ -52,7 +52,7 @@ jobs:
       # If a PR of the auto-update/readme branch is open, this action will just update it, not create a new PR.
       uses: cloudposse/actions/github/create-pull-request@0.30.0
       with:
-        token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         commit-message: Update README.md and docs
         title: Update README.md and docs
         body: |-
