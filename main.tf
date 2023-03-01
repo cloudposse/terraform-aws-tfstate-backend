@@ -159,22 +159,9 @@ resource "aws_s3_bucket" "default" {
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
   bucket        = substr(local.bucket_name, 0, 63)
-  acl           = var.acl
+  
   force_destroy = var.force_destroy
-  policy        = local.policy
-
-  versioning {
-    enabled    = true
-    mfa_delete = var.mfa_delete
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
+  # policy        = local.policy
 
   dynamic "replication_configuration" {
     for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
@@ -203,6 +190,33 @@ resource "aws_s3_bucket" "default" {
   }
 
   tags = module.this.tags
+}
+resource "aws_s3_bucket_policy" "default" {
+  bucket = join("", aws_s3_bucket.default.*.id)
+  policy = local.policy
+}
+
+resource "aws_s3_bucket_acl" "default" {
+  bucket = join("", aws_s3_bucket.default.*.id)
+  acl    = var.acl
+}
+
+resource "aws_s3_bucket_versioning" "default" {
+  bucket = join("", aws_s3_bucket.default.*.id)
+  versioning_configuration {
+    status = "Enabled"
+    mfa_delete = var.mfa_delete
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
+  bucket = join("", aws_s3_bucket.default.*.id)
+
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
