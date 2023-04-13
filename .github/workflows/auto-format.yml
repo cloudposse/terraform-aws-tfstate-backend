@@ -19,7 +19,7 @@ jobs:
       if: github.event.pull_request.state == 'open'
       name: Privileged Checkout
       with:
-        token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         # Check out the PR commit, not the merge commit
         # Use `ref` instead of `sha` to enable pushing back to `ref`
@@ -30,7 +30,7 @@ jobs:
       if: github.event.pull_request.state == 'open'
       shell: bash
       env:
-        GITHUB_TOKEN: "${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}"
+        GITHUB_TOKEN: "${{ secrets.REPO_ACCESS_TOKEN }}"
       run: make BUILD_HARNESS_PATH=/build-harness PACKAGES_PREFER_HOST=true -f /build-harness/templates/Makefile.build-harness pr/auto-format/host
 
     # Commit changes (if any) to the PR branch
@@ -54,10 +54,10 @@ jobs:
           [[ $SENDER ==  "cloudpossebot" ]] || git push
           # Set status to fail, because the push should trigger another status check,
           # and we use success to indicate the checks are finished.
-          printf "::set-output name=%s::%s\n" "changed" "true"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
           exit 1
         else
-          printf "::set-output name=%s::%s\n" "changed" "false"
+          echo "changed=false" >> "$GITHUB_OUTPUT"
           echo "No changes detected"
         fi
 
@@ -75,7 +75,7 @@ jobs:
         contains(' 37929162 29139614 11232728 ', format(' {0} ', github.event.pull_request.user.id))
         && steps.commit.outputs.changed == 'false' && github.event.pull_request.state == 'open'
       with:
-        token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         repository: cloudposse/actions
         event-type: test-command
         client-payload: |-

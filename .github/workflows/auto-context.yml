@@ -11,6 +11,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Find default branch name
+      id: defaultBranch
+      shell: bash
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      run: |
+        default_branch=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
+        echo "defaultBranch=${default_branch}" >> "$GITHUB_OUTPUT"
+        printf "defaultBranchRef.name=%s\n" "${default_branch}"
+
     - name: Update context.tf
       shell: bash
       id: update
@@ -27,7 +37,7 @@ jobs:
             make init
             make github/init/context.tf
             make readme/build
-            echo "::set-output name=create_pull_request::true"
+            echo "create_pull_request=true" >> "$GITHUB_OUTPUT"
           fi
         else
           echo "This module has not yet been updated to support the context.tf pattern! Please update in order to support automatic updates."
@@ -37,7 +47,7 @@ jobs:
       if: steps.update.outputs.create_pull_request == 'true'
       uses: cloudposse/actions/github/create-pull-request@0.30.0
       with:
-        token: ${{ secrets.PUBLIC_REPO_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         committer: 'cloudpossebot <11232728+cloudpossebot@users.noreply.github.com>'
         author: 'cloudpossebot <11232728+cloudpossebot@users.noreply.github.com>'
         commit-message: Update context.tf from origin source
@@ -50,7 +60,7 @@ jobs:
           To support all the features of the `context` interface.
 
         branch: auto-update/context.tf
-        base: master
+        base: ${{ steps.defaultBranch.outputs.defaultBranch }}
         delete-branch: true
         labels: |
           auto-update
