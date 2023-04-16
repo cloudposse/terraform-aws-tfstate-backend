@@ -1,196 +1,127 @@
-variable "arn_format" {
-  type        = string
-  default     = "arn:aws"
-  description = "ARN format to be used. May be changed to support deployment in GovCloud/China regions."
+variable "blue_s3_bucket_name" {
+  type        = list(string)
+  description = "S3 bucket name for bucket in blue region. If not provided, the name will be generated from context."
+  default     = []
+  validation {
+    condition     = length(var.blue_s3_bucket_name) < 2 && try(length(var.blue_s3_bucket_name[0]), 0) <= 63
+    error_message = "Only 1 blue_s3_bucket_name can be provided, and it must be no more than 63 characters."
+  }
 }
 
-variable "acl" {
-  type        = string
-  description = "The canned ACL to apply to the S3 bucket"
-  default     = "private"
+variable "blue_kms_key_arn" {
+  type        = list(string)
+  description = <<-EOT
+    The KMS Key ARN for encrypting object (SSE-KMS) in the blue bucket. Default is to use default (SSE-S3) key.
+    Note: If you are not using the default key and have replication enabled, you must grant the replication role
+    permission to use the key (`kms:Encrypt` and `kms:Decrypt`).
+    EOT
+  default     = []
+  validation {
+    condition     = length(var.blue_kms_key_arn) < 2
+    error_message = "Only 1 blue_kms_key_arn can be provided."
+  }
 }
 
-variable "billing_mode" {
-  default     = "PROVISIONED"
-  description = "DynamoDB billing mode"
+variable "green_s3_bucket_name" {
+  type        = list(string)
+  description = "S3 bucket name for bucket in green region. If not provided, the name will be generated from context."
+  default     = []
+  validation {
+    condition     = length(var.green_s3_bucket_name) < 2 && try(length(var.green_s3_bucket_name[0]), 0) <= 63
+    error_message = "Only 1 green_s3_bucket_name can be provided, and it must be no more than 63 characters."
+  }
 }
 
-variable "read_capacity" {
-  default     = 5
-  description = "DynamoDB read capacity units"
+variable "green_kms_key_arn" {
+  type        = list(string)
+  description = "The KMS Key ARN for encrypting object (SSE-KMS) in the green bucket. Default is to use default (SSE-S3) key."
+  default     = []
+  validation {
+    condition     = length(var.green_kms_key_arn) < 2
+    error_message = "Only 1 green_kms_key_arn can be provided."
+  }
 }
 
-variable "write_capacity" {
-  default     = 5
-  description = "DynamoDB write capacity units"
+variable "replication_enabled" {
+  type        = bool
+  description = <<-EOT
+    Set true to enable bidirectional replication and creation of hot standby for quick failover. Highly recommended.
+    If set to `false`, the "green" configuration will be ignored.
+    Replication is not supported in AWS GovCloud (US) because S3 Replication Time Control (S3 RTC) is not available.
+    EOT
+  default     = true
+}
+
+variable "replication_role_name" {
+  type        = list(string)
+  description = "The name to give to the IAM role created for replication. If not provided, the name will be generated from context."
+  default     = []
+  validation {
+    condition     = length(var.replication_role_name) < 2 && try(length(var.replication_role_name[0]), 0) <= 64
+    error_message = "Only 1 replication_role_name can be provided, and it must be no more than 64 characters."
+  }
+}
+
+variable "lock_table_enabled" {
+  type        = bool
+  description = <<-EOT
+    Set true to create a DynamoDB table to provide Terraform state locking. Highly recommended.
+    If replication is enabled, a global DynamoDB table will be created in both the blue and green regions.
+    EOT
+  default     = true
+}
+
+variable "dynamodb_table_name" {
+  type        = list(string)
+  description = "The name of the DynamoDB table. If not provided, the name will be generated from context."
+  default     = []
+  validation {
+    condition     = length(var.dynamodb_table_name) < 2
+    error_message = "Only 1 dynamodb_table_name can be provided."
+  }
+}
+
+variable "permissions_boundary" {
+  type        = list(string)
+  description = "The ARN of the policy that sets the permissions boundary for the IAM role used for replication."
+  default     = []
+  validation {
+    condition     = length(var.permissions_boundary) < 2
+    error_message = "Only 1 permissions_boundary can be provided."
+  }
+}
+
+variable "blue_bucket_logging" {
+  type = list(object({
+    target_bucket = string
+    target_prefix = string
+  }))
+  description = "Destination for S3 Server Access Logs for the blue bucket."
+  default     = []
+  validation {
+    condition     = length(var.blue_bucket_logging) < 2
+    error_message = "Only 1 blue bucket logging configuration can be provided."
+  }
+}
+
+variable "green_bucket_logging" {
+  type = list(object({
+    target_bucket = string
+    target_prefix = string
+  }))
+  description = "Destination for S3 Server Access Logs for the green bucket."
+  default     = []
+  validation {
+    condition     = length(var.green_bucket_logging) < 2
+    error_message = "Only 1 green bucket logging configuration can be provided."
+  }
 }
 
 variable "force_destroy" {
   type        = bool
-  description = "A boolean that indicates the S3 bucket can be destroyed even if it contains objects. These objects are not recoverable"
+  description = <<-EOT
+    FOR TESTING ONLY! When set to true, `terraform destroy` will destroy the S3 buckets and all the objects in them.
+    These objects are not recoverable even if you have versioning or backups enabled.
+    EOT
   default     = false
-}
-
-variable "mfa_delete" {
-  type        = bool
-  description = "A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 )"
-  default     = false
-}
-
-variable "enable_point_in_time_recovery" {
-  type        = bool
-  description = "Enable DynamoDB point-in-time recovery"
-  default     = true
-}
-
-variable "enable_server_side_encryption" {
-  type        = bool
-  description = "Enable DynamoDB server-side encryption"
-  default     = true
-}
-
-variable "enable_public_access_block" {
-  type        = bool
-  description = "Enable Bucket Public Access Block"
-  default     = true
-}
-
-variable "block_public_acls" {
-  type        = bool
-  description = "Whether Amazon S3 should block public ACLs for this bucket"
-  default     = true
-}
-
-variable "ignore_public_acls" {
-  type        = bool
-  description = "Whether Amazon S3 should ignore public ACLs for this bucket"
-  default     = true
-}
-
-variable "block_public_policy" {
-  description = "Whether Amazon S3 should block public bucket policies for this bucket"
-  default     = true
-}
-
-variable "restrict_public_buckets" {
-  type        = bool
-  description = "Whether Amazon S3 should restrict public bucket policies for this bucket"
-  default     = true
-}
-
-variable "prevent_unencrypted_uploads" {
-  type        = bool
-  default     = true
-  description = "Prevent uploads of unencrypted objects to S3"
-}
-
-variable "profile" {
-  type        = string
-  default     = ""
-  description = "AWS profile name as set in the shared credentials file"
-}
-
-variable "role_arn" {
-  type        = string
-  default     = ""
-  description = "The role to be assumed"
-}
-
-variable "terraform_backend_config_file_name" {
-  type        = string
-  default     = "terraform.tf"
-  description = "Name of terraform backend config file"
-}
-
-variable "terraform_backend_config_file_path" {
-  type        = string
-  default     = ""
-  description = "Directory for the terraform backend config file, usually `.`. The default is to create no file."
-}
-
-variable "terraform_backend_config_template_file" {
-  type        = string
-  default     = ""
-  description = "The path to the template used to generate the config file"
-}
-
-variable "terraform_version" {
-  type        = string
-  default     = "0.12.2"
-  description = "The minimum required terraform version"
-}
-
-variable "terraform_state_file" {
-  type        = string
-  default     = "terraform.tfstate"
-  description = "The path to the state file inside the bucket"
-}
-
-variable "s3_bucket_name" {
-  type        = string
-  default     = ""
-  description = "S3 bucket name. If not provided, the name will be generated by the label module in the format namespace-stage-name"
-}
-
-variable "s3_replication_enabled" {
-  type        = bool
-  default     = false
-  description = "Set this to true and specify `s3_replica_bucket_arn` to enable replication"
-}
-
-variable "s3_replica_bucket_arn" {
-  type        = string
-  default     = ""
-  description = "The ARN of the S3 replica bucket (destination)"
-}
-
-variable "logging" {
-  type = object({
-    bucket_name = string
-    prefix      = string
-  })
-  default     = null
-  description = "Bucket access logging configuration."
-}
-
-variable "logging_bucket_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to create the s3 access log bucket."
-}
-
-variable "logging_bucket_standard_transition_days" {
-  type        = number
-  default     = 30
-  description = "Whether to create the s3 access log bucket."
-}
-
-variable "logging_bucket_glacier_transition_days" {
-  type        = number
-  default     = 60
-  description = "Whether to create the s3 access log bucket."
-}
-
-variable "logging_bucket_expiration_days" {
-  type        = number
-  default     = 90
-  description = "Whether to create the s3 access log bucket."
-}
-
-variable "bucket_enabled" {
-  type        = bool
-  default     = true
-  description = "Whether to create the s3 bucket."
-}
-
-variable "dynamodb_enabled" {
-  type        = bool
-  default     = true
-  description = "Whether to create the dynamodb table."
-}
-
-variable "dynamodb_table_name" {
-  type        = string
-  default     = null
-  description = "Override the name of the DynamoDB table which defaults to using `module.dynamodb_table_label.id`"
 }

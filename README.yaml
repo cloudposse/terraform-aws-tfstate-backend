@@ -50,22 +50,20 @@ related:
 
 # Short description of this project
 description: |-
-  Terraform module to provision an S3 bucket to store `terraform.tfstate` file and a DynamoDB table to lock the state file
-  to prevent concurrent modifications and state corruption.
+  Terraform module to provision an S3 backend to hold Terraform state.
 
-  The module supports the following:
+  The module supports the following options:
 
-  1. Forced server-side encryption at rest for the S3 bucket
+  1. Creation of DynamoDB table to provide consistency checking and state locking to prevent concurrent operations
+  2. Replication of state and locks to a second region, to ensure continued availability in the event of a region outage
+
+  The module enforces the following:
+
+  1. Forced server-side encryption at rest for the S3 bucket and DynamoDB table
   2. S3 bucket versioning to allow for Terraform state recovery in the case of accidental deletions and human errors
-  3. State locking and consistency checking via DynamoDB table to prevent concurrent operations
-  4. DynamoDB server-side encryption
+  3. Point-in-time recovery enabled for DynamoDB table
 
   https://www.terraform.io/docs/backends/types/s3.html
-
-
-  __NOTE:__ The operators of the module (IAM Users) must have permissions to create S3 buckets and DynamoDB tables when performing `terraform plan` and `terraform apply`
-
-  __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` feature of the bucket. Changes regarding mfa_delete can only be made manually using the root credentials with MFA of the AWS Account where the bucket resides. Please see: https://github.com/terraform-providers/terraform-provider-aws/issues/62
 
 # How to use this project
 usage: |-

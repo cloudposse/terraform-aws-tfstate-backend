@@ -1,10 +1,10 @@
-region = "us-east-2"
+enabled = true
 
-green_region = "us-west-2"
+region = "us-east-2"
 
 namespace = "eg"
 
-environment = "ue2"
+environment = "use2"
 
 stage = "test"
 

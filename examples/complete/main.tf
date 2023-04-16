@@ -1,14 +1,15 @@
-provider "aws" {
-  region = var.region
-}
 
-module "tfstate_backend" {
-  source = "../../"
+module "tfstate" {
+  source = "../.."
 
-  force_destroy = true
+  providers = {
+    aws.blue  = aws
+    aws.green = aws.green
+  }
 
-  bucket_enabled   = var.bucket_enabled
-  dynamodb_enabled = var.dynamodb_enabled
+  force_destroy       = true
+  lock_table_enabled  = false
+  replication_enabled = true
 
   context = module.this.context
 }
