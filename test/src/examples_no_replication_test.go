@@ -53,13 +53,21 @@ func TestExamplesNoReplication(t *testing.T) {
 	// Verify we're getting back the outputs we expect
 	assert.Equal(t, expectedDynamodbTableName, dynamodbTableName)
 
-	subtestFolder := path.Join(path.Dir(tempTestFolder), "complete", "backend-test")
-	testData := fmt.Sprintf("data-for-no-replication-test-%s", randID)
 	backendMap := terraform.OutputMap(t, terraformOptions, "backend_config")
 
-	if !provisionInBlue(t, subtestFolder, backendMap, s3BucketId, backendMap["key"], testData) {
+	backendTestConfig := BackendTestConfig{
+		region:        backendMap["region"],
+		bucketName:    s3BucketId,
+		backendConfig: mapToConfig(backendMap),
+		tfStateKey:    backendMap["key"],
+		testData:      fmt.Sprintf("data-for-no-replication-test-%s", randID),
+		testFolder:    path.Join(path.Dir(tempTestFolder), "complete", "backend-test"),
+		workspace:     "",
+	}
+
+	if !provisionInBlue(t, backendTestConfig) {
 		assert.FailNow(t, "No-replication backend not working as expected")
 	}
 
-	verifyAndChange(t, "only", subtestFolder, backendMap, s3BucketId, backendMap["key"], testData)
+	verifyAndChange(t, "only", backendTestConfig)
 }

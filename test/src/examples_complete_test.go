@@ -14,6 +14,9 @@ import (
 	"time"
 )
 
+const WorkspaceKeyPrefix = "workspace"
+const Workspace = "eg-test"
+
 // Test the Terraform module in examples/complete using Terratest.
 func TestExamplesComplete(t *testing.T) {
 	t.Parallel()
@@ -25,7 +28,6 @@ func TestExamplesComplete(t *testing.T) {
 	varFiles := []string{"fixtures.us-east-2.tfvars"}
 
 	tempTestFolder := testStructure.CopyTerraformFolderToTemp(t, rootFolder, terraformFolderRelativeToRoot)
-	subtestFolder := path.Join(tempTestFolder, "backend-test")
 
 	terraformOptions := &terraform.Options{
 		// The path to where our Terraform code is located
@@ -56,37 +58,77 @@ func TestExamplesComplete(t *testing.T) {
 	blueRegion := blueBackendMap["region"]
 	s3BucketNames := terraform.OutputMap(t, terraformOptions, "s3_bucket_ids")
 	blueBucket := s3BucketNames[blueRegion]
-	// For multi-region, the keys are prefixed with what is configured as the bucket name
-	tfstateKey := fmt.Sprintf("%s/%s", blueBackendMap["bucket"], blueBackendMap["key"])
 	require.NotEmpty(t, blueBucket, "Could not find bucket name for blue region")
+	greenBackendMap := terraform.OutputMap(t, terraformOptions, "green_backend_config")
+	greenRegion := greenBackendMap["region"]
 
-	testData := fmt.Sprintf("data-for-blue-test-%s", randID)
+	blueConfig := BackendTestConfig{
+		region:        blueBackendMap["region"],
+		bucketName:    s3BucketNames[blueRegion],
+		backendConfig: mapToConfig(blueBackendMap),
+		// For multi-region, the keys are prefixed with what is configured as the bucket name
+		tfStateKey: fmt.Sprintf("%s/%s", blueBackendMap["bucket"], blueBackendMap["key"]),
+		testData:   fmt.Sprintf("data-for-blue-test-%s", randID),
+		testFolder: path.Join(tempTestFolder, "backend-test"),
+		workspace:  "",
+	}
+	blueWorkspaceBackendConfig := mapToConfig(blueBackendMap)
+	blueWorkspaceBackendConfig["workspace_key_prefix"] = WorkspaceKeyPrefix
 
-	if !provisionInBlue(t, subtestFolder, blueBackendMap, blueBucket, tfstateKey, testData) {
+	//blueWorkspaceConfig := BackendTestConfig{
+	//	region:        blueConfig.region,
+	//	bucketName:    blueConfig.bucketName,
+	//	backendConfig: blueWorkspaceBackendConfig,
+	//	tfStateKey:    fmt.Sprintf("%s/%s/%s/%s", blueBackendMap["bucket"], WorkspaceKeyPrefix, Workspace, blueBackendMap["key"]),
+	//	testData:      fmt.Sprintf("data-for-blue-workspace-test-%s", randID),
+	//	testFolder:    path.Join(tempTestFolder, "backend-workspace-test"),
+	//	workspace:     Workspace,
+	//}
+
+	greenConfig := BackendTestConfig{
+		region:        greenBackendMap["region"],
+		bucketName:    s3BucketNames[greenRegion],
+		backendConfig: mapToConfig(greenBackendMap),
+		tfStateKey:    fmt.Sprintf("%s/%s", greenBackendMap["bucket"], greenBackendMap["key"]),
+		testData:      blueConfig.testData,
+		testFolder:    path.Join(tempTestFolder, "backend-test"),
+		workspace:     "",
+	}
+	greenWorkspaceBackendConfig := mapToConfig(greenBackendMap)
+	greenWorkspaceBackendConfig["workspace_key_prefix"] = WorkspaceKeyPrefix
+
+	//greenWorkspaceConfig := BackendTestConfig{
+	//	region:        greenConfig.region,
+	//	bucketName:    greenConfig.bucketName,
+	//	backendConfig: greenWorkspaceBackendConfig,
+	//	tfStateKey:    fmt.Sprintf("%s/%s/%s/%s", greenBackendMap["bucket"], WorkspaceKeyPrefix, Workspace, greenBackendMap["key"]),
+	//	testData:      blueWorkspaceConfig.testData,
+	//	testFolder:    path.Join(tempTestFolder, "backend-workspace-test"),
+	//	workspace:     Workspace,
+	//}
+
+	if !provisionInBlue(t, blueConfig) {
 		assert.FailNow(t, "Blue backend not working as expected")
 	}
 
 	// Wait for replication from blue to green
-	waitForReplication(t, "blue", blueBucket, tfstateKey, blueRegion)
+	waitForReplication(t, "blue", blueConfig)
 
 	// Verify that the values are visible in the green region, that
 	// setting them to the same value does not change anything,
 	// and that they can be changed in the green region (in preparation for
 	// testing propagation back to blue).
 
-	greenBackendMap := terraform.OutputMap(t, terraformOptions, "green_backend_config")
-	greenRegion := greenBackendMap["region"]
-	greenBucket := s3BucketNames[greenRegion]
-
-	greenTestData, greenSuccess := verifyAndChange(t, "green", subtestFolder, greenBackendMap, greenBucket, tfstateKey, testData)
+	greenTestData, greenSuccess := verifyAndChange(t, "green", greenConfig)
 	if !greenSuccess {
 		assert.FailNow(t, "Green backend not working as expected")
 	}
 
 	// wait for replication from green to blue
-	waitForReplication(t, "green", greenBucket, tfstateKey, greenRegion)
+	waitForReplication(t, "green", greenConfig)
 
-	verifyAndChange(t, "blue", subtestFolder, blueBackendMap, blueBucket, tfstateKey, greenTestData)
+	blueConfig.testData = greenTestData
+	verifyAndChange(t, "blue", blueConfig)
 
 }
 

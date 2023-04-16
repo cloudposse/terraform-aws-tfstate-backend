@@ -16,25 +16,35 @@ import (
 	"time"
 )
 
+type BackendTestConfig struct {
+	region        string
+	bucketName    string
+	backendConfig map[string]any
+	tfStateKey    string
+	testData      string
+	testFolder    string
+	workspace     string
+}
+
 // Wait for the tfstateKey object to be replicated
-func waitForReplication(t *testing.T, color string, bucketName string, tfstateKey string, region string) {
+func waitForReplication(t *testing.T, color string, cfg BackendTestConfig) {
 	var (
 		otherColor      string
 		pollingDuration time.Duration
 		replicaStatus   *s3.HeadObjectOutput
 		rsError         error
 	)
-	if color == "blue" {
-		otherColor = "green"
-	} else {
+	if color == "green" {
 		otherColor = "blue"
+	} else {
+		otherColor = "green"
 	}
 	retryTime := 10 * time.Second
 	replicaStatusRequest := &s3.HeadObjectInput{
-		Bucket: aws.String(bucketName),
-		Key:    aws.String(tfstateKey),
+		Bucket: aws.String(cfg.bucketName),
+		Key:    aws.String(cfg.tfStateKey),
 	}
-	s3Client := s3.NewFromConfig(AWSConfig(region))
+	s3Client := s3.NewFromConfig(AWSConfig(cfg.region))
 
 	for i := 0; i < 15*6; i++ {
 		replicaStatus, rsError = s3Client.HeadObject(context.TODO(), replicaStatusRequest)
@@ -60,22 +70,34 @@ func waitForReplication(t *testing.T, color string, bucketName string, tfstateKe
 }
 
 // Provision the resources the first time, using the blue backend
-func provisionInBlue(t *testing.T, tempTestFolder string, backendMap map[string]string, bucketName string, tfstateKey string, testData string) bool {
+func provisionInBlue(t *testing.T, cfg BackendTestConfig) bool {
+	testData := cfg.testData
 	return t.Run("Provision in blue", func(t *testing.T) {
-		region := backendMap["region"]
 
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			// The path to where our Terraform code is located
-			TerraformDir: tempTestFolder,
+			TerraformDir: cfg.testFolder,
 			NoColor:      true,
 			Upgrade:      true,
 			Vars: map[string]interface{}{
 				"test": testData,
 			},
-			BackendConfig: mapToConfig(backendMap),
+			BackendConfig: cfg.backendConfig,
 		})
 
-		results := terraform.InitAndApply(t, terraformOptions)
+		var results string
+
+		if len(cfg.workspace) == 0 {
+			results = terraform.InitAndApply(t, terraformOptions)
+		} else {
+			if _, err := terraform.InitE(t, terraformOptions); err != nil {
+				require.FailNow(t, "Unable to initialize project in directory %s", cfg.testFolder)
+			}
+			if _, err := terraform.WorkspaceSelectOrNewE(t, terraformOptions, cfg.workspace); err != nil {
+				require.FailNow(t, "Unable to create workspace %s", cfg.workspace)
+			}
+			results = terraform.Apply(t, terraformOptions)
+		}
 
 		outputsRegex := regexp.MustCompile(`(?s)\n(Changes to Outputs:\n.+?\n)\n`)
 		outputsMatch := outputsRegex.FindString(results)
@@ -86,7 +108,7 @@ func provisionInBlue(t *testing.T, tempTestFolder string, backendMap map[string]
 
 		// Check a state file actually got stored in S3 and contains our data in it somewhere
 		// (since that data is used in an output of the Terraform code)
-		contents := ttaws.GetS3ObjectContents(t, region, bucketName, tfstateKey)
+		contents := ttaws.GetS3ObjectContents(t, cfg.region, cfg.bucketName, cfg.tfStateKey)
 		require.Contains(t, contents, testData)
 	})
 }
@@ -96,22 +118,23 @@ func provisionInBlue(t *testing.T, tempTestFolder string, backendMap map[string]
 // and that they can be changed in the region (in preparation for
 // testing propagation back to the other region).
 
-func verifyAndChange(t *testing.T, color string, tempTestFolder string, backendMap map[string]string, bucketName string, tfstateKey string, testData string) (string, bool) {
-	region := backendMap["region"]
+func verifyAndChange(t *testing.T, color string, cfg BackendTestConfig) (string, bool) {
+	// tempTestFolder string, backendMap map[string]string, bucketName string, tfstateKey string, testData string) (string, bool) {
+	region := cfg.region
 	newTestData := fmt.Sprintf("Test data for %s region %s: (%s)", color, region, random.UniqueId())
 	return newTestData, t.Run(fmt.Sprintf("Verify and change in %s", color), func(t *testing.T) {
 		s3Client := s3.NewFromConfig(AWSConfig(region))
 
 		// Check a state file actually got stored in S3 and contains our data in it somewhere
 		// (since that data is used in an output of the Terraform code)
-		contents := ttaws.GetS3ObjectContents(t, backendMap["region"], bucketName, tfstateKey)
-		require.Contains(t, contents, testData)
+		contents := ttaws.GetS3ObjectContents(t, region, cfg.bucketName, cfg.tfStateKey)
+		require.Contains(t, contents, cfg.testData)
 
 		if color != "only" {
 			// Check object's replica status
 			replicaStatusRequest := &s3.HeadObjectInput{
-				Bucket: aws.String(bucketName),
-				Key:    aws.String(tfstateKey),
+				Bucket: aws.String(cfg.bucketName),
+				Key:    aws.String(cfg.tfStateKey),
 			}
 
 			replicaStatus, rsError := s3Client.HeadObject(context.TODO(), replicaStatusRequest)
@@ -125,14 +148,14 @@ func verifyAndChange(t *testing.T, color string, tempTestFolder string, backendM
 
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			// The path to where our Terraform code is located
-			TerraformDir: tempTestFolder,
+			TerraformDir: cfg.testFolder,
 			NoColor:      true,
 			Reconfigure:  true,
 			Upgrade:      true,
 			Vars: map[string]interface{}{
-				"test": testData,
+				"test": cfg.testData,
 			},
-			BackendConfig: mapToConfig(backendMap),
+			BackendConfig: cfg.backendConfig,
 		})
 
 		if _, err := terraform.InitE(t, terraformOptions); err != nil {
@@ -141,7 +164,13 @@ func verifyAndChange(t *testing.T, color string, tempTestFolder string, backendM
 		}
 
 		outData := terraform.Output(t, terraformOptions, "test")
-		assert.Equal(t, testData, outData, fmt.Sprintf("Unable to read resource in %s backend", color))
+		assert.Equal(t, cfg.testData, outData, fmt.Sprintf("Unable to read resource in %s backend", color))
+
+		if len(cfg.workspace) > 0 {
+			if _, err := terraform.WorkspaceSelectOrNewE(t, terraformOptions, cfg.workspace); err != nil {
+				require.FailNow(t, "Unable to select workspace %s", cfg.workspace)
+			}
+		}
 
 		results := terraform.Apply(t, terraformOptions)
 
