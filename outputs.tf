@@ -6,22 +6,22 @@ output "s3_bucket_ids" {
 output "s3_bucket_arns" {
   description = "Map (by region) of the ARNs of the created S3 buckets"
   value = local.enabled ? {
-    for k in local.colors : local.s3_buckets[k].region => local.s3_buckets[k].arn
+    for k in local.colors : local.s3_buckets[k].region => local.s3_buckets[k].arn if try(local.s3_buckets[k].region, null) != null
   } : null
 }
 
 output "s3_bucket_domains" {
   description = "Map (by region) of the domain names of the created S3 buckets"
   value = local.enabled ? {
-    for k in local.colors : local.s3_buckets[k].region => local.s3_buckets[k].bucket_regional_domain_name
+    for k in local.colors : local.s3_buckets[k].region => local.s3_buckets[k].bucket_regional_domain_name if try(local.s3_buckets[k].region, null) != null
   } : null
 }
 
 output "s3_bucket_kms_key_arns" {
   description = "Map (by bucket name) of the ARNs of the KMS keys used to encrypt the created S3 buckets"
-  value = local.enabled ? merge({
+  value = local.enabled ? merge(one(module.blue_bucket[*].bucket.id) == null ? {} : {
     (module.blue_bucket[0].bucket.id) = local.blue_kms_key_arn },
-    local.replication_enabled ? {
+    local.replication_enabled && one(module.green_bucket[*].bucket.id) != null ? {
     (module.green_bucket[0].bucket.id) = local.green_kms_key_arn } : {}
   ) : null
 }

@@ -15,8 +15,10 @@ locals {
     green = length(var.green_s3_bucket_name) > 0 ? var.green_s3_bucket_name[0] : module.green_label.id
   }
   s3_buckets = {
-    blue  = one(module.blue_bucket[*].bucket)
-    green = one(module.green_bucket[*].bucket)
+    // If a bucket was destroyed outside of Terraform and then you run `terraform destroy`,
+    // and you had replication enabled, module.blue_bucket[0] would exist but not have a `bucket`.
+    blue  = try(one(module.blue_bucket[*].bucket), null)
+    green = try(one(module.green_bucket[*].bucket), null)
   }
 }
 

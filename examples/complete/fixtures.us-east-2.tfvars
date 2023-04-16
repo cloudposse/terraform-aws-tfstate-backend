@@ -4,7 +4,7 @@ green_region = "us-west-2"
 
 namespace = "eg"
 
-environment = "ue2"
+environment = "use2"
 
 stage = "test"
 

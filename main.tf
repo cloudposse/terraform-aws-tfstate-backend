@@ -6,9 +6,10 @@ locals {
   blue_kms_key_arn  = length(var.blue_kms_key_arn) == 0 ? one(data.aws_kms_alias.blue[*].arn) : one(var.blue_kms_key_arn[*])
   green_kms_key_arn = length(var.green_kms_key_arn) == 0 ? one(data.aws_kms_alias.green[*].arn) : one(var.green_kms_key_arn[*])
 
-  blue_backend_config = local.enabled ? merge({ encrypt = true
-    key    = "terraform.tfstate"
-    region = module.blue_bucket[0].bucket.region
+  blue_backend_config = !local.enabled || try(module.blue_bucket[0].bucket, null) == null ? null : merge({
+    encrypt = true
+    key     = "terraform.tfstate"
+    region  = module.blue_bucket[0].bucket.region
     },
     var.replication_enabled ? {
       bucket           = "multi-region"
@@ -18,11 +19,12 @@ locals {
     },
     var.lock_table_enabled ? {
       dynamodb_table = one(aws_dynamodb_table.locks[*].id)
-  } : {}) : null
+  } : {})
 
-  green_backend_config = local.replication_enabled ? merge({ encrypt = true
-    key    = "terraform.tfstate"
-    region = module.green_bucket[0].bucket.region
+  green_backend_config = !local.replication_enabled || try(module.green_bucket[0].bucket, null) == null ? null : merge({
+    encrypt = true
+    key     = "terraform.tfstate"
+    region  = module.green_bucket[0].bucket.region
     },
     var.replication_enabled ? {
       bucket           = "multi-region"
@@ -32,7 +34,7 @@ locals {
     },
     var.lock_table_enabled ? {
       dynamodb_table = one(aws_dynamodb_table.locks[*].id)
-  } : {}) : null
+  } : {})
 
 }
 

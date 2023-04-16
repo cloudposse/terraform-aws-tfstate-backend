@@ -11,7 +11,6 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"path"
 	"regexp"
 	"testing"
 	"time"
@@ -61,13 +60,13 @@ func waitForReplication(t *testing.T, color string, bucketName string, tfstateKe
 }
 
 // Provision the resources the first time, using the blue backend
-func provisionInBlue(t *testing.T, tempTestFolder string, testData string, backendMap map[string]string, bucketName string, tfstateKey string) bool {
+func provisionInBlue(t *testing.T, tempTestFolder string, backendMap map[string]string, bucketName string, tfstateKey string, testData string) bool {
 	return t.Run("Provision in blue", func(t *testing.T) {
 		region := backendMap["region"]
 
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			// The path to where our Terraform code is located
-			TerraformDir: path.Join(tempTestFolder, "backend-test"),
+			TerraformDir: tempTestFolder,
 			NoColor:      true,
 			Upgrade:      true,
 			Vars: map[string]interface{}{
@@ -97,7 +96,7 @@ func provisionInBlue(t *testing.T, tempTestFolder string, testData string, backe
 // and that they can be changed in the region (in preparation for
 // testing propagation back to the other region).
 
-func verifyAndChange(t *testing.T, color string, backendMap map[string]string, bucketName string, tfstateKey string, testData string, tempTestFolder string) (string, bool) {
+func verifyAndChange(t *testing.T, color string, tempTestFolder string, backendMap map[string]string, bucketName string, tfstateKey string, testData string) (string, bool) {
 	region := backendMap["region"]
 	newTestData := fmt.Sprintf("Test data for %s region %s: (%s)", color, region, random.UniqueId())
 	return newTestData, t.Run(fmt.Sprintf("Verify and change in %s", color), func(t *testing.T) {
@@ -108,23 +107,25 @@ func verifyAndChange(t *testing.T, color string, backendMap map[string]string, b
 		contents := ttaws.GetS3ObjectContents(t, backendMap["region"], bucketName, tfstateKey)
 		require.Contains(t, contents, testData)
 
-		// Check object's replica status
-		replicaStatusRequest := &s3.HeadObjectInput{
-			Bucket: aws.String(bucketName),
-			Key:    aws.String(tfstateKey),
-		}
+		if color != "only" {
+			// Check object's replica status
+			replicaStatusRequest := &s3.HeadObjectInput{
+				Bucket: aws.String(bucketName),
+				Key:    aws.String(tfstateKey),
+			}
 
-		replicaStatus, rsError := s3Client.HeadObject(context.TODO(), replicaStatusRequest)
-		assert.NoError(t, rsError, fmt.Sprintf("Error getting status of tfstate object in %s bucket", color))
-		assert.NotNil(t, replicaStatus, fmt.Sprintf("No status returned from HeadObject for tfstate object in %s bucket", color))
+			replicaStatus, rsError := s3Client.HeadObject(context.TODO(), replicaStatusRequest)
+			assert.NoError(t, rsError, fmt.Sprintf("Error getting status of tfstate object in %s bucket", color))
+			assert.NotNil(t, replicaStatus, fmt.Sprintf("No status returned from HeadObject for tfstate object in %s bucket", color))
 
-		if replicaStatus != nil {
-			assert.Equal(t, types.ReplicationStatusReplica, replicaStatus.ReplicationStatus, "Replicated tfstate not marked as REPLICA")
+			if replicaStatus != nil {
+				assert.Equal(t, types.ReplicationStatusReplica, replicaStatus.ReplicationStatus, "Replicated tfstate not marked as REPLICA")
+			}
 		}
 
 		terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
 			// The path to where our Terraform code is located
-			TerraformDir: path.Join(tempTestFolder, "backend-test"),
+			TerraformDir: tempTestFolder,
 			NoColor:      true,
 			Reconfigure:  true,
 			Upgrade:      true,

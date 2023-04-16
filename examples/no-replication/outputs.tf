@@ -12,3 +12,8 @@ output "dynamodb_table_id" {
   value       = module.tfstate_backend.dynamodb_table_id
   description = "DynamoDB table ID"
 }
+
+output "backend_config" {
+  value       = module.tfstate_backend.blue_backend_config
+  description = "Terraform state backend configuration (as a map)"
+}

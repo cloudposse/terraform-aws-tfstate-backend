@@ -1,9 +1,11 @@
 package test
 
 import (
+	"fmt"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/terraform"
 	testStructure "github.com/gruntwork-io/terratest/modules/test-structure"
+	"path"
 
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -50,4 +52,14 @@ func TestExamplesNoReplication(t *testing.T) {
 	expectedDynamodbTableName := "eg-use2-test-terraform-tfstate-backend-" + randID + "-lock"
 	// Verify we're getting back the outputs we expect
 	assert.Equal(t, expectedDynamodbTableName, dynamodbTableName)
+
+	subtestFolder := path.Join(path.Dir(tempTestFolder), "complete", "backend-test")
+	testData := fmt.Sprintf("data-for-no-replication-test-%s", randID)
+	backendMap := terraform.OutputMap(t, terraformOptions, "backend_config")
+
+	if !provisionInBlue(t, subtestFolder, backendMap, s3BucketId, backendMap["key"], testData) {
+		assert.FailNow(t, "No-replication backend not working as expected")
+	}
+
+	verifyAndChange(t, "only", subtestFolder, backendMap, s3BucketId, backendMap["key"], testData)
 }

@@ -30,14 +30,17 @@ clean:
 	[ "$(TEST_HARNESS_PATH)" == "/" ] || rm -rf $(TEST_HARNESS_PATH)
 
 ## Run all tests
-all: module examples/complete
+all: module examples/complete examples/no-replication
 
+# This module does not pass `terraform validate` because of
+# https://github.com/hashicorp/terraform/issues/28490
+# so we remove it from the list of tests on the module
 ## Run basic sanity checks against the module itself
-module: export TESTS ?= installed lint module-pinning provider-pinning validate terraform-docs input-descriptions output-descriptions
+module: export TESTS ?= installed lint module-pinning provider-pinning terraform-docs input-descriptions output-descriptions
 module: deps
 	$(call RUN_TESTS, ../)
 
 ## Run tests against example
-examples/complete: export TESTS ?= installed lint validate
-examples/complete: deps
+examples/complete examples/no-replication: export TESTS ?= installed lint validate
+examples/complete examples/no-replication: deps
 	$(call RUN_TESTS, ../$@)
