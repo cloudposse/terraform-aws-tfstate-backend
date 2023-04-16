@@ -8,7 +8,7 @@ module "tfstate" {
   }
 
   force_destroy       = true
-  lock_table_enabled  = false
+  lock_table_enabled  = true
   replication_enabled = true
 
   context = module.this.context
