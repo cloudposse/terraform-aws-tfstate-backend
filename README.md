@@ -253,9 +253,9 @@ Available targets:
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.63.0 |
-| <a name="provider_aws.blue"></a> [aws.blue](#provider\_aws.blue) | 4.63.0 |
-| <a name="provider_aws.green"></a> [aws.green](#provider\_aws.green) | 4.63.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 4.0 |
+| <a name="provider_aws.blue"></a> [aws.blue](#provider\_aws.blue) | >= 4.0 |
+| <a name="provider_aws.green"></a> [aws.green](#provider\_aws.green) | >= 4.0 |
 
 ## Modules
 
