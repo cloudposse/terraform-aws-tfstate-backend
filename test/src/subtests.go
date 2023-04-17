@@ -26,6 +26,39 @@ type BackendTestConfig struct {
 	workspace     string
 }
 
+func testCrossRegionProvisioning(t *testing.T, blueConfig BackendTestConfig, greenConfig BackendTestConfig) {
+	name := "Cross Region Without Workspace"
+	if len(blueConfig.workspace) > 0 {
+		name = "Cross Region With Workspace " + blueConfig.workspace
+	}
+	t.Run(name, func(t *testing.T) {
+		t.Parallel()
+
+		if !provisionInBlue(t, blueConfig) {
+			assert.FailNow(t, "Blue backend not working as expected")
+		}
+
+		// Wait for replication from blue to green
+		waitForReplication(t, "blue", blueConfig)
+
+		// Verify that the values are visible in the green region, that
+		// setting them to the same value does not change anything,
+		// and that they can be changed in the green region (in preparation for
+		// testing propagation back to blue).
+
+		greenTestData, greenSuccess := verifyAndChange(t, "green", greenConfig)
+		if !greenSuccess {
+			assert.FailNow(t, "Green backend not working as expected")
+		}
+
+		// wait for replication from green to blue
+		waitForReplication(t, "green", greenConfig)
+
+		blueConfig.testData = greenTestData
+		verifyAndChange(t, "blue", blueConfig)
+	})
+}
+
 // Wait for the tfstateKey object to be replicated
 func waitForReplication(t *testing.T, color string, cfg BackendTestConfig) {
 	var (
@@ -163,14 +196,14 @@ func verifyAndChange(t *testing.T, color string, cfg BackendTestConfig) (string,
 			require.FailNow(t, fmt.Sprintf("Terminating test: unable to initialize %s backend", color))
 		}
 
-		outData := terraform.Output(t, terraformOptions, "test")
-		assert.Equal(t, cfg.testData, outData, fmt.Sprintf("Unable to read resource in %s backend", color))
-
 		if len(cfg.workspace) > 0 {
 			if _, err := terraform.WorkspaceSelectOrNewE(t, terraformOptions, cfg.workspace); err != nil {
 				require.FailNow(t, "Unable to select workspace %s", cfg.workspace)
 			}
 		}
+
+		outData := terraform.Output(t, terraformOptions, "test")
+		assert.Equal(t, cfg.testData, outData, fmt.Sprintf("Unable to read resource in %s backend", color))
 
 		results := terraform.Apply(t, terraformOptions)
 

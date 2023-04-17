@@ -75,15 +75,15 @@ func TestExamplesComplete(t *testing.T) {
 	blueWorkspaceBackendConfig := mapToConfig(blueBackendMap)
 	blueWorkspaceBackendConfig["workspace_key_prefix"] = WorkspaceKeyPrefix
 
-	//blueWorkspaceConfig := BackendTestConfig{
-	//	region:        blueConfig.region,
-	//	bucketName:    blueConfig.bucketName,
-	//	backendConfig: blueWorkspaceBackendConfig,
-	//	tfStateKey:    fmt.Sprintf("%s/%s/%s/%s", blueBackendMap["bucket"], WorkspaceKeyPrefix, Workspace, blueBackendMap["key"]),
-	//	testData:      fmt.Sprintf("data-for-blue-workspace-test-%s", randID),
-	//	testFolder:    path.Join(tempTestFolder, "backend-workspace-test"),
-	//	workspace:     Workspace,
-	//}
+	blueWorkspaceConfig := BackendTestConfig{
+		region:        blueConfig.region,
+		bucketName:    blueConfig.bucketName,
+		backendConfig: blueWorkspaceBackendConfig,
+		tfStateKey:    fmt.Sprintf("%s/%s/%s/%s", blueBackendMap["bucket"], WorkspaceKeyPrefix, Workspace, blueBackendMap["key"]),
+		testData:      fmt.Sprintf("data-for-blue-workspace-test-%s", randID),
+		testFolder:    path.Join(tempTestFolder, "backend-workspace-test"),
+		workspace:     Workspace,
+	}
 
 	greenConfig := BackendTestConfig{
 		region:        greenBackendMap["region"],
@@ -97,39 +97,22 @@ func TestExamplesComplete(t *testing.T) {
 	greenWorkspaceBackendConfig := mapToConfig(greenBackendMap)
 	greenWorkspaceBackendConfig["workspace_key_prefix"] = WorkspaceKeyPrefix
 
-	//greenWorkspaceConfig := BackendTestConfig{
-	//	region:        greenConfig.region,
-	//	bucketName:    greenConfig.bucketName,
-	//	backendConfig: greenWorkspaceBackendConfig,
-	//	tfStateKey:    fmt.Sprintf("%s/%s/%s/%s", greenBackendMap["bucket"], WorkspaceKeyPrefix, Workspace, greenBackendMap["key"]),
-	//	testData:      blueWorkspaceConfig.testData,
-	//	testFolder:    path.Join(tempTestFolder, "backend-workspace-test"),
-	//	workspace:     Workspace,
-	//}
-
-	if !provisionInBlue(t, blueConfig) {
-		assert.FailNow(t, "Blue backend not working as expected")
+	greenWorkspaceConfig := BackendTestConfig{
+		region:        greenConfig.region,
+		bucketName:    greenConfig.bucketName,
+		backendConfig: greenWorkspaceBackendConfig,
+		tfStateKey:    fmt.Sprintf("%s/%s/%s/%s", greenBackendMap["bucket"], WorkspaceKeyPrefix, Workspace, greenBackendMap["key"]),
+		testData:      blueWorkspaceConfig.testData,
+		testFolder:    path.Join(tempTestFolder, "backend-workspace-test"),
+		workspace:     Workspace,
 	}
 
-	// Wait for replication from blue to green
-	waitForReplication(t, "blue", blueConfig)
-
-	// Verify that the values are visible in the green region, that
-	// setting them to the same value does not change anything,
-	// and that they can be changed in the green region (in preparation for
-	// testing propagation back to blue).
-
-	greenTestData, greenSuccess := verifyAndChange(t, "green", greenConfig)
-	if !greenSuccess {
-		assert.FailNow(t, "Green backend not working as expected")
-	}
-
-	// wait for replication from green to blue
-	waitForReplication(t, "green", greenConfig)
-
-	blueConfig.testData = greenTestData
-	verifyAndChange(t, "blue", blueConfig)
-
+	// Run the tests for with and without workspaces in parallel,
+	// and wait for them both to finish before proceeding.
+	t.Run("group", func(t *testing.T) {
+		testCrossRegionProvisioning(t, blueConfig, greenConfig)
+		testCrossRegionProvisioning(t, blueWorkspaceConfig, greenWorkspaceConfig)
+	})
 }
 
 func TestExamplesCompleteDisabled(t *testing.T) {
