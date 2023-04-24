@@ -165,6 +165,8 @@ resource "aws_s3_bucket_acl" "default" {
   bucket = one(aws_s3_bucket.default.*.id)
   acl    = var.acl
 
+  # Default "bucket ownership controls" for new S3 buckets is "BucketOwnerEnforced", which disables ACLs.
+  # So, we need to wait until we change bucket ownership to "BucketOwnerPreferred" before we can set ACLs.
   depends_on = [aws_s3_bucket_ownership_controls.default]
 }
 
@@ -172,6 +174,7 @@ resource "aws_s3_bucket_versioning" "default" {
   count = local.bucket_enabled ? 1 : 0
 
   bucket = one(aws_s3_bucket.default.*.id)
+
   versioning_configuration {
     status     = "Enabled"
     mfa_delete = var.mfa_delete ? "Enabled" : "Disabled"
@@ -200,7 +203,7 @@ resource "aws_s3_bucket_logging" "default" {
 }
 
 resource "aws_s3_bucket_public_access_block" "default" {
-  count = local.bucket_enabled && var.enable_public_access_block && !var.bucket_ownership_enforced_enabled ? 1 : 0
+  count = local.bucket_enabled && var.enable_public_access_block ? 1 : 0
 
   bucket                  = one(aws_s3_bucket.default.*.id)
   block_public_acls       = var.block_public_acls
