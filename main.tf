@@ -264,8 +264,8 @@ module "dynamodb_table_label" {
   enabled    = local.dynamodb_enabled
 }
 
-#bridgecrew:skip=BC_AWS_GENERAL_44:Skipping `Ensure DynamoDB Tables have Auto Scaling enabled` because we know this is low usage
 resource "aws_dynamodb_table" "with_server_side_encryption" {
+  #bridgecrew:skip=BC_AWS_GENERAL_44:Skipping `Ensure DynamoDB Tables have Auto Scaling enabled` because we know this is low usage
   count          = local.dynamodb_enabled && var.enable_server_side_encryption ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
@@ -292,6 +292,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
 }
 
 resource "aws_dynamodb_table" "without_server_side_encryption" {
+  #bridgecrew:skip=BC_AWS_GENERAL_44:Skipping `Ensure DynamoDB Tables have Auto Scaling enabled` because we know this is low usage
   count          = local.dynamodb_enabled && !var.enable_server_side_encryption ? 1 : 0
   name           = local.dynamodb_table_name
   billing_mode   = var.billing_mode
