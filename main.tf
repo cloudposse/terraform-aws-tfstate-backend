@@ -158,6 +158,8 @@ resource "aws_s3_bucket" "default" {
 
   #bridgecrew:skip=BC_AWS_S3_13:Skipping `Enable S3 Bucket Logging` check until Bridgecrew will support dynamic blocks (https://github.com/bridgecrewio/checkov/issues/776).
   #bridgecrew:skip=CKV_AWS_52:Skipping `Ensure S3 bucket has MFA delete enabled` check due to issues operating with `mfa_delete` in terraform
+  #bridgecrew:skip=BC_AWS_NETWORKING_52: Skipping `Ensure S3 Bucket has public access blocks` because we have chosen to make it configurable
+  #bridgecrew:skip=BC_AWS_S3_16:Skipping `Ensure AWS S3 object versioning is enabled` because we have it enabled, but Bridgecrew doesn't recognize it
   bucket        = substr(local.bucket_name, 0, 63)
   force_destroy = var.force_destroy
 
@@ -229,26 +231,6 @@ resource "aws_s3_bucket_public_access_block" "default" {
   restrict_public_buckets = var.restrict_public_buckets
 }
 
-/*
-  dynamic "replication_configuration" {
-    for_each = var.s3_replication_enabled ? toset([var.s3_replica_bucket_arn]) : []
-    content {
-      role = aws_iam_role.replication[0].arn
-
-      rules {
-        id     = module.this.id
-        prefix = ""
-        status = "Enabled"
-
-        destination {
-          bucket        = var.s3_replica_bucket_arn
-          storage_class = "STANDARD"
-        }
-      }
-    }
-  }
-*/
-
 resource "aws_s3_bucket_replication_configuration" "default" {
   count = local.bucket_enabled && var.s3_replication_enabled ? 1 : 0
 
@@ -282,6 +264,7 @@ module "dynamodb_table_label" {
   enabled    = local.dynamodb_enabled
 }
 
+#bridgecrew:skip=BC_AWS_GENERAL_44:Skipping `Ensure DynamoDB Tables have Auto Scaling enabled` because we know this is low usage
 resource "aws_dynamodb_table" "with_server_side_encryption" {
   count          = local.dynamodb_enabled && var.enable_server_side_encryption ? 1 : 0
   name           = local.dynamodb_table_name
