@@ -8,10 +8,10 @@ locals {
 
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads
 
-  policy = local.prevent_unencrypted_uploads ? join(
+  policy = join(
     "",
     data.aws_iam_policy_document.prevent_unencrypted_uploads.*.json
-  ) : ""
+  )
 
   terraform_backend_config_file = format(
     "%s/%s",
@@ -153,7 +153,7 @@ resource "aws_s3_bucket" "default" {
 }
 
 resource "aws_s3_bucket_policy" "default" {
-  count = local.bucket_enabled ? 1 : 0
+  count = (local.bucket_enabled && local.prevent_unencrypted_uploads) ? 1 : 0
 
   bucket = one(aws_s3_bucket.default.*.id)
   policy = local.policy
