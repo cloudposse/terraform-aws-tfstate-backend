@@ -141,6 +141,8 @@ data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
   }
 }
 
+#S3 access controls, policies and logging are defined as seperate terraform resources below
+#tfsec:ignore:aws-s3-block-public-acls tfsec:ignore:aws-s3-block-public-policy tfsec:ignore:aws-s3-enable-bucket-encryption tfsec:ignore:aws-s3-encryption-customer-key tfsec:ignore:aws-s3-ignore-public-acls tfsec:ignore:aws-s3-no-public-buckets tfsec:ignore:aws-s3-enable-bucket-logging tfsec:ignore:aws-s3-enable-versioning tfsec:ignore:aws-s3-specify-public-access-block
 resource "aws_s3_bucket" "default" {
   count = local.bucket_enabled ? 1 : 0
 
@@ -241,7 +243,7 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
   # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
   hash_key = "LockID"
 
-  server_side_encryption {
+  server_side_encryption { #tfsec:ignore:aws-dynamodb-table-customer-key
     enabled = true
   }
 
