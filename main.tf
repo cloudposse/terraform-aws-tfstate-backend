@@ -8,10 +8,7 @@ locals {
 
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads
 
-  policy = local.prevent_unencrypted_uploads ? join(
-    "",
-    data.aws_iam_policy_document.prevent_unencrypted_uploads.*.json
-  ) : ""
+  policy = one(data.aws_iam_policy_document.bucket_policy[*].json)
 
   terraform_backend_config_file = format(
     "%s/%s",
@@ -56,63 +53,71 @@ module "bucket_label" {
 
 data "aws_region" "current" {}
 
-data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
-  count = local.prevent_unencrypted_uploads ? 1 : 0
+data "aws_iam_policy_document" "bucket_policy" {
+  count = local.enabled ? 1 : 0
 
-  statement {
-    sid = "DenyIncorrectEncryptionHeader"
+  dynamic "statement" {
+    for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 
-    effect = "Deny"
+    content {
+      sid = "DenyIncorrectEncryptionHeader"
 
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
+      effect = "Deny"
 
-    actions = [
-      "s3:PutObject"
-    ]
+      principals {
+        identifiers = ["*"]
+        type        = "AWS"
+      }
 
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "AES256",
-        "aws:kms"
+      actions = [
+        "s3:PutObject"
       ]
+
+      resources = [
+        "${var.arn_format}:s3:::${local.bucket_name}/*",
+      ]
+
+      condition {
+        test     = "StringNotEquals"
+        variable = "s3:x-amz-server-side-encryption"
+
+        values = [
+          "AES256",
+          "aws:kms"
+        ]
+      }
     }
   }
 
-  statement {
-    sid = "DenyUnEncryptedObjectUploads"
+  dynamic "statement" {
+    for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 
-    effect = "Deny"
+    content {
+      sid = "DenyUnEncryptedObjectUploads"
 
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
+      effect = "Deny"
 
-    actions = [
-      "s3:PutObject"
-    ]
+      principals {
+        identifiers = ["*"]
+        type        = "AWS"
+      }
 
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "true"
+      actions = [
+        "s3:PutObject"
       ]
+
+      resources = [
+        "${var.arn_format}:s3:::${local.bucket_name}/*",
+      ]
+
+      condition {
+        test     = "Null"
+        variable = "s3:x-amz-server-side-encryption"
+
+        values = [
+          "true"
+        ]
+      }
     }
   }
 
