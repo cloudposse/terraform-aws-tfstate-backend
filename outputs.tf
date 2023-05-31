@@ -19,17 +19,17 @@ output "s3_replication_role_arn" {
 }
 
 output "dynamodb_table_name" {
-  value       = one(aws_dynamodb_table.with_server_side_encryption.*.name)
+  value       = one(aws_dynamodb_table.with_server_side_encryption[*].name)
   description = "DynamoDB table name"
 }
 
 output "dynamodb_table_id" {
-  value       = one(aws_dynamodb_table.with_server_side_encryption.*.id)
+  value       = one(aws_dynamodb_table.with_server_side_encryption[*].id)
   description = "DynamoDB table ID"
 }
 
 output "dynamodb_table_arn" {
-  value       = one(aws_dynamodb_table.with_server_side_encryption.*.arn)
+  value       = one(aws_dynamodb_table.with_server_side_encryption[*].arn)
   description = "DynamoDB table ARN"
 }
 

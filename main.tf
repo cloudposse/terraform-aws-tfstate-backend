@@ -8,10 +8,7 @@ locals {
 
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads
 
-  policy = local.prevent_unencrypted_uploads ? join(
-    "",
-    data.aws_iam_policy_document.prevent_unencrypted_uploads.*.json
-  ) : ""
+  policy = one(data.aws_iam_policy_document.bucket_policy[*].json)
 
   terraform_backend_config_file = format(
     "%s/%s",
@@ -56,63 +53,71 @@ module "bucket_label" {
 
 data "aws_region" "current" {}
 
-data "aws_iam_policy_document" "prevent_unencrypted_uploads" {
-  count = local.prevent_unencrypted_uploads ? 1 : 0
+data "aws_iam_policy_document" "bucket_policy" {
+  count = local.enabled ? 1 : 0
 
-  statement {
-    sid = "DenyIncorrectEncryptionHeader"
+  dynamic "statement" {
+    for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 
-    effect = "Deny"
+    content {
+      sid = "DenyIncorrectEncryptionHeader"
 
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
+      effect = "Deny"
 
-    actions = [
-      "s3:PutObject"
-    ]
+      principals {
+        identifiers = ["*"]
+        type        = "AWS"
+      }
 
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "StringNotEquals"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "AES256",
-        "aws:kms"
+      actions = [
+        "s3:PutObject"
       ]
+
+      resources = [
+        "${var.arn_format}:s3:::${local.bucket_name}/*",
+      ]
+
+      condition {
+        test     = "StringNotEquals"
+        variable = "s3:x-amz-server-side-encryption"
+
+        values = [
+          "AES256",
+          "aws:kms"
+        ]
+      }
     }
   }
 
-  statement {
-    sid = "DenyUnEncryptedObjectUploads"
+  dynamic "statement" {
+    for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 
-    effect = "Deny"
+    content {
+      sid = "DenyUnEncryptedObjectUploads"
 
-    principals {
-      identifiers = ["*"]
-      type        = "AWS"
-    }
+      effect = "Deny"
 
-    actions = [
-      "s3:PutObject"
-    ]
+      principals {
+        identifiers = ["*"]
+        type        = "AWS"
+      }
 
-    resources = [
-      "${var.arn_format}:s3:::${local.bucket_name}/*",
-    ]
-
-    condition {
-      test     = "Null"
-      variable = "s3:x-amz-server-side-encryption"
-
-      values = [
-        "true"
+      actions = [
+        "s3:PutObject"
       ]
+
+      resources = [
+        "${var.arn_format}:s3:::${local.bucket_name}/*",
+      ]
+
+      condition {
+        test     = "Null"
+        variable = "s3:x-amz-server-side-encryption"
+
+        values = [
+          "true"
+        ]
+      }
     }
   }
 
@@ -157,14 +162,14 @@ resource "aws_s3_bucket" "default" {
 resource "aws_s3_bucket_policy" "default" {
   count = local.bucket_enabled ? 1 : 0
 
-  bucket = one(aws_s3_bucket.default.*.id)
+  bucket = one(aws_s3_bucket.default[*].id)
   policy = local.policy
 }
 
 resource "aws_s3_bucket_acl" "default" {
   count = local.bucket_enabled && !var.bucket_ownership_enforced_enabled ? 1 : 0
 
-  bucket = one(aws_s3_bucket.default.*.id)
+  bucket = one(aws_s3_bucket.default[*].id)
   acl    = var.acl
 
   # Default "bucket ownership controls" for new S3 buckets is "BucketOwnerEnforced", which disables ACLs.
@@ -175,7 +180,7 @@ resource "aws_s3_bucket_acl" "default" {
 resource "aws_s3_bucket_versioning" "default" {
   count = local.bucket_enabled ? 1 : 0
 
-  bucket = one(aws_s3_bucket.default.*.id)
+  bucket = one(aws_s3_bucket.default[*].id)
 
   versioning_configuration {
     status     = "Enabled"
@@ -186,7 +191,7 @@ resource "aws_s3_bucket_versioning" "default" {
 resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
   count = local.bucket_enabled ? 1 : 0
 
-  bucket = one(aws_s3_bucket.default.*.id)
+  bucket = one(aws_s3_bucket.default[*].id)
 
   rule {
     apply_server_side_encryption_by_default {
@@ -198,7 +203,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
 resource "aws_s3_bucket_logging" "default" {
   count = local.bucket_enabled && length(var.logging) > 0 ? 1 : 0
 
-  bucket = one(aws_s3_bucket.default.*.id)
+  bucket = one(aws_s3_bucket.default[*].id)
 
   target_bucket = var.logging[0].target_bucket
   target_prefix = var.logging[0].target_prefix
@@ -207,7 +212,7 @@ resource "aws_s3_bucket_logging" "default" {
 resource "aws_s3_bucket_public_access_block" "default" {
   count = local.bucket_enabled && var.enable_public_access_block ? 1 : 0
 
-  bucket                  = one(aws_s3_bucket.default.*.id)
+  bucket                  = one(aws_s3_bucket.default[*].id)
   block_public_acls       = var.block_public_acls
   ignore_public_acls      = var.ignore_public_acls
   block_public_policy     = var.block_public_policy
@@ -218,7 +223,7 @@ resource "aws_s3_bucket_public_access_block" "default" {
 # See https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html
 resource "aws_s3_bucket_ownership_controls" "default" {
   count  = local.bucket_enabled ? 1 : 0
-  bucket = one(aws_s3_bucket.default.*.id)
+  bucket = one(aws_s3_bucket.default[*].id)
 
   rule {
     object_ownership = var.bucket_ownership_enforced_enabled ? "BucketOwnerEnforced" : "BucketOwnerPreferred"
