@@ -56,6 +56,8 @@ data "aws_region" "current" {}
 data "aws_iam_policy_document" "bucket_policy" {
   count = local.enabled ? 1 : 0
 
+  source_policy_documents = var.user_policy_documents
+
   dynamic "statement" {
     for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 

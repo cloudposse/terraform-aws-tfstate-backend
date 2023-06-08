@@ -189,3 +189,9 @@ variable "permissions_boundary" {
   default     = ""
   description = "ARN of the policy that is used to set the permissions boundary for the IAM replication role"
 }
+
+variable "user_policy_documents" {
+  type        = list(string)
+  default     = []
+  description = "List of IAM policy documents (in JSON format) to attach to the S3 bucket in addition of the policies created by this module."
+}
