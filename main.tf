@@ -8,7 +8,9 @@ locals {
 
   prevent_unencrypted_uploads = local.enabled && var.prevent_unencrypted_uploads
 
-  policy = one(data.aws_iam_policy_document.bucket_policy[*].json)
+  policy = one(data.aws_iam_policy_document.aggregated_policy[*].json)
+
+  source_policy_documents = var.source_policy_documents
 
   terraform_backend_config_file = format(
     "%s/%s",
@@ -53,10 +55,16 @@ module "bucket_label" {
 
 data "aws_region" "current" {}
 
-data "aws_iam_policy_document" "bucket_policy" {
+data "aws_iam_policy_document" "aggregated_policy" {
   count = local.enabled ? 1 : 0
 
-  source_policy_documents = var.user_policy_documents
+  source_policy_documents   = data.aws_iam_policy_document.bucket_policy[*].json
+  override_policy_documents = local.source_policy_documents
+}
+
+
+data "aws_iam_policy_document" "bucket_policy" {
+  count = local.enabled ? 1 : 0
 
   dynamic "statement" {
     for_each = local.prevent_unencrypted_uploads ? ["true"] : []
