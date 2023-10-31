@@ -191,7 +191,7 @@ variable "permissions_boundary" {
 }
 
 variable "terraform_deployment_arns" {
-  type        = set([])
+  type        = set(string)
   default     = []
   description = "ARNs of all roles that can access state bucket for terraform deployments"
 }
