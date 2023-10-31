@@ -73,8 +73,7 @@ data "aws_iam_policy_document" "bucket_policy" {
         "s3:Put*"
       ]
       principals {
-#        identifiers = [var.terraform_deployment_arns]
-        identifiers = ["*"]
+        identifiers = [var.terraform_deployment_arns]
         type        = "AWS"
       }
     }
