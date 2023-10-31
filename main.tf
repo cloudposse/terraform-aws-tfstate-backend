@@ -53,11 +53,16 @@ module "bucket_label" {
 
 data "aws_region" "current" {}
 
+output "aaa" {
+  value = length(var.terraform_deployment_arns)
+}
+
+
 data "aws_iam_policy_document" "bucket_policy" {
   count = local.enabled ? 1 : 0
 
   dynamic "statement" {
-    for_each = length(var.terraform_deployment_arns) == 0 ? ["true"] : []
+    for_each = length(var.terraform_deployment_arns) > 0 ? ["true"] : []
 
     content {
       sid     = "For Terraform deployments"
@@ -68,7 +73,8 @@ data "aws_iam_policy_document" "bucket_policy" {
         "s3:Put*"
       ]
       principals {
-        identifiers = [var.terraform_deployment_arns]
+#        identifiers = [var.terraform_deployment_arns]
+        identifiers = ["*"]
         type        = "AWS"
       }
     }
