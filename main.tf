@@ -71,6 +71,9 @@ data "aws_iam_policy_document" "bucket_policy" {
         identifiers = var.terraform_deployment_arns
         type        = "AWS"
       }
+      resources = [
+        "${var.arn_format}:s3:::${local.bucket_name}/*",
+      ]
     }
   }
 
@@ -78,8 +81,7 @@ data "aws_iam_policy_document" "bucket_policy" {
     for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 
     content {
-      sid = "DenyIncorrectEncryptionHeader"
-
+      sid    = "DenyIncorrectEncryptionHeader"
       effect = "Deny"
 
       principals {
