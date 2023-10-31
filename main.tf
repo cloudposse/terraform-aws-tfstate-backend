@@ -53,11 +53,6 @@ module "bucket_label" {
 
 data "aws_region" "current" {}
 
-output "aaa" {
-  value = length(var.terraform_deployment_arns)
-}
-
-
 data "aws_iam_policy_document" "bucket_policy" {
   count = local.enabled ? 1 : 0
 
