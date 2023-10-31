@@ -57,6 +57,24 @@ data "aws_iam_policy_document" "bucket_policy" {
   count = local.enabled ? 1 : 0
 
   dynamic "statement" {
+    for_each = length(var.terraform_deployment_arns) == 0 ? ["true"] : []
+
+    content {
+      sid     = "For Terraform deployments"
+      effect  = "Allow"
+      actions = [
+        "s3:Get*",
+        "s3:List*",
+        "s3:Put*"
+      ]
+      principals {
+        identifiers = [var.terraform_deployment_arns]
+        type        = "AWS"
+      }
+    }
+  }
+
+  dynamic "statement" {
     for_each = local.prevent_unencrypted_uploads ? ["true"] : []
 
     content {
@@ -248,7 +266,8 @@ resource "aws_dynamodb_table" "with_server_side_encryption" {
   # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
   hash_key = "LockID"
 
-  server_side_encryption { #tfsec:ignore:aws-dynamodb-table-customer-key
+  server_side_encryption {
+    #tfsec:ignore:aws-dynamodb-table-customer-key
     enabled = true
   }
 
