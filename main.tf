@@ -10,8 +10,6 @@ locals {
 
   policy = one(data.aws_iam_policy_document.aggregated_policy[*].json)
 
-  source_policy_documents = var.source_policy_documents
-
   terraform_backend_config_file = format(
     "%s/%s",
     var.terraform_backend_config_file_path,
@@ -58,8 +56,8 @@ data "aws_region" "current" {}
 data "aws_iam_policy_document" "aggregated_policy" {
   count = local.enabled ? 1 : 0
 
-  source_policy_documents   = data.aws_iam_policy_document.bucket_policy[*].json
-  override_policy_documents = local.source_policy_documents
+  source_policy_documents   = [one(data.aws_iam_policy_document.bucket_policy[*].json)]
+  override_policy_documents = var.source_policy_documents
 }
 
 
@@ -172,8 +170,9 @@ resource "aws_s3_bucket" "default" {
 resource "aws_s3_bucket_policy" "default" {
   count = local.bucket_enabled ? 1 : 0
 
-  bucket = one(aws_s3_bucket.default[*].id)
-  policy = local.policy
+  bucket     = one(aws_s3_bucket.default[*].id)
+  policy     = local.policy
+  depends_on = [aws_s3_bucket_public_access_block.default]
 }
 
 resource "aws_s3_bucket_acl" "default" {
@@ -238,6 +237,16 @@ resource "aws_s3_bucket_ownership_controls" "default" {
   rule {
     object_ownership = var.bucket_ownership_enforced_enabled ? "BucketOwnerEnforced" : "BucketOwnerPreferred"
   }
+  depends_on = [time_sleep.wait_for_aws_s3_bucket_settings]
+}
+
+# Workaround S3 eventual consistency for settings objects
+resource "time_sleep" "wait_for_aws_s3_bucket_settings" {
+  count = local.enabled ? 1 : 0
+
+  depends_on       = [aws_s3_bucket_public_access_block.default, aws_s3_bucket_policy.default]
+  create_duration  = "30s"
+  destroy_duration = "30s"
 }
 
 module "dynamodb_table_label" {
