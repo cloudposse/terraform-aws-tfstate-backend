@@ -60,7 +60,6 @@ data "aws_iam_policy_document" "aggregated_policy" {
   override_policy_documents = var.source_policy_documents
 }
 
-
 data "aws_iam_policy_document" "bucket_policy" {
   count = local.enabled ? 1 : 0
 
