@@ -7,13 +7,11 @@ terraform {
     key     = "${terraform_state_file}"
     profile = "${profile}"
     encrypt = "${encrypt}"
-
     %{~ if role_arn != "" ~}
     assume_role {
       role_arn = "${role_arn}"
     }
     %{~ endif ~}
-
     %{~ if dynamodb_table != "" ~}
     dynamodb_table = "${dynamodb_table}"
     %{~ endif ~}
