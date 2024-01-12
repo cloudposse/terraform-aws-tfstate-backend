@@ -1,11 +1,8 @@
 
 <!-- markdownlint-disable -->
-# terraform-aws-tfstate-backend [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg)](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
+# terraform-aws-tfstate-backend<a href="https://cpco.io/homepage"><img align="right" src="https://cloudposse.com/logo-300x69.svg" width="150" /></a> [![Latest Release](https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg)](https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest) [![Slack Community](https://slack.cloudposse.com/badge.svg)](https://slack.cloudposse.com)
 <!-- markdownlint-restore -->
 
-[![README Header][readme_header_img]][readme_header_link]
-
-[![Cloud Posse][logo]](https://cpco.io/homepage)
 
 <!--
 
@@ -45,57 +42,32 @@ __NOTE:__ The operators of the module (IAM Users) must have permissions to creat
 
 __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` feature of the bucket. Changes regarding mfa_delete can only be made manually using the root credentials with MFA of the AWS Account where the bucket resides. Please see: https://github.com/terraform-providers/terraform-provider-aws/issues/62
 
+
 ---
+> [!NOTE]
+> This project is part of Cloud Posse's comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps.
+> <a href="https://cpco.io/terraform-modules"><img src="https://docs.cloudposse.com/images/terraform-open-source-modules.svg" align="right" /></a>
+>
+> It's 100% Open Source and licensed under the [APACHE2](LICENSE).
+>
+> We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out!
 
-This project is part of our comprehensive ["SweetOps"](https://cpco.io/sweetops) approach towards DevOps.
+[![README Header][readme_header_img]][readme_header_link]
 
-
-[![Terraform Open Source Modules](https://docs.cloudposse.com/images/terraform-open-source-modules.svg)][terraform_modules]
-
-
-
-It's 100% Open Source and licensed under the [APACHE2](LICENSE).
-
-
-
-
-
-
-
-We literally have [*hundreds of terraform modules*][terraform_modules] that are Open Source and well-maintained. Check them out!
-
-
-
-
-
-
-## Security & Compliance [<img src="https://cloudposse.com/wp-content/uploads/2020/11/bridgecrew.svg" width="250" align="right" />](https://bridgecrew.io/)
-
-Security scanning is graciously provided by Bridgecrew. Bridgecrew is the leading fully hosted, cloud-native solution providing continuous Terraform security and compliance.
-
-| Benchmark | Description |
-|--------|---------------|
-| [![Infrastructure Security](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/general)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=INFRASTRUCTURE+SECURITY) | Infrastructure Security Compliance |
-| [![CIS KUBERNETES](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/cis_kubernetes)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=CIS+KUBERNETES+V1.5) | Center for Internet Security, KUBERNETES Compliance |
-| [![CIS AWS](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/cis_aws)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=CIS+AWS+V1.2) | Center for Internet Security, AWS Compliance |
-| [![CIS AZURE](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/cis_azure)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=CIS+AZURE+V1.1) | Center for Internet Security, AZURE Compliance |
-| [![PCI-DSS](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/pci)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=PCI-DSS+V3.2) | Payment Card Industry Data Security Standards Compliance |
-| [![NIST-800-53](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/nist)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=NIST-800-53) | National Institute of Standards and Technology Compliance |
-| [![ISO27001](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/iso)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=ISO27001) | Information Security Management System, ISO/IEC 27001 Compliance |
-| [![SOC2](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/soc2)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=SOC2)| Service Organization Control 2 Compliance |
-| [![CIS GCP](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/cis_gcp)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=CIS+GCP+V1.1) | Center for Internet Security, GCP Compliance |
-| [![HIPAA](https://www.bridgecrew.cloud/badges/github/cloudposse/terraform-aws-tfstate-backend/hipaa)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=cloudposse%2Fterraform-aws-tfstate-backend&benchmark=HIPAA) | Health Insurance Portability and Accountability Compliance |
 
 
 
 ## Usage
 
 
-**IMPORTANT:** We do not pin modules to versions in our examples because of the
-difficulty of keeping the versions in the documentation in sync with the latest released versions.
-We highly recommend that in your code you pin the version to the exact version you are
-using so that your infrastructure remains stable, and update versions in a
-systematic way so that they do not catch you by surprise.
+
+> **Important**
+> We do not pin modules to versions in Cloud Posse's examples because of the
+> difficulty of keeping the versions in the documentation in sync with the latest released versions.
+> We highly recommend that in your code you pin the version to the exact version you are
+> using so that your infrastructure remains stable, and update versions in a
+> systematic way so that they do not catch you by surprise.
+
 
 
 
@@ -354,13 +326,6 @@ Available targets:
 <!-- markdownlint-restore -->
 
 
-
-## Share the Love
-
-Like this project? Please give it a ★ on [our GitHub](https://github.com/cloudposse/terraform-aws-tfstate-backend)! (it helps us **a lot**)
-
-
-
 ## Related Projects
 
 Check out these related projects.
@@ -368,16 +333,49 @@ Check out these related projects.
 - [terraform-aws-dynamodb](https://github.com/cloudposse/terraform-aws-dynamodb) - Terraform module that implements AWS DynamoDB with support for AutoScaling
 - [terraform-aws-dynamodb-autoscaler](https://github.com/cloudposse/terraform-aws-dynamodb-autoscaler) - Terraform module to provision DynamoDB autoscaler
 
-## Help
+## ✨ Contributing
 
-**Got a question?** We got answers.
+This project is under active development, and we encourage contributions from our community. 
+Many thanks to our outstanding contributors:
 
-File a GitHub [issue](https://github.com/cloudposse/terraform-aws-tfstate-backend/issues), send us an [email][email] or join our [Slack Community][slack].
+<a href="https://github.com/cloudposse/terraform-aws-tfstate-backend/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=cloudposse/terraform-aws-tfstate-backend&max=24" />
+</a>
 
-[![README Commercial Support][readme_commercial_support_img]][readme_commercial_support_link]
+### 🐛 Bug Reports & Feature Requests
 
-## DevOps Accelerator for Startups
+Please use the [issue tracker](https://github.com/cloudposse/terraform-aws-tfstate-backend/issues) to report any bugs or file feature requests.
 
+### 💻 Developing
+
+If you are interested in being a contributor and want to get involved in developing this project or [help out](https://cpco.io/help-out) with Cloud Posse's other projects, we would love to hear from you! Shoot us an [email][email].
+
+In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
+
+ 1. **Fork** the repo on GitHub
+ 2. **Clone** the project to your own machine
+ 3. **Commit** changes to your own branch
+ 4. **Push** your work back up to your fork
+ 5. Submit a **Pull Request** so that we can review your changes
+
+**NOTE:** Be sure to merge the latest changes from "upstream" before making a pull request!
+
+### 🌎 Slack Community
+
+Join our [Open Source Community][slack] on Slack. It's **FREE** for everyone! Our "SweetOps" community is where you get to talk with others who share a similar vision for how to rollout and manage infrastructure. This is the best place to talk shop, ask questions, solicit feedback, and work together as a community to build totally *sweet* infrastructure.
+
+### 📰 Newsletter
+
+Sign up for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover.
+
+### 📆 Office Hours <img src="https://img.cloudposse.com/fit-in/200x200/https://cloudposse.com/wp-content/uploads/2019/08/Powered-by-Zoom.png" align="right" />
+
+[Join us every Wednesday via Zoom][office_hours] for our weekly "Lunch & Learn" sessions. It's **FREE** for everyone!
+
+## About 
+
+This project is maintained and funded by [Cloud Posse, LLC][website]. 
+<a href="https://cpco.io/homepage"><img src="https://cloudposse.com/logo-300x69.svg" align="right" /></a>
 
 We are a [**DevOps Accelerator**][commercial_support]. We'll help you build your cloud infrastructure from the ground up so you can own it. Then we'll show you how to operate it and stick around for as long as you need us.
 
@@ -398,58 +396,7 @@ We deliver 10x the value for a fraction of the cost of a full-time engineer. Our
 - **Code Reviews.** You'll receive constructive feedback on Pull Requests.
 - **Bug Fixes.** We'll rapidly work with you to fix any bugs in our projects.
 
-## Slack Community
-
-Join our [Open Source Community][slack] on Slack. It's **FREE** for everyone! Our "SweetOps" community is where you get to talk with others who share a similar vision for how to rollout and manage infrastructure. This is the best place to talk shop, ask questions, solicit feedback, and work together as a community to build totally *sweet* infrastructure.
-
-## Newsletter
-
-Sign up for [our newsletter][newsletter] that covers everything on our technology radar.  Receive updates on what we're up to on GitHub as well as awesome new projects we discover.
-
-## Office Hours
-
-[Join us every Wednesday via Zoom][office_hours] for our weekly "Lunch & Learn" sessions. It's **FREE** for everyone!
-
-[![zoom](https://img.cloudposse.com/fit-in/200x200/https://cloudposse.com/wp-content/uploads/2019/08/Powered-by-Zoom.png")][office_hours]
-
-## ✨ Contributing
-
-
-
-This project is under active development, and we encourage contributions from our community. 
-Many thanks to our outstanding contributors:
-
-<a href="https://github.com/cloudposse/terraform-aws-tfstate-backend/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=cloudposse/terraform-aws-tfstate-backend&max=24" />
-</a>
-
-
-
-### Bug Reports & Feature Requests
-
-Please use the [issue tracker](https://github.com/cloudposse/terraform-aws-tfstate-backend/issues) to report any bugs or file feature requests.
-
-### Developing
-
-If you are interested in being a contributor and want to get involved in developing this project or [help out](https://cpco.io/help-out) with our other projects, we would love to hear from you! Shoot us an [email][email].
-
-In general, PRs are welcome. We follow the typical "fork-and-pull" Git workflow.
-
- 1. **Fork** the repo on GitHub
- 2. **Clone** the project to your own machine
- 3. **Commit** changes to your own branch
- 4. **Push** your work back up to your fork
- 5. Submit a **Pull Request** so that we can review your changes
-
-**NOTE:** Be sure to merge the latest changes from "upstream" before making a pull request!
-
-
-## Copyright
-
-Copyright © 2017-2023 [Cloud Posse, LLC](https://cpco.io/copyright)
-
-
-
+[![README Commercial Support][readme_commercial_support_img]][readme_commercial_support_link]
 ## License
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -475,29 +422,12 @@ specific language governing permissions and limitations
 under the License.
 ```
 
-
-
-
-
-
-
-
-
 ## Trademarks
 
 All other trademarks referenced herein are the property of their respective owners.
-
-## About
-
-This project is maintained and funded by [Cloud Posse, LLC][website]. Like it? Please let us know by [leaving a testimonial][testimonial]!
-
-[![Cloud Posse][logo]][website]
-
-We're a [DevOps Professional Services][hire] company based in Los Angeles, CA. We ❤️  [Open Source Software][we_love_open_source].
-
-We offer [paid support][commercial_support] on all of our projects.
-
-Check out [our other projects][github], [follow us on twitter][twitter], [apply for a job][jobs], or [hire us][hire] to help with your cloud strategy and implementation.[![README Footer][readme_footer_img]][readme_footer_link]
+---
+Copyright © 2017-2024 [Cloud Posse, LLC](https://cpco.io/copyright)
+[![README Footer][readme_footer_img]][readme_footer_link]
 [![Beacon][beacon]][website]
 <!-- markdownlint-disable -->
   [logo]: https://cloudposse.com/logo-300x69.svg
@@ -508,7 +438,6 @@ Check out [our other projects][github], [follow us on twitter][twitter], [apply 
   [hire]: https://cpco.io/hire?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=hire
   [slack]: https://cpco.io/slack?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=slack
   [twitter]: https://cpco.io/twitter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=twitter
-  [testimonial]: https://cpco.io/leave-testimonial?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=testimonial
   [office_hours]: https://cloudposse.com/office-hours?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=office_hours
   [newsletter]: https://cpco.io/newsletter?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=newsletter
   [email]: https://cpco.io/email?utm_source=github&utm_medium=readme&utm_campaign=cloudposse/terraform-aws-tfstate-backend&utm_content=email
