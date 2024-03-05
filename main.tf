@@ -151,6 +151,28 @@ data "aws_iam_policy_document" "bucket_policy" {
       values   = ["false"]
     }
   }
+
+  dynamic "statement" {
+    for_each = var.additional_policy_statements
+    content {
+      sid    = statement.value["sid"]
+      effect = try(statement.value["effect"], "Allow")
+      principals {
+        identifiers = statement.value["principal"]["identifiers"]
+        type        = statement.value["principal"]["type"]
+      }
+      resources = statement.value["resources"]
+      actions   = statement.value["actions"]
+      dynamic "condition" {
+        for_each = try(statement.value["condition"], [])
+        content {
+          test     = try(condition.value["test"], null)
+          variable = try(condition.value["variable"], null)
+          values   = try(condition.value["values"], null)
+        }
+      }
+    }
+  }
 }
 
 #S3 access controls, policies and logging are defined as seperate terraform resources below
