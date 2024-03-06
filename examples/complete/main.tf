@@ -27,5 +27,40 @@ module "tfstate_backend" {
 
   bucket_ownership_enforced_enabled = true
 
+  additional_policy_statements = [
+    {
+      sid    = "OrganizationList",
+      effect = "Allow",
+      principal = {
+        identifiers = ["*"]
+        type        = "AWS"
+      },
+      actions   = ["s3:ListBucket"],
+      resources = ["arn:aws:s3:::XXXXXXXX"]
+      condition = [{
+        test     = "StringEquals"
+        variable = "aws:PrincipalOrgID"
+        values   = ["o-xxxxxx"]
+      }]
+    },
+    {
+      sid    = "OrganizationGet",
+      effect = "Allow",
+      principal = {
+        identifiers = ["*"]
+        type        = "AWS"
+      },
+      actions = ["s3:GetObject"],
+      resources = [
+        "arn:aws:s3:::XXXXXXXX/org-wide/terraform.tfstates",
+      ],
+      condition = [{
+        test     = "StringEquals"
+        variable = "aws:PrincipalOrgID"
+        values   = ["o-xxxxxx"]
+      }]
+    }
+  ]
+
   context = module.this.context
 }
