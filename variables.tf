@@ -34,6 +34,13 @@ variable "force_destroy" {
   default     = false
 }
 
+variable "deletion_protection_enabled" {
+  type        = bool
+  description = "A boolean that enables deletion protection for DynamoDB table"
+  default     = false
+}
+
+
 variable "mfa_delete" {
   type        = bool
   description = "A boolean that indicates that versions of S3 objects can only be deleted with MFA. ( Terraform cannot apply changes of this value; https://github.com/terraform-providers/terraform-provider-aws/issues/629 )"

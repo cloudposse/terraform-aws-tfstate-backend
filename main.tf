@@ -257,11 +257,12 @@ module "dynamodb_table_label" {
 }
 
 resource "aws_dynamodb_table" "with_server_side_encryption" {
-  count          = local.dynamodb_enabled ? 1 : 0
-  name           = local.dynamodb_table_name
-  billing_mode   = var.billing_mode
-  read_capacity  = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
-  write_capacity = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
+  count                       = local.dynamodb_enabled ? 1 : 0
+  name                        = local.dynamodb_table_name
+  billing_mode                = var.billing_mode
+  read_capacity               = var.billing_mode == "PROVISIONED" ? var.read_capacity : null
+  write_capacity              = var.billing_mode == "PROVISIONED" ? var.write_capacity : null
+  deletion_protection_enabled = var.deletion_protection_enabled
 
   # https://www.terraform.io/docs/backends/types/s3.html#dynamodb_table
   hash_key = "LockID"
