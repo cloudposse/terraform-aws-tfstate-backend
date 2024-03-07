@@ -37,7 +37,7 @@ variable "force_destroy" {
 variable "deletion_protection_enabled" {
   type        = bool
   description = "A boolean that enables deletion protection for DynamoDB table"
-  default     = true
+  default     = false
 }
 
 
