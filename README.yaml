@@ -1,4 +1,3 @@
----
 #
 # This is the canonical configuration for the `README.md`
 # Run `make readme` to rebuild the `README.md`
@@ -33,13 +32,17 @@ categories:
 
 # Badges to display
 badges:
-  - name: "Latest Release"
-    image: "https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg"
-    url: "https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest"
-  - name: "Slack Community"
-    image: "https://slack.cloudposse.com/badge.svg"
-    url: "https://slack.cloudposse.com"
+  - name: Latest Release
+    image: https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg?style=for-the-badge
+    url: https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest
+  - name: Last Updated
+    image: https://img.shields.io/github/last-commit/cloudposse/terraform-aws-tfstate-backend.svg?style=for-the-badge
+    url: https://github.com/cloudposse/terraform-aws-tfstate-backend/commits
+  - name: Slack Community
+    image: https://slack.cloudposse.com/for-the-badge.svg
+    url: https://slack.cloudposse.com
 
+# List any related terraform modules that this module may be used with or that this module depends on.
 related:
   - name: "terraform-aws-dynamodb"
     description: "Terraform module that implements AWS DynamoDB with support for AutoScaling"
@@ -68,7 +71,7 @@ description: |-
   __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` feature of the bucket. Changes regarding mfa_delete can only be made manually using the root credentials with MFA of the AWS Account where the bucket resides. Please see: https://github.com/terraform-providers/terraform-provider-aws/issues/629
 
 # How to use this project
-usage: |-
+usage: |2-
 
   ### Create
 
@@ -192,20 +195,4 @@ include:
   - "docs/terraform.md"
 
 # Contributors to this project
-contributors:
-  - name: "Andriy Knysh"
-    github: "aknysh"
-  - name: "Erik Osterman"
-    github: "osterman"
-  - name: "Maarten van der Hoef"
-    github: "maartenvanderhoef"
-  - name: "Vladimir"
-    github: "SweetOps"
-  - name: "Chris Weyl"
-    github: "rsrchboy"
-  - name: "John McGehee"
-    github: "jmcgeheeiv"
-  - name: "Oliver L Schoenborn"
-    github: "schollii"
-  - name: "RB"
-    github: "nitrocode"
+contributors: []
