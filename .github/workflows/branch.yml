@@ -1,0 +1,25 @@
+---
+name: Branch
+on:
+  pull_request:
+    branches:
+      - main
+      - release/**
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches:
+      - main
+      - release/v*
+    paths-ignore:
+      - '.github/**'
+      - 'docs/**'
+      - 'examples/**'
+      - 'test/**'
+      - 'README.md'
+
+permissions: {}
+
+jobs:
+  terraform-module:
+    uses: cloudposse/.github/.github/workflows/shared-terraform-module.yml@main
+    secrets: inherit
