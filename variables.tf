@@ -92,7 +92,15 @@ variable "restrict_public_buckets" {
 variable "prevent_unencrypted_uploads" {
   type        = bool
   default     = true
-  description = "Prevent uploads of unencrypted objects to S3"
+  description = <<-EOT
+    Enforce requirement to specify encryption key when uploading content to the S3 bucket.
+    The name of this variable is a little misleading.  Since a default encryption key is created
+    for the bucket by this module, contents are always encrypted at rest.
+    Setting this variable to `true` (the default) will require that uploads to the bucket will need
+    to be initiated with a specific encryption key.
+    If this variable is set to `true` and an upload is attempted without specifying an encryption key
+    (including using the S3 Console), an "Access Denied" error will be thrown by AWS.
+    EOT
 }
 
 variable "profile" {
