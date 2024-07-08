@@ -228,5 +228,5 @@ variable "kms_master_key_id" {
 variable "bucket_key_enabled" {
   type        = boolean
   default     = false
-  description = "Enable bucket key encryption, to reduce usage costs"
+  description = "Enable bucket key encryption, which reduces usage costs"
 }
