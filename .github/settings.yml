@@ -5,3 +5,4 @@ repository:
   description: Terraform module that provisions an S3 bucket to store the `terraform.tfstate` file and a DynamoDB table to lock the state file to prevent concurrent modifications and state corruption.
   homepage: https://cloudposse.com/accelerate
   topics: terraform, terraform-module, aws, tfstate, dynamodb, locking, aws-dynamodb, terraform-modules, dynamodb-table, s3-bucket, backend, terraform-state, remote-state, hcl2
+
