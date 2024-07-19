@@ -1,5 +1,6 @@
 variable "region" {
-  type = string
+  type        = string
+  description = "AWS region"
 }
 
 variable "arn_format" {
