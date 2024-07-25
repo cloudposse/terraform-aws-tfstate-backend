@@ -224,3 +224,9 @@ variable "kms_master_key_id" {
     This can only be used when you set the value of sse_algorithm as aws:kms.
     EOT
 }
+
+variable "bucket_key_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable bucket key encryption, which reduces usage costs"
+}
