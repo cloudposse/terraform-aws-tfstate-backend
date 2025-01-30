@@ -8,8 +8,7 @@ terraform {
     profile = "${profile}"
     encrypt = "${encrypt}"
     %{~ if role_arn != "" ~}
-
-    assume_role {
+    assume_role = {
       role_arn = "${role_arn}"
     }
     %{~ endif ~}
