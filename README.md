@@ -3,7 +3,7 @@
 <!-- markdownlint-disable -->
 <a href="https://cpco.io/homepage"><img src="https://github.com/cloudposse/terraform-aws-tfstate-backend/blob/main/.github/banner.png?raw=true" alt="Project Banner"/></a><br/>
     <p align="right">
-<a href="https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest"><img src="https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg?style=for-the-badge" alt="Latest Release"/></a><a href="https://github.com/cloudposse/terraform-aws-tfstate-backend/commits"><img src="https://img.shields.io/github/last-commit/cloudposse/terraform-aws-tfstate-backend.svg?style=for-the-badge" alt="Last Updated"/></a><a href="https://slack.cloudposse.com"><img src="https://slack.cloudposse.com/for-the-badge.svg" alt="Slack Community"/></a></p>
+<a href="https://github.com/cloudposse/terraform-aws-tfstate-backend/releases/latest"><img src="https://img.shields.io/github/release/cloudposse/terraform-aws-tfstate-backend.svg?style=for-the-badge" alt="Latest Release"/></a><a href="https://github.com/cloudposse/terraform-aws-tfstate-backend/commits"><img src="https://img.shields.io/github/last-commit/cloudposse/terraform-aws-tfstate-backend.svg?style=for-the-badge" alt="Last Updated"/></a><a href="https://cloudposse.com/slack"><img src="https://slack.cloudposse.com/for-the-badge.svg" alt="Slack Community"/></a></p>
 <!-- markdownlint-restore -->
 
 <!--
@@ -61,7 +61,6 @@ __NOTE:__ This module cannot be used to apply changes to the `mfa_delete` featur
 
 
 ## Usage
-
 
 ### Create
 
@@ -194,18 +193,6 @@ module "terraform_state_backend" {
 
 
 <!-- markdownlint-disable -->
-## Makefile Targets
-```text
-Available targets:
-
-  help                                Help screen
-  help/all                            Display help for all targets
-  help/short                          This help short screen
-  lint                                Lint terraform code
-
-```
-<!-- markdownlint-restore -->
-<!-- markdownlint-disable -->
 ## Requirements
 
 | Name | Version |
@@ -327,6 +314,11 @@ Available targets:
 | <a name="output_s3_replication_role_arn"></a> [s3\_replication\_role\_arn](#output\_s3\_replication\_role\_arn) | The ARN of the IAM Role created for replication, if enabled. |
 | <a name="output_terraform_backend_config"></a> [terraform\_backend\_config](#output\_terraform\_backend\_config) | Rendered Terraform backend config file |
 <!-- markdownlint-restore -->
+
+
+
+
+
 
 
 ## Related Projects
