@@ -1,6 +1,8 @@
 module github.com/cloudposse/terraform-aws-tfstate-backend
 
-go 1.20
+go 1.24
+
+toolchain go1.24.0
 
 require (
 	github.com/gruntwork-io/terratest v0.41.16
