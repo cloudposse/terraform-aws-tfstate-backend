@@ -19,7 +19,7 @@ locals {
   terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
   terraform_backend_config_content = templatefile(local.terraform_backend_config_template_file, {
-    region = data.aws_region.current.name
+    region = data.aws_region.current.region
     # Template file inputs cannot be null, so we use empty string if the variable is null
     bucket = try(aws_s3_bucket.default[0].id, "")
 
