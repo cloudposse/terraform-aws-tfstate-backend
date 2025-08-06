@@ -127,7 +127,7 @@ variable "terraform_backend_config_template_file" {
 
 variable "terraform_version" {
   type        = string
-  default     = "1.0.0"
+  default     = null
   description = "The minimum required terraform version"
 }
 
@@ -176,6 +176,12 @@ variable "logging" {
 variable "bucket_enabled" {
   type        = bool
   default     = true
+  description = "Whether to create the S3 bucket."
+}
+
+variable "s3_state_lock_enabled" {
+  type        = bool
+  default     = false
   description = "Whether to create the S3 bucket."
 }
 
