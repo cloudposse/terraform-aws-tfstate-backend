@@ -1,8 +1,9 @@
 locals {
   enabled = module.this.enabled
 
-  bucket_enabled   = local.enabled && var.bucket_enabled
-  dynamodb_enabled = local.enabled && var.dynamodb_enabled
+  bucket_enabled        = local.enabled && var.bucket_enabled
+  s3_state_lock_enabled = local.enabled && var.s3_state_lock_enabled
+  dynamodb_enabled      = local.enabled && var.dynamodb_enabled
 
   dynamodb_table_name = local.dynamodb_enabled ? coalesce(var.dynamodb_table_name, module.dynamodb_table_label.id) : ""
 
@@ -16,7 +17,10 @@ locals {
     var.terraform_backend_config_file_name
   )
 
-  terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
+  terraform_backend_default_template_file = local.s3_state_lock_enabled ? "${path.module}/templates/terraform-s3-lock.tf.tpl" : "${path.module}/templates/terraform.tf.tpl"
+  terraform_version_minimum               = local.s3_state_lock_enabled ? "1.11.0" : "1.0.0"
+  terraform_version_requested             = var.terraform_version != null ? var.terraform_version : local.terraform_version_minimum
+  terraform_backend_config_template_file  = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : local.terraform_backend_default_template_file
 
   terraform_backend_config_content = templatefile(local.terraform_backend_config_template_file, {
     region = data.aws_region.current.name
@@ -24,11 +28,12 @@ locals {
     bucket = try(aws_s3_bucket.default[0].id, "")
 
     dynamodb_table = try(aws_dynamodb_table.with_server_side_encryption[0].name, "")
+    use_lockfile   = local.s3_state_lock_enabled
 
     encrypt              = "true"
     role_arn             = var.role_arn == null ? "" : var.role_arn
     profile              = var.profile == null ? "" : var.profile
-    terraform_version    = var.terraform_version == null ? "" : var.terraform_version
+    terraform_version    = local.terraform_version_requested
     terraform_state_file = var.terraform_state_file == null ? "" : var.terraform_state_file
     namespace            = var.namespace == null ? "" : var.namespace
     stage                = var.stage == null ? "" : var.stage
@@ -164,6 +169,19 @@ resource "aws_s3_bucket" "default" {
   force_destroy = var.force_destroy
 
   tags = module.this.tags
+}
+
+resource "aws_s3_bucket_object_lock_configuration" "default" {
+  count = local.s3_state_lock_enabled ? 1 : 0
+
+  bucket = one(aws_s3_bucket.default[*].id)
+
+  rule {
+    default_retention {
+      mode = "GOVERNANCE"
+      days = 7
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "default" {
