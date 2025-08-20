@@ -17,10 +17,9 @@ locals {
     var.terraform_backend_config_file_name
   )
 
-  terraform_backend_default_template_file = local.s3_state_lock_enabled ? "${path.module}/templates/terraform-s3-lock.tf.tpl" : "${path.module}/templates/terraform.tf.tpl"
-  terraform_version_minimum               = local.s3_state_lock_enabled ? "1.11.0" : "1.0.0"
-  terraform_version_requested             = var.terraform_version != null ? var.terraform_version : local.terraform_version_minimum
-  terraform_backend_config_template_file  = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : local.terraform_backend_default_template_file
+  terraform_version_minimum              = local.s3_state_lock_enabled ? "1.11.0" : "1.0.0"
+  terraform_version_requested            = var.terraform_version != null ? var.terraform_version : local.terraform_version_minimum
+  terraform_backend_config_template_file = var.terraform_backend_config_template_file != "" ? var.terraform_backend_config_template_file : "${path.module}/templates/terraform.tf.tpl"
 
   terraform_backend_config_content = templatefile(local.terraform_backend_config_template_file, {
     region = data.aws_region.current.name

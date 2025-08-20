@@ -13,9 +13,14 @@ terraform {
       role_arn = "${role_arn}"
     }
     %{~ endif ~}
+    %{~ if use_lockfile ~}
+
+    use_lockfile = true
+    %{~ else ~}
     %{~ if dynamodb_table != "" ~}
 
     dynamodb_table = "${dynamodb_table}"
+    %{~ endif ~}
     %{~ endif ~}
   }
 }
