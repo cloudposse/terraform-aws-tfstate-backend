@@ -181,6 +181,7 @@ resource "aws_s3_bucket_object_lock_configuration" "default" {
       days = 7
     }
   }
+  depends_on = [aws_s3_bucket_versioning.default]
 }
 
 resource "aws_s3_bucket_policy" "default" {
