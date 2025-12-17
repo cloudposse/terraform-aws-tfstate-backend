@@ -104,7 +104,7 @@ variable "profile" {
 variable "role_arn" {
   type        = string
   default     = ""
-  description = "The role to be assumed"
+  description = "The role to be assumed. If this is set, `terraform_version` variable must be `1.6.0` or higher."
 }
 
 variable "terraform_backend_config_file_name" {
