@@ -10,3 +10,5 @@ terraform-aws-tfstate-backend.iml
 
 .build-harness
 build-harness
+
+.atmos/cache.yaml
