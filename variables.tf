@@ -182,13 +182,13 @@ variable "bucket_enabled" {
 variable "s3_state_lock_enabled" {
   type        = bool
   default     = false
-  description = "Whether to create the S3 bucket."
+  description = "Whether to use S3 native state locking (use_lockfile). Requires Terraform >= 1.10. When enabled, DynamoDB is not needed for state locking. See https://developer.hashicorp.com/terraform/language/backend/s3#s3-state-locking"
 }
 
 variable "dynamodb_enabled" {
   type        = bool
   default     = true
-  description = "Whether to create the DynamoDB table."
+  description = "Whether to create the DynamoDB table for state locking. Note: DynamoDB-based locking is deprecated in Terraform >= 1.10 in favor of S3 native locking (s3_state_lock_enabled). See https://developer.hashicorp.com/terraform/language/backend/s3#enabling-dynamodb-state-locking-deprecated"
 }
 
 variable "dynamodb_table_name" {
