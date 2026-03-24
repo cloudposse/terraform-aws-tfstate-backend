@@ -132,6 +132,39 @@ Follow this procedure just once to create your deployment.
 This concludes the one-time preparation. Now you can extend and modify your
 Terraform configuration as usual.
 
+### S3 Native State Locking (Terraform >= 1.10)
+
+Starting with Terraform 1.10, S3 supports [native state locking](https://developer.hashicorp.com/terraform/language/backend/s3#s3-state-locking)
+via `use_lockfile = true`, removing the need for a DynamoDB table.
+
+> **Note**: DynamoDB-based state locking is [deprecated](https://developer.hashicorp.com/terraform/language/backend/s3#enabling-dynamodb-state-locking-deprecated)
+> in Terraform 1.10+. New setups should use S3 native locking instead.
+
+To use S3 native locking instead of DynamoDB:
+
+```hcl
+module "terraform_state_backend" {
+  source = "cloudposse/tfstate-backend/aws"
+
+  namespace  = "eg"
+  stage      = "test"
+  name       = "terraform"
+  attributes = ["state"]
+
+  # Use S3 native locking (Terraform >= 1.10)
+  s3_state_lock_enabled = true
+
+  # Disable DynamoDB table (not needed with S3 native locking)
+  dynamodb_enabled = false
+
+  terraform_backend_config_file_path = "."
+  terraform_backend_config_file_name = "backend.tf"
+  force_destroy                      = false
+}
+```
+
+The generated `backend.tf` will use `use_lockfile = true` instead of `dynamodb_table`.
+
 ### Destroy
 
 Follow this procedure to delete your deployment.
