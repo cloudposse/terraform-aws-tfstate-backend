@@ -132,39 +132,6 @@ Follow this procedure just once to create your deployment.
 This concludes the one-time preparation. Now you can extend and modify your
 Terraform configuration as usual.
 
-### S3 Native State Locking (Terraform >= 1.10)
-
-Starting with Terraform 1.10, S3 supports [native state locking](https://developer.hashicorp.com/terraform/language/backend/s3#s3-state-locking)
-via `use_lockfile = true`, removing the need for a DynamoDB table.
-
-> **Note**: DynamoDB-based state locking is [deprecated](https://developer.hashicorp.com/terraform/language/backend/s3#enabling-dynamodb-state-locking-deprecated)
-> in Terraform 1.10+. New setups should use S3 native locking instead.
-
-To use S3 native locking instead of DynamoDB:
-
-```hcl
-module "terraform_state_backend" {
-  source = "cloudposse/tfstate-backend/aws"
-
-  namespace  = "eg"
-  stage      = "test"
-  name       = "terraform"
-  attributes = ["state"]
-
-  # Use S3 native locking (Terraform >= 1.10)
-  s3_state_lock_enabled = true
-
-  # Disable DynamoDB table (not needed with S3 native locking)
-  dynamodb_enabled = false
-
-  terraform_backend_config_file_path = "."
-  terraform_backend_config_file_name = "backend.tf"
-  force_destroy                      = false
-}
-```
-
-The generated `backend.tf` will use `use_lockfile = true` instead of `dynamodb_table`.
-
 ### Destroy
 
 Follow this procedure to delete your deployment.
@@ -299,7 +266,7 @@ module "terraform_state_backend" {
 | <a name="input_deletion_protection_enabled"></a> [deletion\_protection\_enabled](#input\_deletion\_protection\_enabled) | A boolean that enables deletion protection for DynamoDB table | `bool` | `false` | no |
 | <a name="input_delimiter"></a> [delimiter](#input\_delimiter) | Delimiter to be used between ID elements.<br/>Defaults to `-` (hyphen). Set to `""` to use no delimiter at all. | `string` | `null` | no |
 | <a name="input_descriptor_formats"></a> [descriptor\_formats](#input\_descriptor\_formats) | Describe additional descriptors to be output in the `descriptors` output map.<br/>Map of maps. Keys are names of descriptors. Values are maps of the form<br/>`{<br/>   format = string<br/>   labels = list(string)<br/>}`<br/>(Type is `any` so the map values can later be enhanced to provide additional options.)<br/>`format` is a Terraform format string to be passed to the `format()` function.<br/>`labels` is a list of labels, in order, to pass to `format()` function.<br/>Label values will be normalized before being passed to `format()` so they will be<br/>identical to how they appear in `id`.<br/>Default is `{}` (`descriptors` output will be empty). | `any` | `{}` | no |
-| <a name="input_dynamodb_enabled"></a> [dynamodb\_enabled](#input\_dynamodb\_enabled) | Whether to create the DynamoDB table. | `bool` | `true` | no |
+| <a name="input_dynamodb_enabled"></a> [dynamodb\_enabled](#input\_dynamodb\_enabled) | Whether to create the DynamoDB table for state locking. Note: DynamoDB-based locking is deprecated in Terraform >= 1.10 in favor of S3 native locking (s3\_state\_lock\_enabled). See https://developer.hashicorp.com/terraform/language/backend/s3#enabling-dynamodb-state-locking-deprecated | `bool` | `true` | no |
 | <a name="input_dynamodb_table_name"></a> [dynamodb\_table\_name](#input\_dynamodb\_table\_name) | Override the name of the DynamoDB table which defaults to using `module.dynamodb_table_label.id` | `string` | `null` | no |
 | <a name="input_enable_point_in_time_recovery"></a> [enable\_point\_in\_time\_recovery](#input\_enable\_point\_in\_time\_recovery) | Enable DynamoDB point-in-time recovery | `bool` | `true` | no |
 | <a name="input_enable_public_access_block"></a> [enable\_public\_access\_block](#input\_enable\_public\_access\_block) | Enable Bucket Public Access Block | `bool` | `true` | no |
@@ -327,7 +294,7 @@ module "terraform_state_backend" {
 | <a name="input_s3_bucket_name"></a> [s3\_bucket\_name](#input\_s3\_bucket\_name) | S3 bucket name. If not provided, the name will be generated from the context by the label module. | `string` | `""` | no |
 | <a name="input_s3_replica_bucket_arn"></a> [s3\_replica\_bucket\_arn](#input\_s3\_replica\_bucket\_arn) | The ARN of the S3 replica bucket (destination) | `string` | `""` | no |
 | <a name="input_s3_replication_enabled"></a> [s3\_replication\_enabled](#input\_s3\_replication\_enabled) | Set this to true and specify `s3_replica_bucket_arn` to enable replication | `bool` | `false` | no |
-| <a name="input_s3_state_lock_enabled"></a> [s3\_state\_lock\_enabled](#input\_s3\_state\_lock\_enabled) | Whether to create the S3 bucket. | `bool` | `false` | no |
+| <a name="input_s3_state_lock_enabled"></a> [s3\_state\_lock\_enabled](#input\_s3\_state\_lock\_enabled) | Whether to use S3 native state locking (use\_lockfile). Requires Terraform >= 1.10. When enabled, DynamoDB is not needed for state locking. See https://developer.hashicorp.com/terraform/language/backend/s3#s3-state-locking | `bool` | `false` | no |
 | <a name="input_source_policy_documents"></a> [source\_policy\_documents](#input\_source\_policy\_documents) | List of IAM policy documents (in JSON format) that are merged together into the generated S3 bucket policy.<br/>Statements must have unique SIDs.<br/>Statement having SIDs that match policy SIDs generated by this module will override them. | `list(string)` | `[]` | no |
 | <a name="input_sse_encryption"></a> [sse\_encryption](#input\_sse\_encryption) | The server-side encryption algorithm to use.<br/>Valid values are `AES256`, `aws:kms`, and `aws:kms:dsse`. | `string` | `"AES256"` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
