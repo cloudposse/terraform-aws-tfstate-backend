@@ -230,3 +230,15 @@ variable "kms_master_key_id" {
     This can only be used when you set the value of sse_algorithm as aws:kms.
     EOT
 }
+
+variable "blocked_encryption_types" {
+  type        = list(string)
+  default     = null
+  description = <<-EOT
+    List of encryption types to block on the bucket, passed to the `rule` block of
+    `aws_s3_bucket_server_side_encryption_configuration`.
+
+    Defaults to `null` (attribute omitted) so the module remains compatible with `hashicorp/aws`
+    provider versions older than 6.22.0, which do not know this field.
+    EOT
+}
