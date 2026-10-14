@@ -238,7 +238,13 @@ variable "blocked_encryption_types" {
     List of encryption types to block on the bucket, passed to the `rule` block of
     `aws_s3_bucket_server_side_encryption_configuration`.
 
-    Defaults to `null` (attribute omitted) so the module remains compatible with `hashicorp/aws`
-    provider versions older than 6.22.0, which do not know this field.
+    Requires `hashicorp/aws` >= 6.22.0, the first release whose schema recognizes this
+    argument. Terraform validates argument names against the provider schema before it
+    evaluates their values, so merely leaving this `null` does not make the module usable
+    with older providers. For that reason the module's AWS provider constraint is pinned
+    to `>= 6.22.0`.
+
+    Defaults to `null`, which omits the attribute and preserves the provider's default
+    behavior (no encryption types blocked).
     EOT
 }

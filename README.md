@@ -204,7 +204,7 @@ module "terraform_state_backend" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.0.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.22.0 |
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.7.1 |
 
@@ -212,7 +212,7 @@ module "terraform_state_backend" {
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.22.0 |
 | <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | >= 0.7.1 |
 
@@ -262,7 +262,7 @@ module "terraform_state_backend" {
 | <a name="input_billing_mode"></a> [billing\_mode](#input\_billing\_mode) | DynamoDB billing mode | `string` | `"PAY_PER_REQUEST"` | no |
 | <a name="input_block_public_acls"></a> [block\_public\_acls](#input\_block\_public\_acls) | Whether Amazon S3 should block public ACLs for this bucket | `bool` | `true` | no |
 | <a name="input_block_public_policy"></a> [block\_public\_policy](#input\_block\_public\_policy) | Whether Amazon S3 should block public bucket policies for this bucket | `bool` | `true` | no |
-| <a name="input_blocked_encryption_types"></a> [blocked\_encryption\_types](#input\_blocked\_encryption\_types) | List of encryption types to block on the bucket, passed to the `rule` block of<br/>`aws_s3_bucket_server_side_encryption_configuration`.<br/><br/>Defaults to `null` (attribute omitted) so the module remains compatible with `hashicorp/aws`<br/>provider versions older than 6.22.0, which do not know this field. | `list(string)` | `null` | no |
+| <a name="input_blocked_encryption_types"></a> [blocked\_encryption\_types](#input\_blocked\_encryption\_types) | List of encryption types to block on the bucket, passed to the `rule` block of<br/>`aws_s3_bucket_server_side_encryption_configuration`.<br/><br/>Requires `hashicorp/aws` >= 6.22.0, the first release whose schema recognizes this<br/>argument. Terraform validates argument names against the provider schema before it<br/>evaluates their values, so merely leaving this `null` does not make the module usable<br/>with older providers. For that reason the module's AWS provider constraint is pinned<br/>to `>= 6.22.0`.<br/><br/>Defaults to `null`, which omits the attribute and preserves the provider's default<br/>behavior (no encryption types blocked). | `list(string)` | `null` | no |
 | <a name="input_bucket_enabled"></a> [bucket\_enabled](#input\_bucket\_enabled) | Whether to create the S3 bucket. | `bool` | `true` | no |
 | <a name="input_bucket_ownership_enforced_enabled"></a> [bucket\_ownership\_enforced\_enabled](#input\_bucket\_ownership\_enforced\_enabled) | Set bucket object ownership to "BucketOwnerEnforced". Disables ACLs. | `bool` | `true` | no |
 | <a name="input_context"></a> [context](#input\_context) | Single object for setting entire context at once.<br/>See description of individual variables for details.<br/>Leave string and numeric variables as `null` to use default value.<br/>Individual variable settings (non-null) override settings in context object,<br/>except for attributes, tags, and additional\_tag\_map, which are merged. | `any` | <pre>{<br/>  "additional_tag_map": {},<br/>  "attributes": [],<br/>  "delimiter": null,<br/>  "descriptor_formats": {},<br/>  "enabled": true,<br/>  "environment": null,<br/>  "id_length_limit": null,<br/>  "label_key_case": null,<br/>  "label_order": [],<br/>  "label_value_case": null,<br/>  "labels_as_tags": [<br/>    "unset"<br/>  ],<br/>  "name": null,<br/>  "namespace": null,<br/>  "regex_replace_chars": null,<br/>  "stage": null,<br/>  "tags": {},<br/>  "tenant": null<br/>}</pre> | no |
