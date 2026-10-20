@@ -208,14 +208,6 @@ module "terraform_state_backend" {
 | <a name="requirement_local"></a> [local](#requirement\_local) | >= 2.0 |
 | <a name="requirement_time"></a> [time](#requirement\_time) | >= 0.7.1 |
 
-## Providers
-
-| Name | Version |
-| ---- | ------- |
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | >= 2.0 |
-| <a name="provider_time"></a> [time](#provider\_time) | >= 0.7.1 |
-
 ## Modules
 
 | Name | Source | Version |
