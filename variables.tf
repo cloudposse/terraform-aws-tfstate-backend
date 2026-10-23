@@ -230,3 +230,21 @@ variable "kms_master_key_id" {
     This can only be used when you set the value of sse_algorithm as aws:kms.
     EOT
 }
+
+variable "blocked_encryption_types" {
+  type        = list(string)
+  default     = null
+  description = <<-EOT
+    List of encryption types to block on the bucket, passed to the `rule` block of
+    `aws_s3_bucket_server_side_encryption_configuration`.
+
+    Requires `hashicorp/aws` >= 6.22.0, the first release whose schema recognizes this
+    argument. Terraform validates argument names against the provider schema before it
+    evaluates their values, so merely leaving this `null` does not make the module usable
+    with older providers. For that reason the module's AWS provider constraint is pinned
+    to `>= 6.22.0`.
+
+    Defaults to `null`, which omits the attribute and preserves the provider's default
+    behavior (no encryption types blocked).
+    EOT
+}

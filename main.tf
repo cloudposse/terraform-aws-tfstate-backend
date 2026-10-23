@@ -220,6 +220,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "default" {
   bucket = one(aws_s3_bucket.default[*].id)
 
   rule {
+    blocked_encryption_types = var.blocked_encryption_types
+
     apply_server_side_encryption_by_default {
       sse_algorithm     = var.sse_encryption
       kms_master_key_id = var.kms_master_key_id
