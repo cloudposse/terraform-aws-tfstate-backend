@@ -190,5 +190,42 @@ usage: |2-
   }
   ```
 
+  ### Lifecycle Rules
+
+  This module does not create a lifecycle configuration. A bucket can have only one, so add your own with the `s3_bucket_id` output.
+
+  Remove old state versions (current states are not changed):
+
+  ```hcl
+  resource "aws_s3_bucket_lifecycle_configuration" "tfstate" {
+    bucket = module.terraform_state_backend.s3_bucket_id
+
+    rule {
+      id     = "prune-noncurrent-versions"
+      status = "Enabled"
+      filter {}
+      noncurrent_version_expiration {
+        noncurrent_days           = 30
+        newer_noncurrent_versions = 90
+      }
+    }
+  }
+  ```
+
+  To also remove the state of destroyed workspaces, add a rule that expires small objects. An empty state is a few hundred bytes. Check the object sizes in your bucket before you set the limit. Versioning keeps the previous version, so you can restore it until the noncurrent rule removes it.
+
+  ```hcl
+    rule {
+      id     = "expire-empty-states"
+      status = "Enabled"
+      filter {
+        object_size_less_than = 512
+      }
+      expiration {
+        days = 30
+      }
+    }
+  ```
+
 include: []
 contributors: []
