@@ -160,6 +160,31 @@ variable "s3_replica_bucket_arn" {
   description = "The ARN of the S3 replica bucket (destination)"
 }
 
+variable "s3_replica_kms_key_arn" {
+  type        = string
+  default     = null
+  description = <<-EOT
+    ARN of the KMS key in the destination Region that encrypts the replicas.
+    When set, objects encrypted with SSE-KMS are replicated too (S3 skips them otherwise),
+    and the replication role may decrypt them with the source bucket's key and encrypt with this key.
+    Use a customer managed key: an AWS managed `aws/s3` key cannot be named as the replica key.
+    EOT
+
+  validation {
+    condition     = var.s3_replica_kms_key_arn == null || can(regex("^arn:[^:]+:kms:", var.s3_replica_kms_key_arn))
+    error_message = "`s3_replica_kms_key_arn` must be a KMS key ARN."
+  }
+}
+
+variable "s3_replication_delete_marker_enabled" {
+  type        = bool
+  default     = true
+  description = <<-EOT
+    Replicate delete markers to the replica bucket.
+    Set to `false` to keep the replica as an independent copy: deleting a state object in the source then leaves it visible in the replica.
+    EOT
+}
+
 variable "logging" {
   type = list(object({
     target_bucket = string
