@@ -27,5 +27,9 @@ module "tfstate_backend" {
 
   bucket_ownership_enforced_enabled = true
 
+  # Block server-side encryption with customer-provided keys (SSE-C) on the state
+  # bucket. Requires `hashicorp/aws` >= 6.22.0 (see versions.tf).
+  blocked_encryption_types = ["SSE-C"]
+
   context = module.this.context
 }
