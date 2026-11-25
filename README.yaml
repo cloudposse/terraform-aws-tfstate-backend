@@ -190,6 +190,25 @@ usage: |2-
   }
   ```
 
+  The replica bucket must have versioning enabled. S3 replicates only objects written after the replication configuration exists; copy existing state with S3 Batch Replication.
+
+  #### Encrypted state (SSE-KMS)
+
+  S3 does not replicate SSE-KMS objects unless the rule opts in and names a key for the replicas. Set `s3_replica_kms_key_arn` to a customer managed key in the replica's Region. The module then adds both to the rule and lets the replication role decrypt the source objects and encrypt the replicas, scoped to S3 and to the two buckets.
+
+  ```hcl
+    sse_encryption         = "aws:kms"
+    s3_replication_enabled = true
+    s3_replica_bucket_arn  = "arn:aws:s3:::eg-test-terraform-tfstate-replica"
+    s3_replica_kms_key_arn = "arn:aws:kms:us-west-2:111111111111:key/00000000-0000-0000-0000-000000000000"
+  ```
+
+  If the source bucket uses a customer managed key, its key policy must also allow the replication role (output `s3_replication_role_arn`) to use `kms:Decrypt`.
+
+  #### Delete markers
+
+  Delete markers are replicated by default, so deleting a state object hides it in the replica too. Set `s3_replication_delete_marker_enabled = false` to keep the replica as an independent copy.
+
   ### Lifecycle Rules
 
   This module does not create a lifecycle configuration. A bucket can have only one, so add your own with the `s3_bucket_id` output.
